@@ -10,9 +10,9 @@ SELECT OrderProduct.orderProductID, OrderProduct.orderID, Product.name, OrderPro
 FROM OrderProduct
 INNER JOIN Product ON OrderProduct.productID=Product.productID;
 
--- OrderProduct_view that also includes time.
+-- OrderProduct_view that also includes userID and ordertime.
 CREATE VIEW OrderProduct_view2 AS
-SELECT OrderProduct.orderProductID, Order.orderID, Product.name, OrderProduct.quantity, Order.orderTime
+SELECT OrderProduct.orderProductID, Order.orderID, Order.UserID, Product.name, OrderProduct.quantity, Order.orderTime
 FROM OrderProduct
 INNER JOIN Product ON OrderProduct.productID=Product.productID
 INNER JOIN `Order` ON OrderProduct.orderID=Order.orderID;
