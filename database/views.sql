@@ -1,16 +1,10 @@
-CREATE VIEW User_view AS
-SELECT userID, isAdmin, firstName, lastName, email, hashedPassword 
-FROM User;
-
+-- Displays User's name instead of ID.
 CREATE VIEW Order_view AS
-SELECT orderID, userID, totalPrice, totalPounds, deliveryFee, orderTime, orderStatus, streetAddress, city, zipCode 
-FROM `Order`;
+SELECT Order.orderID, User.firstName, User.LastName, Order.totalPrice, Order.totalPounds, Order.deliveryFee, Order.orderTime, Order.orderStatus, Order.streetAddress, Order.city, Order.zipCode
+FROM `Order`
+INNER JOIN User ON Order.userID=User.userID;
 
-CREATE VIEW Product_view AS
-SELECT productID, category, name, price, pounds, quantity 
-FROM Product;
-
--- Replaces product id with product name.
+-- Displays Product's ID instead of ID.
 CREATE VIEW OrderProduct_view AS
 SELECT OrderProduct.orderProductID, OrderProduct.orderID, Product.name, OrderProduct.quantity
 FROM OrderProduct
