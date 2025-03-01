@@ -4,7 +4,7 @@ FROM User;
 
 CREATE VIEW Order_view AS
 SELECT orderID, userID, totalPrice, totalPounds, deliveryFee, orderTime, orderStatus, streetAddress, city, zipCode 
-FROM Order;
+FROM `Order`;
 
 CREATE VIEW Product_view AS
 SELECT productID, category, name, price, pounds, quantity 
