@@ -18,3 +18,10 @@ VALUES (1, 1, "Danny", "Xu", "pocafup@gmail.com", "JEGI23jGEIU23jiweg23FJE"),
 (13, 0, "Charlie", "Copper", "CharliePersonal@gmail.com", "6etrFU7sx7hScWld4eiv"),
 (14, 0, "Margaret", "Marcus", "MMWorkLife@gmail.com", "7Bqwuv43SAFSdjs23PTd");
 
+INSERT INTO `Order` (orderID, userID, totalPrice, totalPounds, deliveryFee, orderTime, orderStatus, streetAddress, city, zipCode)
+VALUES (1, 11, 10.68, 3.96, 0, '2025-03-01 12:54:39', 1, "550 East Taylor Street", "San Jose", 95112);
+
+INSERT INTO OrderProduct (orderProductID, orderID, productID, quantity)
+VALUES (1, 1, 1, 12);
+
+
