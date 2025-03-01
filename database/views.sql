@@ -10,6 +10,8 @@ CREATE VIEW Product_view AS
 SELECT productID, category, name, price, pounds, quantity 
 FROM Product;
 
+-- Replaces product id with product name.
 CREATE VIEW OrderProduct_view AS
-SELECT orderProductID, orderID, productID, quantity 
-FROM OrderProduct;
+SELECT OrderProduct.orderProductID, OrderProduct.orderID, Product.name, OrderProduct.quantity
+FROM OrderProduct
+INNER JOIN Product ON OrderProduct.productID=Product.productID;
