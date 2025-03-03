@@ -53,6 +53,18 @@ const Product = {
 
   // Delete a product
   delete: async (productID) => {
+    // First, check if the product is referenced in any orders
+    const [orderProducts] = await db.execute(
+      'SELECT COUNT(*) as count FROM OrderProduct WHERE productID = ?',
+      [productID]
+    );
+
+    if (orderProducts[0].count > 0) {
+      // Product is referenced in orders, cannot delete
+      throw new Error('Cannot delete product as it exists in orders');
+    }
+
+    // Safe to delete the product
     const [result] = await db.execute(
       'DELETE FROM Product WHERE productID = ?',
       [productID]
