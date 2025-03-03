@@ -13,7 +13,7 @@ module.exports = {
   validateEnv: () => {
     const required = ['DB_HOST', 'DB_USER', 'DB_PASS', 'DB_NAME', 'JWT_SECRET'];
     const missing = required.filter(key => !process.env[key]);
-    
+
     if (missing.length > 0) {
       throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
     }
