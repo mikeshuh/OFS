@@ -59,12 +59,48 @@ const User = {
 
   // Delete a user
   delete: async (userID) => {
-    const [result] = await db.execute(
-      'DELETE FROM User WHERE userID = ?',
-      [userID]
-    );
+    // Begin a transaction
+    const connection = await db.getConnection();
+    try {
+      await connection.beginTransaction();
 
-    return result.affectedRows > 0; // Return true if deletion was successful
+      // 1. Find all orders for this user
+      const [orders] = await connection.execute(
+        'SELECT orderID FROM `Order` WHERE userID = ?',
+        [userID]
+      );
+
+      // 2. For each order, delete the related OrderProduct records
+      for (const order of orders) {
+        await connection.execute(
+          'DELETE FROM OrderProduct WHERE orderID = ?',
+          [order.orderID]
+        );
+      }
+
+      // 3. Delete all orders for this user
+      await connection.execute(
+        'DELETE FROM `Order` WHERE userID = ?',
+        [userID]
+      );
+
+      // 4. Finally, delete the user
+      const [result] = await connection.execute(
+        'DELETE FROM User WHERE userID = ?',
+        [userID]
+      );
+
+      await connection.commit();
+      return {
+        success: result.affectedRows > 0,
+        ordersDeleted: orders.length
+      };
+    } catch (error) {
+      await connection.rollback(); // Rollback transaction on error
+      throw error;
+    } finally {
+      connection.release(); // Release the connection back to the pool
+    }
   }
 };
 
