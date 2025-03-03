@@ -68,7 +68,7 @@ const Order = {
 
   // Delete an order
   delete: async (orderID) => {
-    // Begin a transaction to ensure data integrity
+    // Begin a transaction
     const connection = await db.getConnection();
     try {
       await connection.beginTransaction();
