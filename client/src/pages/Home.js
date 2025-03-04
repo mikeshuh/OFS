@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `src/assets/` 
 import discountImage from "../assets/discount.png"; //Discount image
 
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   const handleSearch = () => {
     alert(`Searching for: ${searchQuery}`);
@@ -45,7 +47,9 @@ const Home = () => {
       <div style={styles.container}>
         <h1>Welcome to OFS Online Grocery Store</h1>
         <p>Order fresh groceries online and get them delivered to your doorstep.</p>
-        <button style={styles.shopButton} onClick={() => alert("Start Shopping!")}>
+        <button style={styles.shopButton} 
+          onClick={() => navigate("/products")}
+        >
           Start Shopping
         </button>
       </div>
@@ -55,6 +59,8 @@ const Home = () => {
 
 // 🏷️ Discount Banner
 const DiscountBanner = () => {
+  const navigate = useNavigate();
+
   return (
     <div style={styles.discountBanner}>
       <img src={discountImage} alt="Discount" style={styles.discountImage} />
@@ -63,19 +69,21 @@ const DiscountBanner = () => {
       <div style={styles.discountTextContainer}>
         {/* Left side：10% OFF & With First Order */}
         <div style={styles.leftColumn}>
-          <span style={styles.discountHighlight}>10% OFF</span>
+          <span style={styles.discountHighlight}>FREE Shipping!!!</span>
           <br />
-          <span style={styles.discountSubText}>With First Order</span>
+          <span style={styles.discountSubText}>With Order &le; 20 lbs</span>
         </div>
 
         {/* Right side：Code: WELCOME */}
         <div style={styles.rightColumn}>
-          <span style={styles.discountCode}>Code: WELCOME</span>
+          <span style={styles.discountRight}>Time-Limited Benefit</span>
         </div>
       </div>
 
-      <button style={styles.claimButton} onClick={() => alert("Discount claimed!")}>
-        Claim NOW!!!
+      <button style={styles.shopButton} 
+        onClick={() => navigate("/products")}
+      >
+        Shop NOW!!!
       </button>
     </div>
   );
@@ -195,7 +203,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "30px",
+    fontSize: "40px",
     fontWeight: "bold",
     textAlign: "center",
     flex: 1
@@ -209,21 +217,10 @@ const styles = {
     fontSize: "15px",
     color: "#555"
   },
-  discountCode: {
-    fontSize: "30px",
+  discountRight: {
+    fontSize: "25px",
     color: "#dc3545"
-  },
-  claimButton: {
-    backgroundColor: "white",
-    color: "#dc3545",
-    border: "2px solid #dc3545",
-    fontWeight: "bold",
-    padding: "10px 20px",
-    borderRadius: "20px",
-    fontSize: "16px",
-    cursor: "pointer",
-    transition: "background-color 0.3s ease, color 0.3s ease"
-  },  
+  }, 
 
   container: {
     textAlign: "center",
