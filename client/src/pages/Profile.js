@@ -1,28 +1,35 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `src/assets/` 
 import discountImage from "../assets/discount.png"; //Discount image
 
-const Home = () => {
+const Profile = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const navigate = useNavigate();
 
   const handleSearch = () => {
     alert(`Searching for: ${searchQuery}`);
-  };
+
+    
+};
+
+const [viewMode, setView] = useState(true);
+        
+    const EditButton = () => {
+            setView(!viewMode);
+};
+
 
   return (
     <div>
       {/* Navi Bar */}
       <nav style={styles.navbar}>
         <div style={styles.logoContainer}>
-          <img src={logo} alt="OFS Logo" style={styles.logo} />
+          <Link to="/" style={styles.link}><img src={logo} alt="OFS Logo" style={styles.logo} /></Link>
         </div>
         <div style={styles.navLinks}>
           <Link to="/categories" style={styles.link}>Food Category</Link>
           <Link to="/cart" style={styles.link}>Shopping Cart</Link>
-          <Link to="/profile" style={styles.link}>User Profile</Link>
+          
         </div>
         <div style={styles.searchContainer}>
           <input
@@ -35,8 +42,7 @@ const Home = () => {
           <button style={styles.searchButton} onClick={handleSearch}>🔍</button>
         </div>
         <div style={styles.authButtons}>
-          <Link to="/login" style={styles.button}>Log In</Link>
-          <Link to="/signup" style={styles.button}>Sign Up</Link>
+          <Link to="/signup" style={styles.button}>Sign Out</Link>
         </div>
       </nav>
 
@@ -45,13 +51,46 @@ const Home = () => {
 
       {/* Main page information */}
       <div style={styles.container}>
-        <h1>Welcome to OFS Online Grocery Store</h1>
-        <p>Order fresh groceries online and get them delivered to your doorstep.</p>
-        <button style={styles.shopButton} 
-        onClick={() => navigate("/products")}
-        >
-          Start Shopping
-        </button>
+        <h1>Profile Page</h1>
+        <p>First Name</p>
+        <p>Last Name</p>
+        <div style={styles.searchContainer}>
+        <p>Email</p>
+          {!viewMode && <input
+            type="text"
+            placeholder="Email Field (Hide if no edit)"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={styles.searchInput}
+          />}
+        </div>
+
+       <div style={styles.searchContainer}>
+        <p>Password</p>
+        {!viewMode && <input
+            type="text"
+            placeholder="Pwd Field (Hide if no edit)"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={styles.searchInput}
+          />}
+        </div>
+
+        {viewMode && <button style={styles.profileButton} onClick={EditButton}>
+          View History
+        </button>}
+
+        {viewMode && <button style={styles.editButton} onClick={EditButton}>
+          Edit Profile
+        </button>}
+
+        {!viewMode && <button style={styles.exitButton} onClick={EditButton}>
+          Save Changes
+        </button>}
+
+        {!viewMode && <button style={styles.exitButton} onClick={EditButton}>
+          Cancel Changes
+        </button>}
       </div>
     </div>
   );
@@ -59,10 +98,6 @@ const Home = () => {
 
 // 🏷️ Discount Banner
 const DiscountBanner = () => {
-  
-  /*Warning Message*/
-  const navigate = useNavigate();
-
   return (
     <div style={styles.discountBanner}>
       <img src={discountImage} alt="Discount" style={styles.discountImage} />
@@ -82,9 +117,7 @@ const DiscountBanner = () => {
         </div>
       </div>
 
-      <button style={styles.claimButton} 
-      onClick={() => alert("Discount claimed!")}
-      >
+      <button style={styles.claimButton} onClick={() => alert("Why you click me?")}>
         Claim NOW!!!
       </button>
     </div>
@@ -219,16 +252,52 @@ const styles = {
     fontSize: "15px",
     color: "#555"
   },
-  discountRight: {
-    fontSize: "25px",
+  discountCode: {
+    fontSize: "30px",
     color: "#dc3545"
-  }, 
+  },
+  claimButton: {
+    backgroundColor: "white",
+    color: "#dc3545",
+    border: "2px solid #dc3545",
+    fontWeight: "bold",
+    padding: "10px 20px",
+    borderRadius: "20px",
+    fontSize: "16px",
+    cursor: "pointer",
+    transition: "background-color 0.3s ease, color 0.3s ease"
+  },  
 
   container: {
     textAlign: "center",
     padding: "50px"
   },
-  shopButton: {
+  profileButton: {
+    margin: "10px",
+    backgroundColor: "#28a745",
+    color: "#fff",
+    padding: "10px 20px",
+    border: "none",
+    borderRadius: "5px",
+    fontSize: "16px",
+    cursor: "pointer",
+    transition: "background-color 0.3s ease",
+  },
+
+  editButton: {
+    margin: "10px",
+    backgroundColor: "#28a745",
+    color: "#fff",
+    padding: "10px 20px",
+    border: "none",
+    borderRadius: "5px",
+    fontSize: "16px",
+    cursor: "pointer",
+    transition: "background-color 0.3s ease",
+  },
+
+  exitButton: {
+    margin: "10px",
     backgroundColor: "#28a745",
     color: "#fff",
     padding: "10px 20px",
@@ -239,5 +308,4 @@ const styles = {
     transition: "background-color 0.3s ease",
   }
 };
-
-export default Home;
+export default Profile;
