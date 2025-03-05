@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `src/assets/`
 import discountImage from "../assets/discount.png"; //Discount image
+import Navbar from "../components/Navbar";
 
 const Signup = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -15,30 +16,7 @@ const Signup = () => {
   return (
     <div>
       {/* Navi Bar */}
-      <nav style={styles.navbar}>
-        <div style={styles.logoContainer}>
-          <img src={logo} alt="OFS Logo" style={styles.logo} />
-        </div>
-        <div style={styles.navLinks}>
-          <Link to="/categories" style={styles.link}>Food Category</Link>
-          <Link to="/cart" style={styles.link}>Shopping Cart</Link>
-          <Link to="/profile" style={styles.link}>User Profile</Link>
-        </div>
-        <div style={styles.searchContainer}>
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={styles.searchInput}
-          />
-          <button style={styles.searchButton} onClick={handleSearch}>🔍</button>
-        </div>
-        <div style={styles.authButtons}>
-          <Link to="/login" style={styles.button}>Log In</Link>
-          <Link to="/signup" style={styles.button}>Sign Up</Link>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Discount */}
       <DiscountBanner />

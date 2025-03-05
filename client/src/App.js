@@ -4,6 +4,8 @@ import Home from "./pages/Home";
 import Products from "./pages/Products"
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
+import NotFoundPage from "./pages/NotFoundPage";
+import Redirect404 from "./pages/Redirect404";
 
 import Signup from "./pages/Signup";
 import "./App.css";
@@ -20,6 +22,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/products" element={<div>Products</div>} />
+        <Route path="/404" element={<NotFoundPage />} />
+        <Route path="*" element={<Redirect404 />} />
       </Routes>
     </Router>
   );
