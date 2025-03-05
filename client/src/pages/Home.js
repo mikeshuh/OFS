@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `src/assets/` 
+import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `src/assets/`
 import discountImage from "../assets/discount.png"; //Discount image
-
+import Navbar from "../Components/Navbar";
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
@@ -15,30 +15,7 @@ const Home = () => {
   return (
     <div>
       {/* Navi Bar */}
-      <nav style={styles.navbar}>
-        <div style={styles.logoContainer}>
-          <img src={logo} alt="OFS Logo" style={styles.logo} />
-        </div>
-        <div style={styles.navLinks}>
-          <Link to="/categories" style={styles.link}>Food Category</Link>
-          <Link to="/cart" style={styles.link}>Shopping Cart</Link>
-          <Link to="/profile" style={styles.link}>User Profile</Link>
-        </div>
-        <div style={styles.searchContainer}>
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={styles.searchInput}
-          />
-          <button style={styles.searchButton} onClick={handleSearch}>🔍</button>
-        </div>
-        <div style={styles.authButtons}>
-          <Link to="/login" style={styles.button}>Log In</Link>
-          <Link to="/signup" style={styles.button}>Sign Up</Link>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Discount */}
       <DiscountBanner />
@@ -47,9 +24,7 @@ const Home = () => {
       <div style={styles.container}>
         <h1>Welcome to OFS Online Grocery Store</h1>
         <p>Order fresh groceries online and get them delivered to your doorstep.</p>
-        <button style={styles.shopButton} 
-        onClick={() => navigate("/products")}
-        >
+        <button style={styles.shopButton} onClick={() => navigate("/products")}>
           Start Shopping
         </button>
       </div>
@@ -59,14 +34,14 @@ const Home = () => {
 
 // 🏷️ Discount Banner
 const DiscountBanner = () => {
-  
+
   /*Warning Message*/
   const navigate = useNavigate();
 
   return (
     <div style={styles.discountBanner}>
       <img src={discountImage} alt="Discount" style={styles.discountImage} />
-      
+
       {/* Two columns */}
       <div style={styles.discountTextContainer}>
         {/* Left side：10% OFF & With First Order */}
@@ -82,7 +57,7 @@ const DiscountBanner = () => {
         </div>
       </div>
 
-      <button style={styles.claimButton} 
+      <button style={styles.claimButton}
       onClick={() => alert("Discount claimed!")}
       >
         Claim NOW!!!
@@ -93,7 +68,7 @@ const DiscountBanner = () => {
 
 
 
-// CSS 
+// CSS
 const styles = {
   navbar: {
     display: "flex",
@@ -222,7 +197,7 @@ const styles = {
   discountRight: {
     fontSize: "25px",
     color: "#dc3545"
-  }, 
+  },
 
   container: {
     textAlign: "center",

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `src/assets/` 
+import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `src/assets/`
 import discountImage from "../assets/discount.png"; //Discount image
+import Navbar from "../Components/Navbar";
 
 const Profile = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -9,11 +10,11 @@ const Profile = () => {
   const handleSearch = () => {
     alert(`Searching for: ${searchQuery}`);
 
-    
+
 };
 
 const [viewMode, setView] = useState(true);
-        
+
     const EditButton = () => {
             setView(!viewMode);
 };
@@ -22,29 +23,7 @@ const [viewMode, setView] = useState(true);
   return (
     <div>
       {/* Navi Bar */}
-      <nav style={styles.navbar}>
-        <div style={styles.logoContainer}>
-          <Link to="/" style={styles.link}><img src={logo} alt="OFS Logo" style={styles.logo} /></Link>
-        </div>
-        <div style={styles.navLinks}>
-          <Link to="/categories" style={styles.link}>Food Category</Link>
-          <Link to="/cart" style={styles.link}>Shopping Cart</Link>
-          
-        </div>
-        <div style={styles.searchContainer}>
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={styles.searchInput}
-          />
-          <button style={styles.searchButton} onClick={handleSearch}>🔍</button>
-        </div>
-        <div style={styles.authButtons}>
-          <Link to="/signup" style={styles.button}>Sign Out</Link>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Discount */}
       <DiscountBanner />
@@ -101,7 +80,7 @@ const DiscountBanner = () => {
   return (
     <div style={styles.discountBanner}>
       <img src={discountImage} alt="Discount" style={styles.discountImage} />
-      
+
       {/* Two columns */}
       <div style={styles.discountTextContainer}>
         {/* Left side：10% OFF & With First Order */}
@@ -126,7 +105,7 @@ const DiscountBanner = () => {
 
 
 
-// CSS 
+// CSS
 const styles = {
   navbar: {
     display: "flex",
@@ -266,7 +245,7 @@ const styles = {
     fontSize: "16px",
     cursor: "pointer",
     transition: "background-color 0.3s ease, color 0.3s ease"
-  },  
+  },
 
   container: {
     textAlign: "center",
