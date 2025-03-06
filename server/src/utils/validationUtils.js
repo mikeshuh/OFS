@@ -96,7 +96,7 @@ const validatePasswordChange = (passwordData) => {
   }
 
   // Validate new password
-  if (newPassword && !isValidPassword(newPassword)) {
+  else if (!isValidPassword(newPassword)) {
     errors.push('New password must be at least 8 characters long');
   }
 

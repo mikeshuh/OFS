@@ -37,19 +37,10 @@ const register = async (req, res) => {
       hashedPassword
     };
 
-    const userID = await User.create(userData);
+    await User.create(userData);
 
-    // Get user without password
-    const newUser = await User.findById(userID);
-
-    // Generate token
-    const token = generateToken(newUser);
-
-    // Return success with user data and token
-    return responseHandler.created(res, {
-      user: newUser,
-      token
-    }, 'User registered successfully.');
+    // Return success
+    return responseHandler.created(res, undefined, 'User registered successfully.');
   } catch (error) {
     console.error(`Registration error: ${error.message}`, error);
     return responseHandler.error(res, 'Failed to register user.');
@@ -88,11 +79,8 @@ const login = async (req, res) => {
     // Generate token
     const token = generateToken(userData);
 
-    // Return success with user data and token
-    return responseHandler.success(res, {
-      user: userData,
-      token
-    }, 'Login successful.');
+    // Return success with token
+    return responseHandler.success(res, {token}, 'Login successful.');
   } catch (error) {
     console.error(`Login error: ${error.message}`, error);
     return responseHandler.error(res, 'Failed to login.');
