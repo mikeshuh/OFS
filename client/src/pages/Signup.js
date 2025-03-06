@@ -1,16 +1,48 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `src/assets/`
-import discountImage from "../assets/discount.png"; //Discount image
+import discountImage from "../assets/discount.png"; // Discount image
 import Navbar from "../components/Navbar";
 
 const Signup = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    passwordConfirmed: ""
+  });
   const navigate = useNavigate();
 
-  const handleSearch = () => {
-    alert(`Searching for: ${searchQuery}`);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+
+  const signupDB = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://localhost:5000/api/users/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
+      if (response.ok) {
+        // Handle successful signup (e.g., navigate to login page)
+        navigate("/login");
+      } else {
+        // Handle error response
+        const errorData = await response.json();
+        console.error("Error:", errorData);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
@@ -20,17 +52,44 @@ const Signup = () => {
 
       {/* Discount */}
       <DiscountBanner />
+
       {/* Signup Form */}
       <div style={styles.loginContainer}>
         <h1 style={styles.header}>New User Signup</h1>
-        <form style={styles.form}>
+        <form style={styles.form} onSubmit={signupDB}>
           <div style={styles.formGroup}>
-            <label htmlFor="username" style={styles.label}>Username:</label>
+            <label htmlFor="firstName" style={styles.label}>First Name:</label>
             <input
               type="text"
-              id="username"
-              name="username"
-              placeholder="Enter your username"
+              id="firstName"
+              name="firstName"
+              placeholder="Enter your First Name"
+              value={formData.firstName}
+              onChange={handleChange}
+              style={styles.input}
+            />
+          </div>
+          <div style={styles.formGroup}>
+            <label htmlFor="lastName" style={styles.label}>Last Name:</label>
+            <input
+              type="text"
+              id="lastName"
+              name="lastName"
+              placeholder="Enter your Last Name"
+              value={formData.lastName}
+              onChange={handleChange}
+              style={styles.input}
+            />
+          </div>
+          <div style={styles.formGroup}>
+            <label htmlFor="email" style={styles.label}>Email:</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter your email"
+              value={formData.email}
+              onChange={handleChange}
               style={styles.input}
             />
           </div>
@@ -41,46 +100,20 @@ const Signup = () => {
               id="password"
               name="password"
               placeholder="Enter your password"
+              value={formData.password}
+              onChange={handleChange}
               style={styles.input}
             />
           </div>
           <div style={styles.formGroup}>
-            <label htmlFor="confirmed password" style={styles.label}>Confirmed Password:</label>
+            <label htmlFor="passwordConfirmed" style={styles.label}>Confirmed Password:</label>
             <input
-              type="passwordConfirmed"
+              type="password"
               id="passwordConfirmed"
               name="passwordConfirmed"
               placeholder="Enter your password again"
-              style={styles.input}
-            />
-          </div>
-          <div style={styles.formGroup}>
-            <label htmlFor="email" style={styles.label}>email:</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Enter your email"
-              style={styles.input}
-            />
-          </div>
-          <div style={styles.formGroup}>
-            <label htmlFor="firstName" style={styles.label}>First Name:</label>
-            <input
-              type="firstName"
-              id="firstName"
-              name="firstName"
-              placeholder="Enter your First Name"
-              style={styles.input}
-            />
-          </div>
-          <div style={styles.formGroup}>
-            <label htmlFor="lastName" style={styles.label}>Last Name:</label>
-            <input
-              type="lastName"
-              id="lastName"
-              name="lastName"
-              placeholder="Enter your Last Name"
+              value={formData.passwordConfirmed}
+              onChange={handleChange}
               style={styles.input}
             />
           </div>
@@ -93,10 +126,6 @@ const Signup = () => {
 
 // 🏷️ Discount Banner
 const DiscountBanner = () => {
-
-  /*Warning Message*/
-  const navigate = useNavigate();
-
   return (
     <div style={styles.discountBanner}>
       <img src={discountImage} alt="Discount" style={styles.discountImage} />
@@ -124,8 +153,6 @@ const DiscountBanner = () => {
     </div>
   );
 };
-
-
 
 // CSS
 const styles = {
