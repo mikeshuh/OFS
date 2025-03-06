@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `src/assets/`
 import discountImage from "../assets/discount.png"; //Discount image
 import Navbar from "../components/Navbar.js";
 const Home = () => {
@@ -46,23 +44,22 @@ const DiscountBanner = () => {
 
       {/* Two columns */}
       <div style={styles.discountTextContainer}>
-        {/* Left side：10% OFF & With First Order */}
         <div style={styles.leftColumn}>
-          <span style={styles.discountHighlight}>10% OFF</span>
+          <span style={styles.discountHighlight}>FREE SHIPPING</span>
           <br />
-          <span style={styles.discountSubText}>With First Order</span>
+          <span style={styles.discountSubText}>Order ≤ 20 lbs</span>
         </div>
 
         {/* Right side：Code: WELCOME */}
         <div style={styles.rightColumn}>
-          <span style={styles.discountCode}>Code: WELCOME</span>
+          <span style={styles.discountCode}>Time-Limited Offer</span>
         </div>
       </div>
 
-      <button style={styles.claimButton}
-      onClick={() => alert("Discount claimed!")}
+      <button style={styles.ShoppingNOwButton}
+      onClick={() => navigate("/products")}
       >
-        Claim NOW!!!
+        Shopping NOW!!!
       </button>
     </div>
   );
@@ -133,7 +130,7 @@ const styles = {
     transition: "background-color 0.3s ease, color 0.3s ease",
   },
 
-  // 🎉 Discount banner styles
+  // 🎉 Free shipping banner styles
   discountBanner: {
     display: "flex",
     alignItems: "center",
@@ -174,10 +171,10 @@ const styles = {
   rightColumn: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     fontSize: "30px",
     fontWeight: "bold",
-    textAlign: "center",
+    textAlign: "left",
     flex: 1
   },
   discountHighlight: {
@@ -205,6 +202,17 @@ const styles = {
     border: "none",
     borderRadius: "5px",
     fontSize: "16px",
+    cursor: "pointer",
+    transition: "background-color 0.3s ease",
+  },
+
+  ShoppingNOwButton: {
+    backgroundColor: "#28a745",
+    color: "#fff",
+    padding: "13px 15px",
+    border: "none",
+    borderRadius: "5px",
+    fontSize: "13px",
     cursor: "pointer",
     transition: "background-color 0.3s ease",
   }
