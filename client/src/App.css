@@ -2,6 +2,10 @@
   text-align: center;
 }
 
+div {
+  text-align: center;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -37,6 +41,7 @@
   }
 }
 
+
 .navbar {
   display: flex;
   justify-Content: space-between;
@@ -48,7 +53,7 @@
 
 .logoContainer { flex: 1 }
 .logo { height: 50px }
-navLinks {
+.navLinks {
   flex: 2;
   display: flex;
   justify-Content: center;
@@ -62,7 +67,7 @@ link {
   font-Weight: bold;
   padding: 10px;
   transition: color 0.3s ease;
-}
+};
 
 .searchContainer {
   flex: 1.5;
@@ -70,7 +75,7 @@ link {
   align-Items: center;
   justify-Content: center;
   gap: 5px;
-}
+};
 
 .searchInput {
   padding: 8px 12px;
@@ -79,7 +84,8 @@ link {
   border-Radius: 5px;
   outline: none;
   width: 180px
-};
+}
+
 .searchButton {
   background-Color: #fff;
   border: 1px solid #28a745;
@@ -89,14 +95,14 @@ link {
   cursor: pointer;
   font-Size: 14px;
   transition: background-color 0.3s ease;
-};
+}
 
 .authButtons {
   flex: 1;
   display: flex;
   justify-Content: flex-end;
   gap: 10px
-};
+}
 
 button {
   text-Decoration: none;
@@ -108,7 +114,7 @@ button {
   font-Weight: bold;
   border: 2px solid #28a745;
   transition: background-color 0.3s ease, color 0.3s ease;
-};
+}
 
 /* 🎉 Discount banner styles*/
 .discountBanner {
@@ -124,14 +130,14 @@ button {
   box-Shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
   position: relative;
   height: 60px
-};
+}
 
 .discountImage {
   height: 90px;
   position: flex;
   left: 20px;
   top: -10px
-};
+}
 
 /* Make the text section horizontally aligned as a whole (left-right layout)*/
 .discountTextContainer {
@@ -140,7 +146,7 @@ button {
   justify-Content: center;
   flex: 1;
   gap: 20px
-};
+}
 
 .leftColumn {
   display: flex;
@@ -150,7 +156,7 @@ button {
   font-Weight: bold;
   text-Align: center;
   flex: 1
-};
+}
 
 .rightColumn {
   display: flex;
@@ -160,23 +166,23 @@ button {
   font-Weight: bold;
   text-Align: center;
   flex: 1
-};
+}
 
 .discountHighlight {
   font-Size: 24px;
   font-Weight: bold;
   color: #000
-};
+}
 
 .discountSubText {
   font-Size: 15px;
   color: #555
-};
+}
 
 .discountCode {
   font-Size: 30px;
   color: #dc3545
-};
+}
 
 .claimButton {
   background-Color: white;
@@ -188,17 +194,17 @@ button {
   font-Size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease;
-};  
+}
 
 .discountRight {
   font-Size: 25px;
   color: #dc3545;
-};
+}
 
 .container {
   text-Align: center;
-  padding: 50px
-};
+  padding: 10px
+}
 
 .shopButton {
   background-Color: #28a745;
@@ -221,7 +227,7 @@ button {
   font-Size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-};
+}
 
 .editButton {
   margin: 10px;
@@ -233,7 +239,7 @@ button {
   font-Size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-};
+}
 
 .exitButton {
   margin: 10px;
@@ -245,4 +251,4 @@ button {
   font-Size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-};
+}
