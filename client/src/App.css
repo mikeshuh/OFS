@@ -36,3 +36,213 @@
     transform: rotate(360deg);
   }
 }
+
+.navbar {
+  display: flex;
+  justify-Content: space-between;
+  align-Items: center;
+  padding: 15px 50px;
+  background-Color: #28a745;
+  box-Shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.logoContainer { flex: 1 }
+.logo { height: 50px }
+navLinks {
+  flex: 2;
+  display: flex;
+  justify-Content: center;
+  gap: 20px;
+}
+
+link {
+  text-Decoration: none;
+  color: #fff;
+  font-Size: 16px;
+  font-Weight: bold;
+  padding: 10px;
+  transition: color 0.3s ease;
+}
+
+.searchContainer {
+  flex: 1.5;
+  display: flex;
+  align-Items: center;
+  justify-Content: center;
+  gap: 5px;
+}
+
+.searchInput {
+  padding: 8px 12px;
+  font-Size: 14px;
+  border: 1px solid #ddd;
+  border-Radius: 5px;
+  outline: none;
+  width: 180px
+};
+.searchButton {
+  background-Color: #fff;
+  border: 1px solid #28a745;
+  color: #28a745;
+  padding: 8px 12px;
+  border-Radius: 5px;
+  cursor: pointer;
+  font-Size: 14px;
+  transition: background-color 0.3s ease;
+};
+
+.authButtons {
+  flex: 1;
+  display: flex;
+  justify-Content: flex-end;
+  gap: 10px
+};
+
+button {
+  text-Decoration: none;
+  background-Color: #fff;
+  color: #28a745;
+  padding: 8px 15px;
+  border-Radius: 5px;
+  font-Size: 14px;
+  font-Weight: bold;
+  border: 2px solid #28a745;
+  transition: background-color 0.3s ease, color 0.3s ease;
+};
+
+/* 🎉 Discount banner styles*/
+.discountBanner {
+  display: flex;
+  align-Items: center;
+  justify-Content: space-between;
+  background-Color: #f8f9fa;
+  padding: 10px 15px;
+  border-Radius: 30px;
+  margin: 10px auto;
+  width: 80%;
+  max-Width: 750px;
+  box-Shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+  height: 60px
+};
+
+.discountImage {
+  height: 90px;
+  position: flex;
+  left: 20px;
+  top: -10px
+};
+
+/* Make the text section horizontally aligned as a whole (left-right layout)*/
+.discountTextContainer {
+  display: flex;
+  align-Items: center;
+  justify-Content: center;
+  flex: 1;
+  gap: 20px
+};
+
+.leftColumn {
+  display: flex;
+  flex-Direction: column;
+  align-Items: center;
+  font-Size: 10px;
+  font-Weight: bold;
+  text-Align: center;
+  flex: 1
+};
+
+.rightColumn {
+  display: flex;
+  align-Items: center;
+  justify-Content: center;
+  font-Size: 30px;
+  font-Weight: bold;
+  text-Align: center;
+  flex: 1
+};
+
+.discountHighlight {
+  font-Size: 24px;
+  font-Weight: bold;
+  color: #000
+};
+
+.discountSubText {
+  font-Size: 15px;
+  color: #555
+};
+
+.discountCode {
+  font-Size: 30px;
+  color: #dc3545
+};
+
+.claimButton {
+  background-Color: white;
+  color: #dc3545;
+  border: 2px solid #dc3545;
+  font-Weight: bold;
+  padding: 10px 20px;
+  border-Radius: 20px;
+  font-Size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+};
+
+.discountRight {
+  font-Size: 25px;
+  color: #dc3545;
+};
+
+.container {
+  text-Align: center;
+  padding: 50px
+};
+
+.shopButton {
+  background-Color: #28a745;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-Radius: 5px;
+  font-Size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.profileButton {
+  margin: 10px;
+  background-Color: #28a745;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-Radius: 5px;
+  font-Size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+};
+
+.editButton {
+  margin: 10px;
+  background-Color: #28a745;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-Radius: 5px;
+  font-Size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+};
+
+.exitButton {
+  margin: 10px;
+  background-Color: #28a745;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-Radius: 5px;
+  font-Size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+};
