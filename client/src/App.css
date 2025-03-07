@@ -246,3 +246,12 @@ button {
   cursor: pointer;
   transition: background-color 0.3s ease;
 };
+
+.alert{
+  background-Color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  border-Radius: 5px;
+  margin: 10px;
+  text-Align: center;
+}

@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `src/assets/`
 import discountImage from "../assets/discount.png"; // Discount image
 import Navbar from "../components/Navbar";
-
+import {JWT_SECRET} from "../utils/Constant.js";
 const Signup = () => {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -13,6 +13,15 @@ const Signup = () => {
     passwordConfirmed: ""
   });
   const navigate = useNavigate();
+
+  {/*alert bar message*/}
+  const [errorMessage,setMessage] = useState("");
+  const [signupError,setSignupError] = useState(false);
+    const SignupError = (errorMessage) => {
+      setSignupError(true);
+      setMessage(errorMessage);
+  }
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,24 +34,37 @@ const Signup = () => {
   const signupDB = async (e) => {
     e.preventDefault();
     try {
+      // Check if password matches
+
+      /* !!! important note: this should be after the response. It is here right now
+      because the backend for confirmed password is not implemented yet. !!! */
+
+      if (formData.password !== formData.passwordConfirmed) {
+        SignupError("Passwords do not match");
+        return;
+      }
       const response = await fetch("http://localhost:5000/api/users/register", {
         method: "POST",
         headers: {
+          'Authorization': `Bearer ${JWT_SECRET}`,
           "Content-Type": "application/json"
         },
         body: JSON.stringify(formData)
       });
+
       if (response.ok) {
+
         // Handle successful signup (e.g., navigate to login page)
         navigate("/login");
       } else {
         // Handle error response
         const errorData = await response.json();
-        console.error("Error:", errorData);
+        SignupError(errorData.message);
       }
     } catch (error) {
-      console.error("Error:", error);
+      SignupError("Network error. Please try again");
     }
+
   };
 
   return (
@@ -53,9 +75,13 @@ const Signup = () => {
       {/* Discount */}
       <DiscountBanner />
 
-      {/* Signup Form */}
-      <div style={styles.loginContainer}>
+      {/* Signup Form Container*/}
+      <div style={styles.signupContainer}>
         <h1 style={styles.header}>New User Signup</h1>
+        {/*Signup Error Alert*/}
+        {signupError && <div class="alert" style={styles.alert}>{errorMessage}</div>}
+
+        {/* Signup Form */}
         <form style={styles.form} onSubmit={signupDB}>
           <div style={styles.formGroup}>
             <label htmlFor="firstName" style={styles.label}>First Name:</label>
@@ -306,16 +332,23 @@ const styles = {
     fontWeight: 'bold',
     color: '#555',
   },
-  loginContainer: {
+  signupContainer: {
     borderRadius: '10px',
     boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-    margin: '20px',
+    margin: '0px 20vw 0px 20vw',
+
+    fontSize: '14px',
     textAlign: "center",
-    padding: "50px"
+    padding: "50px",
+    alignItems: "center"
   },
-  signupContainer:{
-    textAlign: "center",
-    padding: "20px"
+  alert:{
+    color: 'red',
+    backgroundColor: '#f8d7da',
+    borderColor: '#f5c6cb',
+    padding: '10px',
+    marginBottom: '10px',
+    borderRadius: '5px'
   }
 };
 

@@ -4,16 +4,73 @@ import { useNavigate } from "react-router-dom";
 import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `src/assets/`
 import discountImage from "../assets/discount.png"; //Discount image
 import Navbar from "../components/Navbar";
+import {JWT_SECRET} from "../utils/Constant.js";
+import "../App.css";
 
+// const [loginError,setLoginError] = useState(false);
+//     const LoginError = () => {
+//       setLoginError(true);
+// }
 
+// const [message,setMessage] = useState("");
+//     const Message = (error) => {
+//       setMessage(error);
+// }
 const Login = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [errorMessage,setMessage] = useState("");
+
+  {/*alert bar message*/}
+  const [loginError,setLoginError] = useState(false);
+    const LoginError = (errorMessage) => {
+      setLoginError(true);
+      setMessage(errorMessage);
+  }
+
+
+  const [formData,setFormData] = useState({
+    email: "",
+    password: ""
+  })
+
   const navigate = useNavigate();
 
-  const handleSearch = () => {
-    alert(`Searching for: ${searchQuery}`);
+  {/*Form Data Action Listener*/}
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
   };
 
+  {/*Login Function*/}
+  const loginDB = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://localhost:5000/api/users/login", {
+        method: "POST",
+        headers: {
+          'Authorization': `Bearer ${JWT_SECRET}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
+      if (response.ok) {
+        // Handle successful login (e.g., navigate to profile page)
+        navigate("/profile");
+      } else {
+        // Handle error response
+        const errorData = await response.json();
+        console.log(errorData.message);
+        LoginError(errorData.message);
+        console.error("Error:", errorData);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+
+      LoginError("An error occurred. Please try again later.");
+    }
+  }
   return (
     <div>
       {/* Navi Bar */}
@@ -21,19 +78,23 @@ const Login = () => {
 
       {/* Discount */}
       <DiscountBanner />
-      {/* Login Form */}
+      {/* Login Form Container */}
       <div style={styles.loginContainer}>
         <h1 style={styles.header}>New User Login</h1>
-        <form style={styles.form}>
+        {/* Error Message */}
+        {loginError && <div class="alert" style={styles.alert}>{errorMessage}</div>}
+        {/* Login Form */}
+        <form style={styles.form} onSubmit={loginDB}>
           <div style={styles.formGroup}>
             <div style ={styles.tableGroup}>
-             <label htmlFor="username" style={styles.label}>Username:</label>
+             <label htmlFor="email" style={styles.label}>Email:</label>
             <input
-              type="text"
-              id="username"
-              name="username"
-              placeholder="Enter your username"
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter your email"
               style={styles.input}
+              onChange={handleChange}
             />
             </div>
 
@@ -46,6 +107,7 @@ const Login = () => {
               name="password"
               placeholder="Enter your password"
               style={styles.input}
+              onChange={handleChange}
             />
           </div>
           <button type="submit" style={styles.submitButton}>Login</button>
@@ -53,11 +115,13 @@ const Login = () => {
       </div>
       <div style={styles.signupContainer}>
         <p>Don't have an account?</p>
-        <Link to="/signup" style={styles.button}>Sign Up</Link>
+        <Link to="/signup" style={styles.button} >Sign Up</Link>
       </div>
     </div>
   );
 };
+
+
 
 // 🏷️ Discount Banner
 const DiscountBanner = () => {
@@ -246,15 +310,25 @@ const styles = {
   loginContainer: {
     borderRadius: '10px',
     boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-    margin: '20px',
+    margin: '0px 20vw 0px 20vw',
+
     fontSize: '14px',
     textAlign: "center",
-    padding: "50px"
+    padding: "50px",
+    alignItems: "center"
   },
 
   signupContainer:{
     textAlign: "center",
     padding: "20px"
+  },
+  alert:{
+    color: 'red',
+    backgroundColor: '#f8d7da',
+    borderColor: '#f5c6cb',
+    padding: '10px',
+    marginBottom: '10px',
+    borderRadius: '5px'
   }
 };
 
