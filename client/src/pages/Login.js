@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `src/assets/`
 import discountImage from "../assets/discount.png"; //Discount image
 import Navbar from "../components/Navbar";
-import {JWT_SECRET} from "../utils/Constant.js";
 import "../App.css";
+
 
 // const [loginError,setLoginError] = useState(false);
 //     const LoginError = () => {
@@ -18,6 +18,11 @@ import "../App.css";
 // }
 const Login = () => {
   const [errorMessage,setMessage] = useState("");
+  const [formData,setFormData] = useState({
+    email: "",
+    password: ""
+  })
+  const navigate = useNavigate();
 
   {/*alert bar message*/}
   const [loginError,setLoginError] = useState(false);
@@ -25,14 +30,6 @@ const Login = () => {
       setLoginError(true);
       setMessage(errorMessage);
   }
-
-
-  const [formData,setFormData] = useState({
-    email: "",
-    password: ""
-  })
-
-  const navigate = useNavigate();
 
   {/*Form Data Action Listener*/}
   const handleChange = (e) => {
@@ -45,6 +42,7 @@ const Login = () => {
 
   {/*Login Function*/}
   const loginDB = async (e) => {
+    const JWT_SECRET = process.env.JWT_SECRET;
     e.preventDefault();
     try {
       const response = await fetch("http://localhost:5000/api/users/login", {

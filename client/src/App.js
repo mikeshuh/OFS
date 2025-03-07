@@ -6,7 +6,6 @@ import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import NotFoundPage from "./pages/NotFoundPage";
 import Redirect404 from "./pages/Redirect404";
-
 import Signup from "./pages/Signup";
 import "./App.css";
 

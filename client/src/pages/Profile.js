@@ -34,14 +34,14 @@ const [viewMode, setView] = useState(true);
         <p>First Name</p>
         <p>Last Name</p>
         <div style={styles.searchContainer}>
-        <p>Email</p>
-          {!viewMode && <input
-            type="text"
-            placeholder="Email Field (Hide if no edit)"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={styles.searchInput}
-          />}
+          <p>Email</p>
+            {!viewMode && <input
+              type="text"
+              placeholder="Email Field (Hide if no edit)"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={styles.searchInput}
+            />}
         </div>
 
        <div style={styles.searchContainer}>

@@ -3,8 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `src/assets/`
 import discountImage from "../assets/discount.png"; // Discount image
 import Navbar from "../components/Navbar";
-import {JWT_SECRET} from "../utils/Constant.js";
+
 const Signup = () => {
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -32,6 +33,7 @@ const Signup = () => {
   };
 
   const signupDB = async (e) => {
+    const JWT_SECRET = process.env.JWT_SECRET;
     e.preventDefault();
     try {
       // Check if password matches
