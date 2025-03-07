@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `src/assets/`
 import discountImage from "../assets/discount.png"; // Discount image
 import Navbar from "../components/Navbar";
-
+import requestServer from "../utils/Utility";
 const Signup = () => {
 
   const [formData, setFormData] = useState({
@@ -45,14 +45,7 @@ const Signup = () => {
         SignupError("Passwords do not match");
         return;
       }
-      const response = await fetch("http://localhost:5000/api/users/register", {
-        method: "POST",
-        headers: {
-          'Authorization': `Bearer ${JWT_SECRET}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      });
+      const response = await requestServer("http://localhost:5000/api/users/register", "POST", JWT_SECRET,formData);
 
       if (response.ok) {
 

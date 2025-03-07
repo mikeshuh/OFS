@@ -5,7 +5,7 @@ import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `s
 import discountImage from "../assets/discount.png"; //Discount image
 import Navbar from "../components/Navbar";
 import "../App.css";
-
+import requestServer from "../utils/Utility"
 
 // const [loginError,setLoginError] = useState(false);
 //     const LoginError = () => {
@@ -45,16 +45,14 @@ const Login = () => {
     const JWT_SECRET = process.env.JWT_SECRET;
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:5000/api/users/login", {
-        method: "POST",
-        headers: {
-          'Authorization': `Bearer ${JWT_SECRET}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      });
+      const response = await requestServer("http://localhost:5000/api/users/login", "POST", JWT_SECRET, formData);
+      console.log("Out");
       if (response.ok) {
         // Handle successful login (e.g., navigate to profile page)
+        const data = await response.json();
+
+        localStorage.setItem("authToken", data.data?.token);
+        console.log(data.data?.token);
         navigate("/profile");
       } else {
         // Handle error response

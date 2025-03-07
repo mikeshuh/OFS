@@ -1,24 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `src/assets/`
-import discountImage from "../assets/discount.png"; //Discount image
+import discountImage from "../assets/discount.png"; // Discount image
 import Navbar from "../components/Navbar";
+import {jwtDecode} from "jwt-decode";
+import requestServer from "../utils/Utility";
 
 const Profile = () => {
   const [searchQuery, setSearchQuery] = useState("");
-
   const handleSearch = () => {
     alert(`Searching for: ${searchQuery}`);
+  };
 
+  const [viewMode, setView] = useState(true);
+  const [profileData, setProfileData] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
-};
+  const EditButton = () => {
+    setView(!viewMode);
+  };
 
-const [viewMode, setView] = useState(true);
-
-    const EditButton = () => {
-            setView(!viewMode);
-};
-
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      const token = localStorage.getItem("authToken");
+      if (token) {
+        try {
+          const decode = jwtDecode(token);
+          const response = await requestServer(`http://localhost:5000/api/users/profile/${decode.id}`, "GET", token);
+          if (response.ok) {
+            const data = await response.json();
+            setProfileData(data);
+            console.log("Profile data fetched:", data);
+          } else {
+            const errorData = await response.json();
+            setErrorMessage(errorData.message);
+            console.error("Failed to fetch profile data:", errorData);
+          }
+        } catch (error) {
+          setErrorMessage("Failed to fetch profile data");
+          console.error("Error fetching profile data:", error);
+        }
+      }
+    };
+    fetchProfileData();
+  }, []);
 
   return (
     <div>
@@ -31,45 +56,64 @@ const [viewMode, setView] = useState(true);
       {/* Main page information */}
       <div style={styles.container}>
         <h1>Profile Page</h1>
-        <p>First Name</p>
-        <p>Last Name</p>
-        <div style={styles.searchContainer}>
-          <p>Email</p>
-            {!viewMode && <input
-              type="text"
-              placeholder="Email Field (Hide if no edit)"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={styles.searchInput}
-            />}
-        </div>
+        {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+        {profileData ? (
+          <>
+            <p>First Name: {profileData.data?.firstName}</p>
+            <p>Last Name: {profileData.data?.lastName}</p>
+            <div style={styles.searchContainer}>
+              <p>Email: {profileData.data?.email}</p>
+              {!viewMode && (
+                <input
+                  type="text"
+                  placeholder="Email Field (Hide if no edit)"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={styles.searchInput}
+                />
+              )}
+            </div>
 
-       <div style={styles.searchContainer}>
-        <p>Password</p>
-        {!viewMode && <input
-            type="text"
-            placeholder="Pwd Field (Hide if no edit)"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={styles.searchInput}
-          />}
-        </div>
+            <div style={styles.searchContainer}>
+              <p>Password: ******</p>
+              {!viewMode && (
+                <input
+                  type="password"
+                  placeholder="Pwd Field (Hide if no edit)"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={styles.searchInput}
+                />
+              )}
+            </div>
 
-        {viewMode && <button style={styles.profileButton} onClick={EditButton}>
-          View History
-        </button>}
+            {viewMode && (
+              <button style={styles.profileButton} onClick={EditButton}>
+                View History
+              </button>
+            )}
 
-        {viewMode && <button style={styles.editButton} onClick={EditButton}>
-          Edit Profile
-        </button>}
+            {viewMode && (
+              <button style={styles.editButton} onClick={EditButton}>
+                Edit Profile
+              </button>
+            )}
 
-        {!viewMode && <button style={styles.exitButton} onClick={EditButton}>
-          Save Changes
-        </button>}
+            {!viewMode && (
+              <button style={styles.exitButton} onClick={EditButton}>
+                Save Changes
+              </button>
+            )}
 
-        {!viewMode && <button style={styles.exitButton} onClick={EditButton}>
-          Cancel Changes
-        </button>}
+            {!viewMode && (
+              <button style={styles.exitButton} onClick={EditButton}>
+                Cancel Changes
+              </button>
+            )}
+          </>
+        ) : (
+          <p>Loading profile data...</p>
+        )}
       </div>
     </div>
   );
@@ -102,8 +146,6 @@ const DiscountBanner = () => {
     </div>
   );
 };
-
-
 
 // CSS
 const styles = {
@@ -287,4 +329,5 @@ const styles = {
     transition: "background-color 0.3s ease",
   }
 };
+
 export default Profile;
