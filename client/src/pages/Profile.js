@@ -10,8 +10,6 @@ function Profile() {
 
   const handleSearch = () => {
     alert(`Searching for: ${searchQuery}`);
-
-
 };
 
 const [viewMode, setView] = useState(true);
@@ -19,7 +17,6 @@ const [viewMode, setView] = useState(true);
     const EditButton = () => {
             setView(!viewMode);
 };
-
 
   return (
     <div>
