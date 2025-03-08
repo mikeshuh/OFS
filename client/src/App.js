@@ -6,6 +6,7 @@ import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import NotFoundPage from "./pages/NotFoundPage";
 import Redirect404 from "./pages/Redirect404";
+import Cart from "./pages/Cart"
 
 import Signup from "./pages/Signup";
 import "./App.css";
@@ -17,7 +18,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Products />} />
         <Route path="/categories" element={<div>Food Category Page</div>} />
-        <Route path="/cart" element={<div>Shopping Cart Page</div>} />
+        <Route path="/cart" element={<Cart />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />

@@ -41,7 +41,7 @@ div {
   }
 }
 
-
+/*
 .navbar {
   display: flex;
   justify-Content: space-between;
@@ -49,16 +49,18 @@ div {
   padding: 15px 50px;
   background-Color: #28a745;
   box-Shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
+}*/
 
 .logoContainer { flex: 1 }
 .logo { height: 50px }
+
+/*
 .navLinks {
   flex: 2;
   display: flex;
   justify-Content: center;
   gap: 20px;
-}
+}*/
 
 link {
   text-Decoration: none;
@@ -254,4 +256,50 @@ button {
   font-Size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+}
+
+.purchaseButton {
+  margin: 10px;
+  background-Color: #28a745;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-Radius: 5px;
+  font-Size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.numInput {
+  padding: 8px 12px;
+  font-Size: 14px;
+  border: 1px solid #ddd;
+  border-Radius: 5px;
+  outline: none;
+  width: 50px;
+  margin: 5px;
+}
+
+table {
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  font-Size: 16px;
+  border: 3px solid;
+  border-color: #28a745;
+}
+
+tr {
+  border-color: #28a745;
+}
+
+th {
+  width: 150px;
+  color:#fff;
+  background-color: #28a745;
+}
+
+td {
+  width: 150px;
+  border: 1px solid #28a745;
 }
