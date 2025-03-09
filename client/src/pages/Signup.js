@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `src/assets/`
-import discountImage from "../assets/discount.png"; // Discount image
+import {  useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import requestServer from "../utils/Utility";
+import DiscountBanner from "../components/DiscountBanner";
 
 const Signup = () => {
 
@@ -16,7 +15,7 @@ const Signup = () => {
   });
   const navigate = useNavigate();
 
-  {/*alert bar message*/}
+  /*alert bar message*/
   const [errorMessage,setMessage] = useState("");
   const [signupError,setSignupError] = useState(false);
     const SignupError = (errorMessage) => {
@@ -41,15 +40,12 @@ const Signup = () => {
 
       /* !!! important note: this should be after the response. It is here right now
       because the backend for confirmed password is not implemented yet. !!! */
-
       if (formData.password !== formData.passwordConfirmed) {
         SignupError("Passwords do not match");
         return;
       }
       const response = await requestServer("http://localhost:5000/api/users/register", "POST", JWT_SECRET,formData);
-      console.log(response.status);
       if (response.data?.success) {
-
         // Handle successful signup (e.g., navigate to login page)
         navigate("/login");
       } else {
@@ -146,36 +142,6 @@ const Signup = () => {
   );
 };
 
-// 🏷️ Discount Banner
-const DiscountBanner = () => {
-  return (
-    <div style={styles.discountBanner}>
-      <img src={discountImage} alt="Discount" style={styles.discountImage} />
-
-      {/* Two columns */}
-      <div style={styles.discountTextContainer}>
-        {/* Left side：10% OFF & With First Order */}
-        <div style={styles.leftColumn}>
-          <span style={styles.discountHighlight}>10% OFF</span>
-          <br />
-          <span style={styles.discountSubText}>With First Order</span>
-        </div>
-
-        {/* Right side：Code: WELCOME */}
-        <div style={styles.rightColumn}>
-          <span style={styles.discountCode}>Code: WELCOME</span>
-        </div>
-      </div>
-
-      <button style={styles.claimButton}
-      onClick={() => alert("Discount claimed!")}
-      >
-        Claim NOW!!!
-      </button>
-    </div>
-  );
-};
-
 // CSS
 const styles = {
   navbar: {
@@ -244,67 +210,6 @@ const styles = {
     fontWeight: "bold",
     border: "2px solid #28a745",
     transition: "background-color 0.3s ease, color 0.3s ease",
-  },
-
-  // 🎉 Discount banner styles
-  discountBanner: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#f8f9fa",
-    padding: "10px 15px",
-    borderRadius: "30px",
-    margin: "10px auto",
-    width: "80%",
-    maxWidth: "750px",
-    boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
-    position: "relative",
-    height: "60px"
-  },
-  discountImage: {
-    height: "90px",
-    position: "flex",
-    left: "20px",
-    top: "-10px"
-  },
-  // Make the text section horizontally aligned as a whole (left-right layout)
-  discountTextContainer: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flex: 1,
-    gap: "20px"
-  },
-  leftColumn: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    fontSize: "10px",
-    fontWeight: "bold",
-    textAlign: "center",
-    flex: 1
-  },
-  rightColumn: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: "30px",
-    fontWeight: "bold",
-    textAlign: "center",
-    flex: 1
-  },
-  discountHighlight: {
-    fontSize: "24px",
-    fontWeight: "bold",
-    color: "#000"
-  },
-  discountSubText: {
-    fontSize: "15px",
-    color: "#555"
-  },
-  discountRight: {
-    fontSize: "25px",
-    color: "#dc3545"
   },
 
   container: {

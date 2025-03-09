@@ -1,6 +1,5 @@
 import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `src/assets/`
-import { Link, NavLink } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import React, { useState } from "react";
 
 import "./Navbar.css"
@@ -8,7 +7,6 @@ import "./Navbar.css"
 function Navbar(){
 
   const [searchQuery, setSearchQuery] = useState("");
-  const navigate = useNavigate();
 
   const handleSearch = () => {
     alert(`Searching for: ${searchQuery}`);

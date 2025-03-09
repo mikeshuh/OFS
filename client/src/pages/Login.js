@@ -1,21 +1,11 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `src/assets/`
-import discountImage from "../assets/discount.png"; //Discount image
 import Navbar from "../components/Navbar";
 import "../App.css";
 import requestServer from "../utils/Utility"
+import DiscountBanner from "../components/DiscountBanner";
 
-// const [loginError,setLoginError] = useState(false);
-//     const LoginError = () => {
-//       setLoginError(true);
-// }
-
-// const [message,setMessage] = useState("");
-//     const Message = (error) => {
-//       setMessage(error);
-// }
 const Login = () => {
   const [errorMessage,setMessage] = useState("");
   const [formData,setFormData] = useState({
@@ -24,14 +14,14 @@ const Login = () => {
   })
   const navigate = useNavigate();
 
-  {/*alert bar message*/}
+  /*alert bar message*/
   const [loginError,setLoginError] = useState(false);
     const LoginError = (errorMessage) => {
       setLoginError(true);
       setMessage(errorMessage);
   }
 
-  {/*Form Data Action Listener*/}
+  /*Form Data Action Listener*/
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -40,30 +30,24 @@ const Login = () => {
     }));
   };
 
-  {/*Login Function*/}
+  /*Login Function*/
   const loginDB = async (e) => {
     const JWT_SECRET = process.env.JWT_SECRET;
     e.preventDefault();
     try {
       const response = await requestServer("http://localhost:5000/api/users/login", "POST", JWT_SECRET, formData);
-      console.log("Out");
       if (response.data?.success) {
-        // Handle successful login (e.g., navigate to profile page)
+        // Handle success login
         const data = await response.data;
-
         localStorage.setItem("authToken", data.data?.token);
         console.log(data.data?.token);
         navigate("/profile");
       } else {
         // Handle error response
         const errorData = response.data;
-        console.log(errorData);
         LoginError(errorData?.message || "An error occurred. Please try again later.");
-        console.error("Error:", errorData);
       }
     } catch (error) {
-      console.error("Error:", error);
-
       LoginError("An error occurred. Please try again later.");
     }
   }
@@ -116,44 +100,6 @@ const Login = () => {
     </div>
   );
 };
-
-
-
-// 🏷️ Discount Banner
-const DiscountBanner = () => {
-
-  /*Warning Message*/
-  const navigate = useNavigate();
-
-  return (
-    <div style={styles.discountBanner}>
-      <img src={discountImage} alt="Discount" style={styles.discountImage} />
-
-      {/* Two columns */}
-      <div style={styles.discountTextContainer}>
-        {/* Left side：10% OFF & With First Order */}
-        <div style={styles.leftColumn}>
-          <span style={styles.discountHighlight}>10% OFF</span>
-          <br />
-          <span style={styles.discountSubText}>With First Order</span>
-        </div>
-
-        {/* Right side：Code: WELCOME */}
-        <div style={styles.rightColumn}>
-          <span style={styles.discountCode}>Code: WELCOME</span>
-        </div>
-      </div>
-
-      <button style={styles.claimButton}
-      onClick={() => alert("Discount claimed!")}
-      >
-        Claim NOW!!!
-      </button>
-    </div>
-  );
-};
-
-
 
 // CSS
 const styles = {
@@ -223,67 +169,6 @@ const styles = {
     fontWeight: "bold",
     border: "2px solid #28a745",
     transition: "background-color 0.3s ease, color 0.3s ease",
-  },
-
-  // 🎉 Discount banner styles
-  discountBanner: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#f8f9fa",
-    padding: "10px 15px",
-    borderRadius: "30px",
-    margin: "10px auto",
-    width: "80%",
-    maxWidth: "750px",
-    boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
-    position: "relative",
-    height: "60px"
-  },
-  discountImage: {
-    height: "90px",
-    position: "flex",
-    left: "20px",
-    top: "-10px"
-  },
-  // Make the text section horizontally aligned as a whole (left-right layout)
-  discountTextContainer: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flex: 1,
-    gap: "20px"
-  },
-  leftColumn: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    fontSize: "10px",
-    fontWeight: "bold",
-    textAlign: "center",
-    flex: 1
-  },
-  rightColumn: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: "30px",
-    fontWeight: "bold",
-    textAlign: "center",
-    flex: 1
-  },
-  discountHighlight: {
-    fontSize: "24px",
-    fontWeight: "bold",
-    color: "#000"
-  },
-  discountSubText: {
-    fontSize: "15px",
-    color: "#555"
-  },
-  discountRight: {
-    fontSize: "25px",
-    color: "#dc3545"
   },
 
   shopButton: {

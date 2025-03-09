@@ -1,24 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `src/assets/`
-import discountImage from "../assets/discount.png"; // Discount image
 import Navbar from "../components/Navbar";
 import { jwtDecode } from "jwt-decode";
 import requestServer from "../utils/Utility";
+import DiscountBanner from "../components/DiscountBanner";
 
 const Profile = () => {
-  const [searchQuery, setSearchQuery] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: ""
   });
-  const handleSearch = () => {
-    alert(`Searching for: ${searchQuery}`);
-  };
-
   const [viewMode, setView] = useState(true);
   const [profileData, setProfileData] = useState(null);
-  const [errorMessage, setErrorMessage] = useState("");
 
   const EditButton = () => {
     setView(!viewMode);
@@ -41,8 +33,8 @@ const Profile = () => {
         const response = await requestServer(`http://localhost:5000/api/users/change-password/${decode.id}`, "PUT", token, formData);
         if (response.data?.success) {
           // Handle successful login (e.g., navigate to profile page)
-          const data = response.data;
           window.alert("Profile Changed Successfully");
+          window.location.reload();
         } else {
           // Handle error response
           const errorData = response.data;
@@ -65,12 +57,9 @@ const Profile = () => {
             setProfileData(data);
           } else {
             const errorData = response.data;
-            setErrorMessage(errorData.message);
             window.alert(`Error: ${errorData.message}`);
           }
         } catch (error) {
-          setErrorMessage("Failed to fetch profile data");
-
           window.alert(`Failed to fetch profile data`);
         }
       }
@@ -89,19 +78,29 @@ const Profile = () => {
       {/* Main page information */}
       <div style={styles.container}>
         <h1>Profile Page</h1>
-        {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
         {profileData ? (
           <>
             <div style={styles.searchContainer}>
-
               <div>
                 <p>First Name: {profileData.data?.firstName}</p>
               </div>
               <div>
                 <p>Last Name: {profileData.data?.lastName}</p>
               </div>
-              {viewMode && <p>Email: {profileData.data?.email}</p>}
-              {!viewMode && (
+              {/* viewMode: for displaying profile data
+                  !viewMode: for editing profile
+               */}
+              {viewMode ? (
+                <div>
+                  <p>Email: {profileData.data?.email}</p>
+                  <button style={styles.profileButton}>
+                    View History
+                  </button>
+                  <button style={styles.editButton} onClick={EditButton}>
+                    Edit Profile
+                  </button>
+                </div>
+              ) : (
                 <form style={styles.form} onSubmit={changeProfile}>
                   <input
                     type="currentPassword"
@@ -127,22 +126,9 @@ const Profile = () => {
                   <button style={styles.exitButton} onClick={EditButton}>
                     Cancel Changes
                   </button>
-
                 </form>
               )}
             </div>
-
-            {viewMode && (
-              <div>
-                <button style={styles.profileButton}>
-                  View History
-                </button>
-                <button style={styles.editButton} onClick={EditButton}>
-                  Edit Profile
-                </button>
-              </div>
-            )}
-
 
           </>
         ) : (
@@ -152,35 +138,6 @@ const Profile = () => {
     </div>
   );
 };
-
-// 🏷️ Discount Banner
-const DiscountBanner = () => {
-  return (
-    <div style={styles.discountBanner}>
-      <img src={discountImage} alt="Discount" style={styles.discountImage} />
-
-      {/* Two columns */}
-      <div style={styles.discountTextContainer}>
-        {/* Left side：10% OFF & With First Order */}
-        <div style={styles.leftColumn}>
-          <span style={styles.discountHighlight}>10% OFF</span>
-          <br />
-          <span style={styles.discountSubText}>With First Order</span>
-        </div>
-
-        {/* Right side：Code: WELCOME */}
-        <div style={styles.rightColumn}>
-          <span style={styles.discountCode}>Code: WELCOME</span>
-        </div>
-      </div>
-
-      <button style={styles.claimButton} onClick={() => alert("Why you click me?")}>
-        Claim NOW!!!
-      </button>
-    </div>
-  );
-};
-
 // CSS
 const styles = {
   navbar: {
@@ -255,79 +212,6 @@ const styles = {
     border: "2px solid #28a745",
     transition: "background-color 0.3s ease, color 0.3s ease",
   },
-
-  // 🎉 Discount banner styles
-  discountBanner: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "#f8f9fa",
-    padding: "10px 15px",
-    borderRadius: "30px",
-    margin: "10px auto",
-    width: "80%",
-    maxWidth: "750px",
-    boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
-    position: "relative",
-    height: "60px"
-  },
-  discountImage: {
-    height: "90px",
-    position: "flex",
-    left: "20px",
-    top: "-10px"
-  },
-  // Make the text section horizontally aligned as a whole (left-right layout)
-  discountTextContainer: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flex: 1,
-    gap: "20px"
-  },
-  leftColumn: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    fontSize: "10px",
-    fontWeight: "bold",
-    textAlign: "center",
-    flex: 1
-  },
-  rightColumn: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: "30px",
-    fontWeight: "bold",
-    textAlign: "center",
-    flex: 1
-  },
-  discountHighlight: {
-    fontSize: "24px",
-    fontWeight: "bold",
-    color: "#000"
-  },
-  discountSubText: {
-    fontSize: "15px",
-    color: "#555"
-  },
-  discountCode: {
-    fontSize: "30px",
-    color: "#dc3545"
-  },
-  claimButton: {
-    backgroundColor: "white",
-    color: "#dc3545",
-    border: "2px solid #dc3545",
-    fontWeight: "bold",
-    padding: "10px 20px",
-    borderRadius: "20px",
-    fontSize: "16px",
-    cursor: "pointer",
-    transition: "background-color 0.3s ease, color 0.3s ease"
-  },
-
   container: {
     textAlign: "center",
     padding: "50px"
