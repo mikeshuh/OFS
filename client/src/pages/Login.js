@@ -76,7 +76,7 @@ const Login = () => {
       <DiscountBanner />
       {/* Login Form Container */}
       <div style={styles.loginContainer}>
-        <h1 style={styles.header}>New User Login</h1>
+        <h1 style={styles.header}>User Login</h1>
         {/* Error Message */}
         {loginError && <div class="alert" style={styles.alert}>{errorMessage}</div>}
         {/* Login Form */}

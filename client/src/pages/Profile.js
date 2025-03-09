@@ -3,11 +3,15 @@ import { Link } from "react-router-dom";
 import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `src/assets/`
 import discountImage from "../assets/discount.png"; // Discount image
 import Navbar from "../components/Navbar";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import requestServer from "../utils/Utility";
 
 const Profile = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [formData,setFormData] = useState({
+    email:"",
+    password:""
+  });
   const handleSearch = () => {
     alert(`Searching for: ${searchQuery}`);
   };
@@ -19,7 +23,36 @@ const Profile = () => {
   const EditButton = () => {
     setView(!viewMode);
   };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
 
+
+  const changeProfile = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("authToken");
+    if (token){
+      try{
+        const decode = jwtDecode(token);
+        const response = await requestServer(`http://localhost:5000/api/users/change-password/${decode.id}`, "PUT", token, formData);
+        if (response.ok) {
+        // Handle successful login (e.g., navigate to profile page)
+        const data = await response.json();
+        window.alert("Profile Changed Successfully");
+      } else {
+        // Handle error response
+        const errorData = await response.json();
+        window.alert("Error:", errorData);
+      }
+      }catch (error){
+        return error
+      }
+    }
+  };
   useEffect(() => {
     const fetchProfileData = async () => {
       const token = localStorage.getItem("authToken");
@@ -30,7 +63,6 @@ const Profile = () => {
           if (response.ok) {
             const data = await response.json();
             setProfileData(data);
-            console.log("Profile data fetched:", data);
           } else {
             const errorData = await response.json();
             setErrorMessage(errorData.message);
@@ -59,57 +91,58 @@ const Profile = () => {
         {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
         {profileData ? (
           <>
-            <p>First Name: {profileData.data?.firstName}</p>
-            <p>Last Name: {profileData.data?.lastName}</p>
             <div style={styles.searchContainer}>
-              <p>Email: {profileData.data?.email}</p>
-              {!viewMode && (
-                <input
-                  type="text"
-                  placeholder="Email Field (Hide if no edit)"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  style={styles.searchInput}
-                />
-              )}
-            </div>
 
-            <div style={styles.searchContainer}>
-              <p>Password: ******</p>
+              <div>
+                <p>First Name: {profileData.data?.firstName}</p>
+              </div>
+              <div>
+                <p>Last Name: {profileData.data?.lastName}</p>
+              </div>
+              {viewMode && <p>Email: {profileData.data?.email}</p>}
               {!viewMode && (
-                <input
-                  type="password"
-                  placeholder="Pwd Field (Hide if no edit)"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  style={styles.searchInput}
-                />
+                <form style={styles.form} onSubmit={changeProfile}>
+                  <input
+                    type="currentPassword"
+                    id="currentPassword"
+                    name="currentPassword"
+                    placeholder="Current Password"
+                    onChange={handleChange}
+                    style={styles.searchInput}
+                  />
+                  <br></br>
+                  <input
+                    type="newPassword"
+                    id="newPassword"
+                    name="newPassword"
+                    placeholder="New Password"
+                    onChange={handleChange}
+                    style={styles.searchInput}
+                  />
+                  <br></br><br></br>
+                  <button type="submit" style={styles.exitButton}>
+                    Save Changes
+                  </button>
+                  <button style={styles.exitButton} onClick={EditButton}>
+                    Cancel Changes
+                  </button>
+
+                </form>
               )}
             </div>
 
             {viewMode && (
-              <button style={styles.profileButton} onClick={EditButton}>
-                View History
-              </button>
+              <div>
+                <button style={styles.profileButton}>
+                  View History
+                </button>
+                <button style={styles.editButton} onClick={EditButton}>
+                  Edit Profile
+                </button>
+              </div>
             )}
 
-            {viewMode && (
-              <button style={styles.editButton} onClick={EditButton}>
-                Edit Profile
-              </button>
-            )}
 
-            {!viewMode && (
-              <button style={styles.exitButton} onClick={EditButton}>
-                Save Changes
-              </button>
-            )}
-
-            {!viewMode && (
-              <button style={styles.exitButton} onClick={EditButton}>
-                Cancel Changes
-              </button>
-            )}
           </>
         ) : (
           <p>Loading profile data...</p>
@@ -174,11 +207,15 @@ const styles = {
     transition: "color 0.3s ease",
   },
   searchContainer: {
-    flex: 1.5,
     display: "flex",
+    flexDirection: "column",
+    flex: 1.5,
+    margin: "5px",
+    gap: "1px",
+    padding: "5px",
     alignItems: "center",
     justifyContent: "center",
-    gap: "5px"
+
   },
   searchInput: {
     padding: "8px 12px",
@@ -186,6 +223,7 @@ const styles = {
     border: "1px solid #ddd",
     borderRadius: "5px",
     outline: "none",
+    margin: "5px",
     width: "180px"
   },
   searchButton: {
@@ -327,6 +365,14 @@ const styles = {
     fontSize: "16px",
     cursor: "pointer",
     transition: "background-color 0.3s ease",
+  },
+  formGroup: {
+    display: 'block',
+  },
+  br: {
+    display: 'block',
+    marginbottom: "3px"
+
   }
 };
 
