@@ -1,22 +1,23 @@
+import axios from 'axios';
 
-import React from "react";
 const requestServer = async (url_, method_, token_, data_ = null) => {
-  console.log(url_);
+  console.log("Requested");
   try {
-    const response = await fetch(url_, {
+    const response = await axios({
       method: method_,
+      url: url_,
+      data: data_,
       headers: {
-        'Authorization': `Bearer ${token_}`,
-        "Content-Type": "application/json"
-      },
-      body: method_ === "GET" ? null : JSON.stringify(data_)
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token_}`
+      }
     });
-    console.log("response generated");
+    console.log("Response received:", response);
     return response;
-
-  }catch (error){
-    return error;
+  } catch (error) {
+    // console.log("Error:", error);
+    return error.response || error;
   }
- }
+};
 
- export default requestServer;
+export default requestServer;

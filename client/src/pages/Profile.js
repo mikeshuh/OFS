@@ -8,9 +8,9 @@ import requestServer from "../utils/Utility";
 
 const Profile = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [formData,setFormData] = useState({
-    email:"",
-    password:""
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
   });
   const handleSearch = () => {
     alert(`Searching for: ${searchQuery}`);
@@ -35,20 +35,20 @@ const Profile = () => {
   const changeProfile = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("authToken");
-    if (token){
-      try{
+    if (token) {
+      try {
         const decode = jwtDecode(token);
         const response = await requestServer(`http://localhost:5000/api/users/change-password/${decode.id}`, "PUT", token, formData);
-        if (response.ok) {
-        // Handle successful login (e.g., navigate to profile page)
-        const data = await response.json();
-        window.alert("Profile Changed Successfully");
-      } else {
-        // Handle error response
-        const errorData = await response.json();
-        window.alert("Error:", errorData);
-      }
-      }catch (error){
+        if (response.data?.success) {
+          // Handle successful login (e.g., navigate to profile page)
+          const data = response.data;
+          window.alert("Profile Changed Successfully");
+        } else {
+          // Handle error response
+          const errorData = response.data;
+          window.alert(`Error: ${errorData.message}`);
+        }
+      } catch (error) {
         return error
       }
     }
@@ -60,17 +60,18 @@ const Profile = () => {
         try {
           const decode = jwtDecode(token);
           const response = await requestServer(`http://localhost:5000/api/users/profile/${decode.id}`, "GET", token);
-          if (response.ok) {
-            const data = await response.json();
+          if (response.data?.success) {
+            const data = response.data;
             setProfileData(data);
           } else {
-            const errorData = await response.json();
+            const errorData = response.data;
             setErrorMessage(errorData.message);
-            console.error("Failed to fetch profile data:", errorData);
+            window.alert(`Error: ${errorData.message}`);
           }
         } catch (error) {
           setErrorMessage("Failed to fetch profile data");
-          console.error("Error fetching profile data:", error);
+
+          window.alert(`Failed to fetch profile data`);
         }
       }
     };

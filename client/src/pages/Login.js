@@ -47,18 +47,18 @@ const Login = () => {
     try {
       const response = await requestServer("http://localhost:5000/api/users/login", "POST", JWT_SECRET, formData);
       console.log("Out");
-      if (response.ok) {
+      if (response.data?.success) {
         // Handle successful login (e.g., navigate to profile page)
-        const data = await response.json();
+        const data = await response.data;
 
         localStorage.setItem("authToken", data.data?.token);
         console.log(data.data?.token);
         navigate("/profile");
       } else {
         // Handle error response
-        const errorData = await response.json();
-        console.log(errorData.message);
-        LoginError(errorData.message);
+        const errorData = response.data;
+        console.log(errorData);
+        LoginError(errorData?.message || "An error occurred. Please try again later.");
         console.error("Error:", errorData);
       }
     } catch (error) {

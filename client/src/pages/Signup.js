@@ -4,6 +4,7 @@ import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `s
 import discountImage from "../assets/discount.png"; // Discount image
 import Navbar from "../components/Navbar";
 import requestServer from "../utils/Utility";
+
 const Signup = () => {
 
   const [formData, setFormData] = useState({
@@ -46,14 +47,14 @@ const Signup = () => {
         return;
       }
       const response = await requestServer("http://localhost:5000/api/users/register", "POST", JWT_SECRET,formData);
-
-      if (response.ok) {
+      console.log(response.status);
+      if (response.data?.success) {
 
         // Handle successful signup (e.g., navigate to login page)
         navigate("/login");
       } else {
         // Handle error response
-        const errorData = await response.json();
+        const errorData = response.data;
         SignupError(errorData.message);
       }
     } catch (error) {
