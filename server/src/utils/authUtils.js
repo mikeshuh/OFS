@@ -10,7 +10,8 @@ const generateToken = (user, expiresIn = '24h') => {
   const payload = {
     id: user.userID,
     email: user.email,
-    isAdmin: user.isAdmin
+    isAdmin: user.isAdmin,
+    tokenVersion: user.tokenVersion || 0
   };
 
   // Generate and return the token
