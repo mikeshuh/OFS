@@ -2,6 +2,12 @@
 const express = require('express');
 const cors = require('cors');
 const env = require('./src/config/env');
+
+// Validate environment variables
+env.validateEnv();
+
+// Then initialize Redis
+const { redisClient } = require('./src/config/redis');
 const responseHandler = require('./src/utils/responseHandler');
 
 // Import routes
@@ -10,9 +16,6 @@ const userRoutes = require('./src/routes/userRoute');
 // order
 // payment
 // delivery
-
-// Validate environment variables
-env.validateEnv();
 
 // Initialize Express app
 const app = express();
@@ -39,7 +42,11 @@ app.use('/api/users', userRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {
-  responseHandler.success(res, { status: 'OK' }, 'Server is running');
+  const redisStatus = redisClient.isOpen ? 'connected' : 'disconnected';
+  responseHandler.success(res, {
+    status: 'OK',
+    redis: redisStatus
+  }, 'Server is running');
 });
 
 // Root route
