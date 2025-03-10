@@ -28,7 +28,7 @@ const User = {
   // Find a user by ID
   findById: async (userID) => {
     const [rows] = await db.execute(
-      'SELECT userID, isAdmin, firstName, lastName, email FROM User WHERE userID = ?',
+      'SELECT userID, isAdmin, firstName, lastName, email, tokenVersion FROM User WHERE userID = ?',
       [userID]
     );
 
@@ -101,7 +101,25 @@ const User = {
     } finally {
       connection.release(); // Release the connection back to the pool
     }
-  }
+  },
+
+    // Get user's current token version
+    getTokenVersion: async (userID) => {
+      const [rows] = await db.execute(
+        'SELECT tokenVersion FROM User WHERE userID = ?',
+        [userID]
+      );
+      return rows[0] ? rows[0].tokenVersion : null;
+    },
+
+    // Increment user's token version
+    incrementTokenVersion: async (userID) => {
+      const [result] = await db.execute(
+        'UPDATE User SET tokenVersion = tokenVersion + 1 WHERE userID = ?',
+        [userID]
+      );
+      return result.affectedRows > 0;
+    }
 };
 
 module.exports = User;
