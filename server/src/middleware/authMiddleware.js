@@ -3,6 +3,7 @@
 const { verifyToken, extractTokenFromHeaders } = require('../utils/authUtils');
 const User = require('../models/userModel');
 const responseHandler = require('../utils/responseHandler');
+const tokenService = require('../services/tokenService');
 
 // Middleware to protect routes - requires valid JWT token
 const protect = async (req, res, next) => {
@@ -21,6 +22,18 @@ const protect = async (req, res, next) => {
       return responseHandler.unauthorized(res, 'Invalid token. Please log in again.');
     }
 
+    // Check if token is blacklisted
+    const isBlacklisted = await tokenService.isBlacklisted(token);
+    if (isBlacklisted) {
+      return responseHandler.unauthorized(res, 'Invalid or expired session. Please log in again.');
+    }
+
+    // Check if token version matches user's current version
+    const currentTokenVersion = await User.getTokenVersion(decoded.id);
+    if (decoded.tokenVersion !== currentTokenVersion) {
+      return responseHandler.unauthorized(res, 'Your credentials have changed. Please log in again.');
+    }
+
     // Check if user still exists
     const user = await User.findById(decoded.id);
     if (!user) {
@@ -29,6 +42,7 @@ const protect = async (req, res, next) => {
 
     // Attach user to request object
     req.user = user;
+    req.token = token;
     next();
   } catch (error) {
     console.error('Auth middleware error:', error);
