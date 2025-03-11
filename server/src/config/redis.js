@@ -1,6 +1,6 @@
 const redis = require('redis');
 
-// Create Redis client with modern connection approach
+// Create Redis client
 const redisClient = redis.createClient({
   url: `redis://${process.env.REDIS_HOST || 'localhost'}:${process.env.REDIS_PORT || 6379}`
 });

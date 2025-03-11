@@ -18,7 +18,7 @@ const TokenService = {
         return true;
       }
 
-      // Store in Redis with expiration - updated for new Redis client
+      // Store in Redis with expiration
       await setAsync(`bl_token_${token}`, userId.toString(), { EX: ttl });
       return true;
     } catch (error) {
@@ -30,7 +30,7 @@ const TokenService = {
   // Check if token is blacklisted
   isBlacklisted: async (token) => {
     try {
-      // Check if token exists in Redis - this method returns a number in v4+
+      // Check if token exists in Redis
       const exists = await existsAsync(`bl_token_${token}`);
       return exists > 0;
     } catch (error) {

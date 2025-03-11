@@ -13,7 +13,7 @@ const server = app.listen(PORT, () => {
   console.log(`http://localhost:${PORT}`);
 });
 
-// Update Redis shutdown in gracefulShutdown function
+// gracefulShutdown function
 const gracefulShutdown = () => {
   console.log('Shutting down gracefully...');
   server.close(() => {
