@@ -13,6 +13,9 @@ router.post('/register', userController.register);
 router.post('/login', userController.login);
 
 // Protected routes (authentication required)
+// POST /api/users/logout - Blacklist current token
+router.post('/logout', protect, userController.logout);
+
 // GET /api/users/profile/:userID - Get user profile details
 router.get('/profile/:userID', protect, userController.getProfile);
 

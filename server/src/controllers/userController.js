@@ -4,6 +4,7 @@ const User = require('../models/userModel');
 const responseHandler = require('../utils/responseHandler');
 const { generateToken, hashPassword, comparePassword } = require('../utils/authUtils');
 const validation = require('../utils/validationUtils');
+const tokenService = require('../services/tokenService');
 
 // Register a new user
 const register = async (req, res) => {
@@ -84,6 +85,19 @@ const login = async (req, res) => {
   } catch (error) {
     console.error(`Login error: ${error.message}`, error);
     return responseHandler.error(res, 'Failed to login.');
+  }
+};
+
+// User logout
+const logout = async (req, res) => {
+  try {
+    // Blacklist the current token
+    await tokenService.blacklistToken(req.token, req.user.userID);
+
+    return responseHandler.success(res, null, 'Logged out successfully.');
+  } catch (error) {
+    console.error(`Logout error: ${error.message}`, error);
+    return responseHandler.error(res, 'Failed to logout.');
   }
 };
 
@@ -197,6 +211,14 @@ const changePassword = async (req, res) => {
       return responseHandler.error(res, 'Failed to change password.');
     }
 
+    // Increment token version to invalidate all existing tokens
+    await User.incrementTokenVersion(userID);
+
+    // Blacklist the current token for immediate effect
+    if (req.token) {
+      await tokenService.blacklistToken(req.token, userID);
+    }
+
     return responseHandler.success(res, null, 'Password changed successfully.');
   } catch (error) {
     console.error(`Change password error: ${error.message}`, error);
@@ -234,6 +256,7 @@ const deleteAccount = async (req, res) => {
 module.exports = {
   register,
   login,
+  logout,
   getProfile,
   updateProfile,
   changePassword,
