@@ -12,6 +12,8 @@ const responseHandler = require('./src/utils/responseHandler');
 
 // Import routes
 const userRoutes = require('./src/routes/userRoute');
+const paymentRoutes = require("./src/routes/paymentRoute");
+
 // product
 // order
 // payment
@@ -38,6 +40,7 @@ app.use('/api/users', userRoutes);
 // product
 // order
 // payment
+app.use('/payment', paymentRoutes); // let all /api/users/* though userRoute.js
 // delivery
 
 // Health check route

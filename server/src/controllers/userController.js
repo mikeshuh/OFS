@@ -5,6 +5,7 @@ const responseHandler = require('../utils/responseHandler');
 const { generateToken, hashPassword, comparePassword } = require('../utils/authUtils');
 const validation = require('../utils/validationUtils');
 const tokenService = require('../services/tokenService');
+const { createPaymentIntent } = require("../services/paymentService");
 
 // Register a new user
 const register = async (req, res) => {
@@ -253,6 +254,25 @@ const deleteAccount = async (req, res) => {
   }
 };
 
+const payment = async (req, res) => {
+  try {
+    console.log("✅ Received payment request:", req.body); 
+
+    const { amount, currency } = req.body;
+
+    if (!amount || !currency) {
+      return res.status(400).json({ error: "Amount and currency are required" });
+    }
+
+    const paymentIntent = await createPaymentIntent(amount, currency);
+    res.json({ clientSecret: paymentIntent.client_secret });
+
+  } catch (error) {
+    console.error("Payment Intent Error:", error.message);
+    res.status(500).json({ error: "Failed to create payment intent" });
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -260,5 +280,6 @@ module.exports = {
   getProfile,
   updateProfile,
   changePassword,
-  deleteAccount
+  deleteAccount,
+  payment
 };

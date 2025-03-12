@@ -3,6 +3,10 @@ const env = require('./src/config/env');
 env.validateEnv();
 const { redisClient } = require('./src/config/redis');
 const app = require('./app');
+const userRoutes = require("./src/routes/userRoute");
+
+// Import Stripe Payment Routes
+const paymentRoutes = require("./src/routes/payment");
 
 // Get port from environment or use default
 const PORT = env.port;
@@ -60,3 +64,6 @@ process.on('uncaughtException', (err) => {
 // Graceful shutdown for SIGTERM and SIGINT
 process.on('SIGTERM', gracefulShutdown);
 process.on('SIGINT', gracefulShutdown);
+
+
+app.use("/api/users", userRoutes); // let all /api/users/* though userRoute.js

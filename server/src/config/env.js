@@ -14,6 +14,9 @@ module.exports = {
   redisHost: process.env.REDIS_HOST || 'localhost',
   redisPort: process.env.REDIS_PORT || 6379,
 
+  // Stripe configuration ✅ (Added Stripe Secret Key)
+  stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+
   // Validation to ensure critical variables exist
   validateEnv: () => {
     const required = [
@@ -21,7 +24,8 @@ module.exports = {
       'DB_USER',
       'DB_PASS',
       'DB_NAME',
-      'JWT_SECRET'
+      'JWT_SECRET',
+      'STRIPE_SECRET_KEY' 
     ];
 
     // Optional but recommended Redis variables

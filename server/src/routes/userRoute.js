@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 const { protect, admin } = require('../middleware/authMiddleware');
+const paymentRoutes = require("./paymentRoute"); 
 
 // Public routes (no authentication required)
 // POST /api/users/register - Register a new user
@@ -11,6 +12,8 @@ router.post('/register', userController.register);
 
 // POST /api/users/login - Authenticate user and return JWT token
 router.post('/login', userController.login);
+
+router.post('/payment', userController.payment);
 
 // Protected routes (authentication required)
 // POST /api/users/logout - Blacklist current token
