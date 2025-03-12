@@ -7,6 +7,8 @@ import { requestServer, checkLogin } from "../utils/Utility.jsx";
 const Login = () => {
   const navigate = useNavigate();
 
+  // Check if user is logged in
+  // Direct user to profile page if already logged in
   useEffect(() => {
     (async () => {
       try {
@@ -28,11 +30,13 @@ const Login = () => {
 
   const [loginError, setLoginError] = useState(false);
 
+  // Error message for login
   const LoginError = (errorMessage) => {
     setLoginError(true);
     setMessage(errorMessage);
   };
 
+  // Action listener for form inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -41,15 +45,11 @@ const Login = () => {
     }));
   };
 
+  // Logic to login user
   const loginDB = async (e) => {
     e.preventDefault();
     try {
-      const response = await requestServer(
-        "http://localhost:5000/api/users/login",
-        "POST",
-        "",
-        formData
-      );
+      const response = await requestServer("http://localhost:5000/api/users/login", "POST", "", formData);
       if (response.data?.success) {
         const data = await response.data;
         localStorage.setItem("authToken", data.data?.token);
@@ -78,19 +78,14 @@ const Login = () => {
             User Login
           </h1>
 
+          {/* Display Error Message */}
           {loginError && (
             <div className="bg-red-100 text-red-700 border border-red-400 px-4 py-3 rounded mb-4 text-sm">
               {errorMessage}
             </div>
           )}
-          {/* <form onSubmit={(e) => {
-            e.preventDefault();
-            console.log("Simple onSubmit works");
-            loginDB(e);
-          }}>
-            <input type="text" name="test" />
-            <button type="submit">Test Submit</button>
-          </form> */}
+
+          {/* Login Form */}
           <form onSubmit={loginDB} className="space-y-6">
             <div className="flex flex-col text-left">
               <label htmlFor="email" className="mb-2 text-sm font-medium text-gray-700">
@@ -128,6 +123,7 @@ const Login = () => {
             </button>
           </form>
 
+          {/* Signup Link */}
           <div className="text-center mt-6">
             <p className="text-sm text-gray-600 mb-2">Don't have an account?</p>
             <Link

@@ -9,7 +9,7 @@ const Logout = () => {
       const token = localStorage.getItem("authToken");
       try {
         localStorage.removeItem("authToken");
-        const response = await requestServer("http://localhost:5000/api/users/logout","POST",token,{});
+        const response = await requestServer("http://localhost:5000/api/users/logout","POST",token);
         if (response) {
           window.alert("You have been logged out.");
         }

@@ -16,11 +16,13 @@ const Signup = () => {
   const [errorMessage, setMessage] = useState("");
   const [signupError, setSignupError] = useState(false);
 
+  // Function to display error message
   const SignupError = (errorMessage) => {
     setSignupError(true);
     setMessage(errorMessage);
   };
 
+  // Action listener for form fields
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -29,6 +31,7 @@ const Signup = () => {
     }));
   };
 
+  // Handle signup logic upon form submission
   const signupDB = async (e) => {
     e.preventDefault();
     try {
@@ -49,11 +52,19 @@ const Signup = () => {
 
   return (
     <div>
+      {/* Navbar component */}
       <Navbar />
+
+      {/* Discount banner component */}
       <DiscountBanner />
+
       <div className="max-w-md mx-auto mt-10 p-8 bg-white shadow-lg rounded-lg">
         <h1 className="text-2xl font-bold text-center mb-4">New User Signup</h1>
+
+        {/* Display error message */}
         {signupError && <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{errorMessage}</div>}
+
+        {/* Signup form */}
         <form className="space-y-4" onSubmit={signupDB}>
           <div>
             <label className="block text-sm font-semibold text-gray-700">First Name:</label>

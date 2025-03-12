@@ -14,10 +14,12 @@ const Profile = () => {
   const [viewMode, setView] = useState(true);
   const [profileData, setProfileData] = useState(null);
 
+  // ViewModes: true -> view profile, false -> edit profile
   const EditButton = () => {
     setView(!viewMode);
   };
 
+  // Action listener for form inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -26,6 +28,7 @@ const Profile = () => {
     }));
   };
 
+  // Logic to change profile
   const changeProfile = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("authToken");
@@ -52,8 +55,10 @@ const Profile = () => {
     }
   };
 
+  // Check if user is logged in
+  // Ensure user is logged in before fetching data
   useEffect(() => {
-    const fetchProfileData = async () => {
+      (async () => {
       const token = localStorage.getItem("authToken");
       if (token) {
         try {
@@ -73,8 +78,7 @@ const Profile = () => {
         window.alert(`Please login first`);
         navigate("/");
       }
-    };
-    fetchProfileData();
+    })();
   }, [navigate]);
 
   return (
@@ -100,10 +104,10 @@ const Profile = () => {
             <p className="text-gray-700">
               <span className="font-semibold">Email:</span> {profileData.data?.email}
             </p>
+
+            {/* buttons */}
             {viewMode ? (
               <div className="flex flex-col items-center space-y-4">
-
-
                 <button
                   className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition duration-300"
                   onClick={() => alert("View History clicked")}
@@ -119,6 +123,7 @@ const Profile = () => {
                 </button>
               </div>
             ) : (
+              // Edit Profile Form
               <form
                 onSubmit={changeProfile}
                 className="flex flex-col items-center space-y-4"
@@ -161,6 +166,7 @@ const Profile = () => {
             )}
           </div>
         ) : (
+          // Message to show when profile data is loading
           <p className="text-gray-600">Loading profile data...</p>
         )}
       </div>
