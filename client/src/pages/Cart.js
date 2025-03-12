@@ -13,10 +13,17 @@ function ShoppingCart() {
 };
 
 const [viewMode, setView] = useState(true);
-
     const EditButton = () => {
             setView(!viewMode);
+    };
+
+const toCheckout = () => {
+  window.location.href="./Checkout";
 };
+
+const discardCart = () => {
+  alert("This function should cancel shopping")
+}
 
   return (
     <div>
@@ -53,12 +60,16 @@ const [viewMode, setView] = useState(true);
         </tr>
         </table>
         
-        {viewMode && <button className="purchaseButton">
+        {viewMode && <button className="purchaseButton" onClick={toCheckout} >
           Purchase
         </button>}
         
         {viewMode && <button className="editButton" onClick={EditButton}>
           Edit Cart
+        </button>}
+
+        {viewMode && <button className="editButton" onClick={discardCart}>
+          Discard Cart
         </button>}
 
         {!viewMode && <button className="exitButton" onClick={EditButton}>
