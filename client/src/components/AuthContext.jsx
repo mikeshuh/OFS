@@ -26,6 +26,7 @@ const AuthProvider = ({ children }) => {
     }
   }
 
+  // logic for login
   const loginAction = async (data) => {
     try {
       const response = await requestServer("http://localhost:5000/api/users/login", "POST", "", data);
@@ -43,6 +44,7 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  // logic for logout
   const logOut = () => {
     window.alert("You have been logged out successfully.");
     navigate("/login");
@@ -51,6 +53,8 @@ const AuthProvider = ({ children }) => {
     setLoggedIn(false);
     localStorage.removeItem("authToken");
   };
+
+  // logic to get profile
   const getProfile = async () => {
     try {
       const decode = jwtDecode(token);
@@ -61,7 +65,23 @@ const AuthProvider = ({ children }) => {
       return error;
     }
   }
-  return <AuthContext.Provider value={{ token, loggedIn, user, checkLogin, loginAction, logOut, getProfile }}>{children}</AuthContext.Provider>;
+
+  const changePassword = async (data) => {
+    try {
+      const decode = jwtDecode(token);
+      const response = await requestServer(`http://localhost:5000/api/users/change-password/${decode.id}`, "PUT", token, data);
+      if(response.data?.success) {
+        window.alert("Password changed successfully");
+        navigate("/login");
+      }else{
+        return response;
+      }
+    } catch (error) {
+      console.error("Error changing password", error);
+      return error;
+    }
+  }
+  return <AuthContext.Provider value={{ changePassword,token, loggedIn, user, checkLogin, loginAction, logOut, getProfile }}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;

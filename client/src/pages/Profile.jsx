@@ -46,28 +46,17 @@ const Profile = () => {
     }));
   };
 
-  // Logic to change profile
+  // Logic to change profile;
   const changeProfile = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      try {
-        const decode = jwtDecode(token);
-        const response = await requestServer(`http://localhost:5000/api/users/change-password/${decode.id}`, "PUT", token, formData
-        );
-        if (response.data?.success) {
-          window.alert("Profile Changed Successfully");
-          localStorage.removeItem("authToken");
-          navigate("/");
-        } else {
-          const errorData = response.data;
-          window.alert(`Error: ${errorData.message}`);
-        }
-      } catch (error) {
-        console.error(error);
-      }
+    try {
+      const response = await auth.changePassword(formData);
+      window.alert(response.data?.message);
+    } catch (error) {
+      console.error(error);
     }
-  };
+  }
+
 
 
 
