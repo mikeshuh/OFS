@@ -9,9 +9,6 @@ const router = express.Router();
  * @access Public
  */
 
-router.get('/', (req, res) => {
-  res.json({ message: "Payment API" });
-});
 router.post('/create-payment-intent', async (req, res) => {
   try {
     const { amount, currency } = req.body;
@@ -29,3 +26,5 @@ router.post('/create-payment-intent', async (req, res) => {
 });
 
 module.exports = router;
+
+//有问题要改，然后适配paymentCountroller.js
