@@ -1,27 +1,15 @@
 import logo from "../assets/OFS_logo.png";
 import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import { checkLogin } from "../utils/Utility";
+import { useAuth } from "./AuthContext";
 
 function Navbar() {
+  const auth = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
-  const [loggedIn, setLoggedIn] = useState(false);
 
   const handleSearch = () => {
     alert(`Searching for: ${searchQuery}`);
   };
-
-  useEffect(() => {
-    const check = async () => {
-      try {
-        const response = await checkLogin();
-        setLoggedIn(response);
-      } catch (error) {
-        window.alert(error);
-      }
-    };
-    check();
-  }, []);
 
   return (
     <nav className="flex items-center justify-between py-[15px] px-[50px] bg-green-600 shadow-md text-center">
@@ -79,7 +67,7 @@ function Navbar() {
 
       {/* Auth Buttons */}
       <div className="flex-2 flex justify-end gap-[10px]">
-        {loggedIn ? (
+        {auth.loggedIn ? (
           <Link
             to="/logout"
             className="rounded-[5px] bg-white text-green-600 text-[14px] font-bold no-underline text-center py-[12px] px-[20px] transition duration-300"

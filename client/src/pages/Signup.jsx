@@ -17,7 +17,7 @@ const Signup = () => {
   const [signupError, setSignupError] = useState(false);
 
   // Function to display error message
-  const SignupError = (errorMessage) => {
+  const setError = (errorMessage) => {
     setSignupError(true);
     setMessage(errorMessage);
   };
@@ -36,17 +36,17 @@ const Signup = () => {
     e.preventDefault();
     try {
       if (formData.password !== formData.passwordConfirmed) {
-        SignupError("Passwords do not match");
+        setError("Passwords do not match");
         return;
       }
       const response = await requestServer("http://localhost:5000/api/users/register", "POST", "", formData);
       if (response.data?.success) {
         navigate("/login");
       } else {
-        SignupError(response.data.message);
+        setError(response.data.message);
       }
     } catch (error) {
-      SignupError("Network error. Please try again");
+      setError("Network error. Please try again");
     }
   };
 
