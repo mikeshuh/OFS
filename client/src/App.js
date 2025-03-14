@@ -8,7 +8,8 @@ import NotFoundPage from "./pages/NotFoundPage";
 import Redirect404 from "./pages/Redirect404";
 import Cart from "./pages/Cart"
 import Checkout from "./pages/Checkout"
-
+import Orders from "./pages/Orders"
+import OrderDetails from "./pages/OrderDetails"
 import Signup from "./pages/Signup";
 import "./App.css";
 
@@ -21,6 +22,8 @@ function App() {
         <Route path="/categories" element={<div>Food Category Page</div>} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/orders" element={<Orders />} />
+        <Route path="/orderDetails" element={<OrderDetails />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />

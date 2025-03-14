@@ -5,7 +5,7 @@ import discountImage from "../assets/discount.png"; //Discount image
 import Navbar from "../components/Navbar.js";
 import "../App.js";
 
-function ShoppingCart() {
+function Checkout() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = () => {
@@ -34,11 +34,11 @@ const [method2, setView2] = useState(false);
   };
 
 const toTransaction = () => {
-    window.location.href="./Profile";
+    window.location.href="./orders";
 };
 
 const toCart = () => {
-  window.location.href="./Cart";
+  window.location.href="./cart";
 };
 
   return (
@@ -152,4 +152,4 @@ function DiscountBanner() {
   );
 };
 
-export default ShoppingCart;
+export default Checkout;

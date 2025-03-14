@@ -18,12 +18,12 @@ const [viewMode, setView] = useState(true);
     };
 
 const toCheckout = () => {
-  window.location.href="./Checkout";
+  window.location.href="./checkout";
 };
 
 const discardCart = () => {
-  alert("This function should cancel shopping")
-}
+  alert("This function should cancel shopping");
+};
 
   return (
     <div>

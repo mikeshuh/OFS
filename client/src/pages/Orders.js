@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/OFS_logo.png"; // Make sure the logo image in the `src/assets/`
 import discountImage from "../assets/discount.png"; //Discount image
-import Navbar from "../components/Navbar";
+import Navbar from "../components/Navbar.js";
 import "../App.js";
 
-function Profile() {
+function Orders() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = () => {
@@ -13,13 +13,12 @@ function Profile() {
 };
 
 const [viewMode, setView] = useState(true);
-
     const EditButton = () => {
             setView(!viewMode);
-};
+    };
 
-const toOrder = () => {
-  window.location.href="./orders";
+const toOrderDetails = () => {
+  window.location.href="./orderDetails";
 }
 
   return (
@@ -32,44 +31,26 @@ const toOrder = () => {
 
       {/* Main page information */}
       <div className="container">
-        <h1>Profile Page</h1>
-        <p>First Name</p>
-        <p>Last Name</p>
+        <h1>Orders</h1>
+        <table>
+        <tr>
+            <th>Order ID</th>
+            <th>Total Cost</th>
+            <th>Date</th>
+            <th>Details</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>10.68</td>
+            <td>2025-03-01 12:54:39</td>
+            <td>
+            <button className="editButton" onClick={toOrderDetails}>
+                View
+            </button>
+            </td>
+        </tr>
+        </table>
         
-        
-        <p>Email</p>
-          {!viewMode && <input
-            type="text"
-            placeholder="Email Field"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="searchInput"
-          />}   
-
-        <p>Password</p>
-        {!viewMode && <input
-            type="text"
-            placeholder="Pwd Field"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="searchInput"
-          />}
-        <br/>
-        {viewMode && <button className="profileButton" onClick={toOrder}>
-          View History
-        </button>}
-
-        {viewMode && <button className="editButton" onClick={EditButton}>
-          Edit Profile
-        </button>}
-
-        {!viewMode && <button className="exitButton" onClick={EditButton}>
-          Save Changes
-        </button>}
-
-        {!viewMode && <button className="exitButton" onClick={EditButton}>
-          Cancel Changes
-        </button>}
       </div>
     </div>
   );
@@ -103,4 +84,4 @@ function DiscountBanner() {
   );
 };
 
-export default Profile;
+export default Orders;
