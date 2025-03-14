@@ -2,25 +2,23 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar.jsx";
 import DiscountBanner from "../components/DiscountBanner.jsx";
-import { requestServer, checkLogin } from "../utils/Utility.jsx";
-
+import { requestServer, checkLogin, PORT } from "../utils/Utility.jsx";
+import { useAuth } from "../components/AuthContext.jsx";
 const Login = () => {
   const navigate = useNavigate();
 
   // Check if user is logged in
   // Direct user to profile page if already logged in
+  const auth = useAuth();
   useEffect(() => {
     (async () => {
-      try {
-        const response = await checkLogin();
-        if (response) {
-          navigate("/profile");
-        }
-      } catch (error) {
-        window.alert(error);
+      const response = await checkLogin();
+      if (response) {
+        navigate("/profile");
       }
+
     })();
-  }, [navigate]);
+  }, []);
 
   const [errorMessage, setMessage] = useState("");
   const [formData, setFormData] = useState({
@@ -31,7 +29,7 @@ const Login = () => {
   const [loginError, setLoginError] = useState(false);
 
   // Error message for login
-  const LoginError = (errorMessage) => {
+  const setError = (errorMessage) => {
     setLoginError(true);
     setMessage(errorMessage);
   };
@@ -49,17 +47,14 @@ const Login = () => {
   const loginDB = async (e) => {
     e.preventDefault();
     try {
-      const response = await requestServer("http://localhost:5000/api/users/login", "POST", "", formData);
-      if (response.data?.success) {
-        const data = await response.data;
-        localStorage.setItem("authToken", data.data?.token);
-        navigate("/profile");
-      } else {
-        const errorData = response.data;
-        LoginError(errorData?.message || "An error occurred. Please try again later.");
+      const response = await auth.loginAction(formData);
+      console.log("Response login: ", response);
+      if (!response.data?.success) {
+        setError(response.data?.message);
       }
     } catch (error) {
-      LoginError("An error occurred. Please try again later.");
+      console.log("Error: ", error);
+      setError(error.message);
     }
   };
 
@@ -140,3 +135,4 @@ const Login = () => {
 };
 
 export default Login;
+

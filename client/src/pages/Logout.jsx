@@ -1,22 +1,13 @@
-import { useEffect } from "react";
+import { use, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import DiscountBanner from "../components/DiscountBanner";
-import { requestServer } from "../utils/Utility";
-
+import { requestServer} from "../utils/Utility";
+import { useAuth } from "../components/AuthContext";
 const Logout = () => {
+  const auth = useAuth();
   useEffect(() => {
      (async () => {
-      const token = localStorage.getItem("authToken");
-      try {
-        localStorage.removeItem("authToken");
-        const response = await requestServer("http://localhost:5000/api/users/logout","POST",token);
-        if (response) {
-          window.alert("You have been logged out.");
-        }
-      } catch (error) {
-        console.error(error);
-        window.alert("An error occurred during logout.");
-      }
+      auth.logOut();
     })();
   }, []);
 

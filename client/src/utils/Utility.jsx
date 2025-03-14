@@ -1,7 +1,9 @@
 import axios from 'axios';
 import {jwtDecode} from 'jwt-decode';
 
-export const requestServer = async (url_, method_, token_, data_ = null) => {
+export const PORT = 5000;
+
+export const requestServer = async (url_, method_, token_, data_ = {}) => {
   try {
     console.log(url_, method_, token_, data_);
     const response = await axios({

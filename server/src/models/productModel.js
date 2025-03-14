@@ -3,14 +3,14 @@ const db = require('../config/db');
 
 // Product model with database operations
 const Product = {
-  // Get all products
-  getAll: async () => {
+  // find all products
+  findAll: async () => {
     const [rows] = await db.execute('SELECT * FROM Product');
     return rows;
   },
 
-  // Get products by category
-  getByCategory: async (category) => {
+  // find products by category
+  findByCategory: async (category) => {
     const [rows] = await db.execute(
       'SELECT * FROM Product WHERE category = ?',
       [category]
@@ -18,8 +18,8 @@ const Product = {
     return rows;
   },
 
-  // Get a product by ID
-  getById: async (productID) => {
+  // find a product by ID
+  findById: async (productID) => {
     const [rows] = await db.execute(
       'SELECT * FROM Product WHERE productID = ?',
       [productID]

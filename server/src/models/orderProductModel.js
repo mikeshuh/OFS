@@ -63,8 +63,8 @@ const OrderProduct = {
     }
   },
 
-  // Get all products in an order
-  getByOrderId: async (orderID) => {
+  // Find all products in an order
+  findByOrderId: async (orderID) => {
     const [rows] = await db.execute(
       `SELECT op.*, p.name, p.price, p.pounds, p.category
        FROM OrderProduct op
