@@ -1,8 +1,7 @@
 import axios from 'axios';
 import {jwtDecode} from 'jwt-decode';
 
-export const PORT = 5000;
-
+const API_URL = import.meta.env.VITE_API_URL;
 export const requestServer = async (url_, method_, token_, data_ = {}) => {
   try {
     console.log(url_, method_, token_, data_);
@@ -26,7 +25,7 @@ export const checkLogin = async () => {
   if (token) {
     try {
       const decode = jwtDecode(token);
-      const response = await requestServer(`http://localhost:5000/api/users/profile/${decode.id}`, "GET", token);
+      const response = await requestServer(`${API_URL}/api/users/profile/${decode.id}`, "GET", token);
       return response.data?.success;
     } catch (error) {
       console.error("Login session expired:", error);
