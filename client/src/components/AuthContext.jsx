@@ -4,6 +4,8 @@ import { requestServer, PORT } from "../utils/Utility";
 import { jwtDecode } from "jwt-decode";
 const AuthContext = createContext();
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("authToken"));
   const [loggedIn, setLoggedIn] = useState(!!token);
@@ -14,7 +16,7 @@ const AuthProvider = ({ children }) => {
   const checkLogin = async () => {
     try {
       const decode = jwtDecode(token);
-      const response = await requestServer(`http://localhost:5000/api/users/profile/${decode.id}`, "GET", token);
+      const response = await requestServer(`${API_URL}/api/users/profile/${decode.id}`, "GET", token);
       if (!response.data?.success) {
         navigate("/login");
       };
@@ -28,7 +30,7 @@ const AuthProvider = ({ children }) => {
   const getProfile = async (token) => {
     try {
       const decode = jwtDecode(token);
-      const response = await requestServer(`http://localhost:5000/api/users/profile/${decode.id}`, "GET", token);
+      const response = await requestServer(`${API_URL}/api/users/profile/${decode.id}`, "GET", token);
       localStorage.setItem("userProfile", JSON.stringify(response.data.data));
     } catch (error) {
       console.error("Error fetching profile", error);
@@ -40,7 +42,7 @@ const AuthProvider = ({ children }) => {
   // logic for login
   const loginAction = async (data) => {
     try {
-      const response = await requestServer("http://localhost:5000/api/users/login", "POST", "", data);
+      const response = await requestServer(`${API_URL}/api/users/login`, "POST", "", data);
       if (response.data?.success) {
         const data = response.data;
         localStorage.setItem("authToken", data.data?.token);
@@ -48,7 +50,7 @@ const AuthProvider = ({ children }) => {
         setToken(data.data?.token);
         await getProfile(data.data?.token);
 
-        await setLoggedIn(true);
+        setLoggedIn(true);
         navigate("/profile");
       }
       return response;
@@ -61,7 +63,7 @@ const AuthProvider = ({ children }) => {
   // logic for logout
   const logOut = async () => {
     try {
-      const response = await requestServer("http://localhost:5000/api/users/logout", "POST", token);
+      const response = await requestServer(`${API_URL}/api/users/logout`, "POST", token);
       if (response.data?.success) {
         window.alert("You have been logged out successfully.");
         setToken("");
@@ -78,7 +80,7 @@ const AuthProvider = ({ children }) => {
   const changePassword = async (data) => {
     try {
       const decode = jwtDecode(token);
-      const response = await requestServer(`http://localhost:5000/api/users/change-password/${decode.id}`, "PUT", token, data);
+      const response = await requestServer(`${API_URL}/api/users/change-password/${decode.id}`, "PUT", token, data);
       if (response.data?.success) {
         navigate("/login");
         setToken("");
