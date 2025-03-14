@@ -7,6 +7,10 @@ const isValidEmail = (email) => {
   return emailRegex.test(email);
 };
 
+const isValidString = (str) => {
+  return str && str.length > 0 && str.length < 255;
+};
+
 // Validate password (minimum 8 characters)
 const isValidPassword = (password) => {
   return password && password.length >= 8;
@@ -20,6 +24,10 @@ const sanitizeString = (str) => {
 // Sanitize number
 const sanitizeInteger = (num) => {
   return num ? parseInt(num, 10) < 1e9 ? parseInt(num,10) : null : null;
+};
+
+const sanitizeFloat = (num) => {
+  return num ? parseFloat(num) < 1e9 ? parseFloat(num) : null : null;
 };
 
 // Sanitize email (trim and lowercase)
@@ -111,13 +119,58 @@ const validatePasswordChange = (passwordData) => {
   };
 };
 
-const validateProduct = (productData) => {
+const validateProductId = (productData) => {
   const { productId} = productData;
   const errors = [];
 
   // Check required fields
   if (!productId ) {
     errors.push(`Product ID is required `);
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+};
+
+const validateCategory = (categoryData) => {
+  const { category } = categoryData;
+  const errors = [];
+
+  // Check required fields
+  if (!category) {
+    errors.push('Category is required');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+}
+
+const validateProduct = (productData) => {
+  const { category, name, price, pounds, quantity } = productData;
+  const errors = [];
+
+  // Check required fields
+  if (!category || !name || !price || !pounds || !quantity) {
+    errors.push('All fields are required (category, name, price, pounds, quantity)');
+  }
+
+  // Validate price
+  if (price && price < 0) {
+    errors.push('Price must be a positive number');
+  }
+
+  // Validate pounds
+  if (pounds && pounds < 0) {
+    errors.push('Pounds must be a positive number');
+  }
+
+  // Validate quantity
+  if (quantity && quantity < 0) {
+    errors.push('Quantity must be a positive number');
   }
 
   return {
@@ -135,11 +188,14 @@ module.exports = {
   isValidPassword,
   sanitizeString,
   sanitizeEmail,
+  sanitizeFloat,
   sanitizeInteger,
   validateRegistration,
   validateLogin,
   validateProfileUpdate,
   validatePasswordChange,
   parseId,
+  validateProductId,
+  validateCategory,
   validateProduct
 };
