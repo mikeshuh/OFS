@@ -2,6 +2,8 @@ import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "./AuthContext.jsx";
 import { jwtDecode } from "jwt-decode";
+
+const API_URL = import.meta.env.VITE_API_URL;
 const ProtectedRoute = () => {
   const user = useAuth();
   const token = user.token;
@@ -12,7 +14,7 @@ const ProtectedRoute = () => {
   async () => {
     try {
       const decode = jwtDecode(token);
-      const response = await requestServer(`http://localhost:5000/api/users/profile/${decode.id}`, "GET", token);
+      const response = await requestServer(`${API_URL}/api/users/profile/${decode.id}`, "GET", token);
       if (!response.data?.success) {
         console.log("Response: ", response);
         window.alert("Please login to access this page");

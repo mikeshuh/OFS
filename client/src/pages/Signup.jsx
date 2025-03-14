@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import { requestServer } from "../utils/Utility";
 import DiscountBanner from "../components/DiscountBanner";
 
+const API_URL = import.meta.env.VITE_API_URL;
 const Signup = () => {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -39,7 +40,7 @@ const Signup = () => {
         setError("Passwords do not match");
         return;
       }
-      const response = await requestServer("http://localhost:5000/api/users/register", "POST", "", formData);
+      const response = await requestServer(`${API_URL}/api/users/register`, "POST", "", formData);
       if (response.data?.success) {
         navigate("/login");
       } else {
