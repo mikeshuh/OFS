@@ -13,7 +13,9 @@ const responseHandler = require('./src/utils/responseHandler');
 // Import routes
 const userRoutes = require('./src/routes/userRoute');
 // product
-// order
+const productRoutes = require('./src/routes/productRoute');
+// order:w
+
 // payment
 // delivery
 
@@ -36,6 +38,7 @@ if (env.nodeEnv === 'development') {
 // API Routes
 app.use('/api/users', userRoutes);
 // product
+app.use('/api/products', productRoutes);
 // order
 // payment
 // delivery

@@ -17,6 +17,11 @@ const sanitizeString = (str) => {
   return str ? str.trim() : '';
 };
 
+// Sanitize number
+const sanitizeInteger = (num) => {
+  return num ? parseInt(num, 10) < 1e9 ? parseInt(num,10) : null : null;
+};
+
 // Sanitize email (trim and lowercase)
 const sanitizeEmail = (email) => {
   return email ? email.trim().toLowerCase() : '';
@@ -106,6 +111,20 @@ const validatePasswordChange = (passwordData) => {
   };
 };
 
+const validateProduct = (productData) => {
+  const { productId} = productData;
+  const errors = [];
+
+  // Check required fields
+  if (!productId ) {
+    errors.push(`Product ID is required `);
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+};
 // Parse ID from string to integer
 const parseId = (id) => {
   return parseInt(id, 10);
@@ -116,9 +135,11 @@ module.exports = {
   isValidPassword,
   sanitizeString,
   sanitizeEmail,
+  sanitizeInteger,
   validateRegistration,
   validateLogin,
   validateProfileUpdate,
   validatePasswordChange,
-  parseId
+  parseId,
+  validateProduct
 };
