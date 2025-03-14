@@ -9,7 +9,8 @@ CREATE TABLE User (
     firstName VARCHAR(32) NOT NULL,
     lastName VARCHAR(32) NOT NULL,
     email VARCHAR(64) NOT NULL UNIQUE,
-    hashedPassword VARCHAR(64) NOT NULL
+    hashedPassword VARCHAR(64) NOT NULL,
+    tokenVersion INT NOT NULL DEFAULT 0
 ) ENGINE=InnoDB;
 
 -- Create the Order table
