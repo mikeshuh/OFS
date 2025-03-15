@@ -6,6 +6,7 @@
 ### Trouble Shooting
 - The pinned message in discord will be updated on a regular basis. If you see an error about a variable you didn't setup, check discord and update your .env.
 - The database structure is still subject to change. There might be some updates in the structure. If you see an error about the database, drop all the tables you have created and run the schema.sql file inside your local database.
+- The 5000 port for Mac users has been taken. The server is likely to be run on port 5001. Adjust the VITE_API_URL in the .env file in client side if this issue occurs.
 
 1. Git setup instructions:
 - Generate your ssh-key
@@ -52,6 +53,7 @@ sudo service redis-server stop
 ```
 - - For Mac, refer to [Documentation for redis](https://redis.io/docs/latest/operate/oss_and_stack/install/install-redis/install-redis-on-mac-os/) to setup
 - Run the command ```node server.js``` to start the server
+- __For specific instructions regarding usage of the requests in the server, refer to the README.md inside the server folder__
 
 5. Connecting to VM
 - The VM we are using is the Oracle Cloud Free Tier, 4-core, 24GB memory machine
