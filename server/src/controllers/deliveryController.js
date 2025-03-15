@@ -17,15 +17,16 @@ const getGeocode = async (req, res) => {
     const {streetAddress,city,zipCode} = req.body;
     const address = `${streetAddress}, ${city}, California, United States, ${zipCode}`;
     const sanitizedAddress = validation.sanitizeString(address);
+    if (!sanitizedAddress || sanitizedAddress === '') {
+      responseHandler.error(res, 'Invalid address');
+      return;
+    }
 
     // Get the coordinates from mapbox
     const coordinates = await deliveryService.getGeocode(sanitizedAddress);
-    if (coordinates) {
-      responseHandler.success(res, coordinates);
-    } else {
-      responseHandler.error(res, 'Could not find coordinates for address');
-    }
+    responseHandler.success(res, coordinates);
   }catch(error){
+    console.log(error)
     responseHandler.error(res, error.message);
   }
 }
@@ -54,6 +55,7 @@ const getRoute = async (req, res) => {
       responseHandler.error(res, 'Could not find route');
     }
   }catch(error){
+    console.log(error)
     responseHandler.error(res, error.message);
   }
 }

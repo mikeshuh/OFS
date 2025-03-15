@@ -1,6 +1,7 @@
 const { get } = require("../routes/userRoute");
 const {geocodingClient,directionsClient} = require('../config/mapbox');
 const { cookie } = require("express-validator");
+const { success } = require("../utils/responseHandler");
 const deliveryService = {
   // Get geocode from address
   getGeocode: async (address) => {
@@ -9,10 +10,9 @@ const deliveryService = {
         query: address,
         limit: 1
       }).send();
-      return response.body.features[0].geometry.coordinates;
+      return response.body.features[0].geometry.coordinates
     } catch (error) {
-      console.error(error);
-      return null;
+      throw new Error(error.message);
     }
   },
   // Get route from origin to destination
