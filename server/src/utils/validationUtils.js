@@ -178,6 +178,38 @@ const validateProduct = (productData) => {
     errors
   };
 };
+
+const validateAddress = (req) => {
+  const { streetAddress,zipCode,city } = req;
+  const errors = [];
+
+  // Check required fields
+  if (!streetAddress || !zipCode || !city) {
+    errors.push('All fields are required (streetAddress, city, zipCode)');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+}
+const validateRoute = (req) => {
+  const { origin, destination } = req;
+  const errors = [];
+
+  if (!validateAddress(origin).isValid) {
+    errors.push('Invalid origin address');
+  }
+
+  if (!validateAddress(destination).isValid) {
+    errors.push('Invalid destination address');
+  }
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+}
+
 // Parse ID from string to integer
 const parseId = (id) => {
   return parseInt(id, 10);
@@ -197,5 +229,7 @@ module.exports = {
   parseId,
   validateProductId,
   validateCategory,
-  validateProduct
+  validateProduct,
+  validateRoute,
+  validateAddress
 };
