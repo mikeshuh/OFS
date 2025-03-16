@@ -21,6 +21,10 @@ const sanitizeString = (str) => {
   return str ? str.trim() : '';
 };
 
+// Sanitize BLOB (right now no sanitization, will do in the future)
+const sanitizeBLOB = (blob) => {
+  return blob ? blob : null;
+}
 // Sanitize number
 const sanitizeInteger = (num) => {
   return num ? parseInt(num, 10) < 1e9 ? parseInt(num,10) : null : null;
@@ -190,6 +194,7 @@ module.exports = {
   sanitizeEmail,
   sanitizeFloat,
   sanitizeInteger,
+  sanitizeBLOB,
   validateRegistration,
   validateLogin,
   validateProfileUpdate,
@@ -198,4 +203,5 @@ module.exports = {
   validateProductId,
   validateCategory,
   validateProduct
+
 };

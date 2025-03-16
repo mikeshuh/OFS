@@ -59,13 +59,14 @@ const createProduct = async (req, res) => {
     }
 
     // sanitize input data
-    const { category, name, price, pounds, quantity } = req.body;
+    const { category, name, price, pounds, quantity, imageBinary } = req.body;
     const productData = {
       category: validation.sanitizeString(category),
       name: validation.sanitizeString(name),
       price: validation.sanitizeFloat(price),
       pounds: validation.sanitizeFloat(pounds),
-      quantity: validation.sanitizeInteger(quantity)
+      quantity: validation.sanitizeInteger(quantity),
+      imageBinary: validation.sanitizeBLOB(imageBinary)
     };
 
     // create product
@@ -103,7 +104,7 @@ const updateProduct = async (req, res) => {
     }
 
     const { productId } = req.params;
-    const { category, name, price, pounds, quantity } = req.body;
+    const { category, name, price, pounds, quantity, imageBinary} = req.body;
 
     // sanitize input data
     const productData = {
@@ -111,7 +112,8 @@ const updateProduct = async (req, res) => {
       name: validation.sanitizeString(name),
       price: validation.sanitizeFloat(price),
       pounds: validation.sanitizeFloat(pounds),
-      quantity: validation.sanitizeInteger(quantity)
+      quantity: validation.sanitizeInteger(quantity),
+      imageBinary: validation.sanitizeBLOB(imageBinary)
     };
 
     const sanitizedProductId = validation.sanitizeInteger(productId);
