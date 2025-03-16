@@ -63,9 +63,6 @@ const Login = () => {
       {/* Navbar */}
       <Navbar />
 
-      {/* Discount Banner */}
-      <DiscountBanner />
-
       {/* Content Center */}
       <div className="flex flex-1 justify-center items-center px-4">
         <div className="w-full max-w-md bg-white shadow-md rounded-xl p-8">
