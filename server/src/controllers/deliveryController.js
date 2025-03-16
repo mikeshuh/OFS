@@ -107,6 +107,8 @@ const getOptimalRoute = async (req, res) => {
       const legs = route[0].legs;
       legs.forEach((leg) => {
         const steps = leg.steps;
+
+        // This is the instruction summary for the trip, including the distance and duration
         const instruction = `Instruction from ${leg.summary}`;
         const duration = `${Math.round(leg.duration / 60)} minutes`;
         const distance =  `${Math.round(leg.distance * 10 / 1609.34) / 10} miles`;
@@ -117,11 +119,16 @@ const getOptimalRoute = async (req, res) => {
           steps:[]
         });
         steps.forEach((step, index) => {
+          // distance is the distacne for each step in miles
           const distance = Math.max(0.1,Math.round(step.distance * 10 / 1609.34) / 10);
           var stepDetail = `  ${step.maneuver.instruction || "No instruction available"} for ${distance} miles`;
+
+          // If it is the last step, the instruction is "arrive at destination", so no need for the distance
+          // There exist a cleaner way to do this but I got lazy
           if (index==steps.length-1) {
             stepDetail = `${step.maneuver.instruction}`;
           }
+          // Add the step instruction to the most recent instruction
           navigationInstruction[navigationInstruction.length - 1].steps.push(stepDetail);
         });
       });
