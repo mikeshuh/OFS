@@ -1,27 +1,25 @@
 const { createPaymentIntent } = require("../services/paymentService");
+const Order = require("../models/orderModel");
+const responseHandler = require("../utils/responseHandler");
 
+/**
+ * Process checkout and create a payment intent
+ */
 const payment = async (req, res) => {
     try {
-      console.log("✅ Received payment request:", req.body); 
-  
-      const { amount, currency } = req.body;
-  
-      if (!amount || !currency) {
-        return res.status(400).json({ error: "Amount and currency are required" });
-      }
-  
-      const paymentIntent = await createPaymentIntent(amount, currency);
-      res.json({ clientSecret: paymentIntent.client_secret });
-  
-    } catch (error) {
-      console.error("Payment Intent Error:", error.message);
-      res.status(500).json({ error: "Failed to create payment intent" });
-    }
-  };
+        const { orderID } = req.body;
+        if (!orderID) return responseHandler.badRequest(res, "Order ID is required");
 
-  
-module.exports = {
-    payment
-  };
-  
-  
+        const order = await Order.getById(orderID);
+        if (!order) return responseHandler.notFound(res, "Order not found");
+        if (order.orderStatus !== "PENDING") return responseHandler.badRequest(res, "Order already processed");
+
+        const paymentIntent = await createPaymentIntent(orderID);
+        return responseHandler.success(res, paymentIntent, "Payment intent created successfully");
+    } catch (error) {
+        console.error("Payment Error:", error.message);
+        return responseHandler.error(res, "Failed to process payment");
+    }
+};
+
+module.exports = { payment };

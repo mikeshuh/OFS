@@ -6,7 +6,7 @@ const app = require('./app');
 const userRoutes = require("./src/routes/userRoute");
 
 // Import Stripe Payment Routes
-const paymentRoutes = require("./src/routes/payment");
+const paymentRoutes = require("./src/routes/paymentRoute");
 
 // Get port from environment or use default
 const PORT = env.port;
