@@ -56,9 +56,6 @@ const Signup = () => {
       {/* Navbar component */}
       <Navbar />
 
-      {/* Discount banner component */}
-      <DiscountBanner />
-
       <div className="max-w-md mx-auto mt-10 p-8 bg-white shadow-lg rounded-lg">
         <h1 className="text-2xl font-bold text-center mb-4">New User Signup</h1>
 
