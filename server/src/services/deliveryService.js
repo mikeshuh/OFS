@@ -1,5 +1,5 @@
 const { get } = require("../routes/userRoute");
-const {geocodingClient,directionsClient} = require('../config/mapbox');
+const { geocodingClient, directionsClient, optimizationClient } = require('../config/mapbox');
 const { cookie } = require("express-validator");
 const { success } = require("../utils/responseHandler");
 const deliveryService = {
@@ -34,7 +34,48 @@ const deliveryService = {
       return response.body;
     } catch (error) {
       console.error(error);
-      return null;
+      throw new Error(error.message);
+    }
+  },
+  getOptimalRoute: async (addresses) => {
+    // Get the coordinates for the addresses
+    const coordinates = [];
+    for (let i = 0; i < addresses.length; i++) {
+      try {
+        coordinates.push({
+          coordinates: await deliveryService.getGeocode(addresses[i])
+        });
+      }catch(error){
+        throw new Error(error.message);
+      }
+
+    }
+
+    // Get the optimized route between the coordinates
+    /*
+    call breakdown:
+      waypoints: the points that the route will pass through
+      roundtrip: start and end at the same point, in this case the warehouse
+      overview: the type of overview geometry that is returned, simplified exclude unwanted data
+      step: return instruction specific to each turn
+    */
+    try {
+      const response = await optimizationClient.getOptimization({
+        profile: 'driving',
+        waypoints: coordinates,
+        source: 'first',
+        roundtrip: true,
+        overview: 'simplified',
+        steps: true
+      }).send();
+      if (response.body.code === 'Ok') {
+        return response.body.trips;
+      } else {
+        throw new Error(response.body.message);
+      }
+    } catch (error) {
+      console.error(error);
+      throw new Error(error.message);
     }
   }
 

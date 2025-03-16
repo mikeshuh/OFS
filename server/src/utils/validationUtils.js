@@ -119,6 +119,22 @@ const validatePasswordChange = (passwordData) => {
   };
 };
 
+const validateOptimalRoute = (req) => {
+  const { addresses } = req;
+  const errors = [];
+  if (!addresses || addresses.length < 2) {
+    errors.push('At least two addresses are required');
+  }
+  for (let i = 0; i < addresses.length; i++) {
+    if (!validateAddress(addresses[i]).isValid) {
+      errors.push(`Invalid address at index ${i}`);
+    }
+  }
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+}
 const validateProductId = (productData) => {
   const { productId} = productData;
   const errors = [];
@@ -231,5 +247,6 @@ module.exports = {
   validateCategory,
   validateProduct,
   validateRoute,
-  validateAddress
+  validateAddress,
+  validateOptimalRoute
 };

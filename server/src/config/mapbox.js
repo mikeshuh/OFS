@@ -1,5 +1,8 @@
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const mbxDirections = require('@mapbox/mapbox-sdk/services/directions');
+const mbxOptimization = require('@mapbox/mapbox-sdk/services/optimization');
+
+
 
 require('dotenv').config();
 
@@ -9,4 +12,6 @@ const geocodingClient = mbxGeocoding({ accessToken: mapboxToken });
 
 const directionsClient = mbxDirections({ accessToken: mapboxToken });
 
-module.exports = { geocodingClient, directionsClient };
+const optimizationClient = mbxOptimization({ accessToken: mapboxToken });
+
+module.exports = { geocodingClient, directionsClient,optimizationClient };
