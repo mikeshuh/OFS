@@ -111,6 +111,25 @@ const parseId = (id) => {
   return parseInt(id, 10);
 };
 
+// Sanitize integer (ensure it's an integer)
+const sanitizeInteger = (value) => {
+  const parsed = parseInt(value, 10);
+  return isNaN(parsed) ? null : parsed;
+};
+
+// Validate payment input (example: check if orderID is integer)
+const validatePaymentInput = (paymentData) => {
+  const errors = [];
+  if (!paymentData.orderID || isNaN(parseInt(paymentData.orderID))) {
+    errors.push('Invalid orderID');
+  }
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+};
+
+
 module.exports = {
   isValidEmail,
   isValidPassword,
@@ -120,5 +139,7 @@ module.exports = {
   validateLogin,
   validateProfileUpdate,
   validatePasswordChange,
-  parseId
+  parseId,
+  sanitizeInteger,
+  validatePaymentInput
 };

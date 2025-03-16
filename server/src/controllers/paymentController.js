@@ -8,13 +8,14 @@ const { createPaymentIntent } = require('../services/paymentService');
 const processPayment = async (req, res) => {
   try {
     // Step 1: Validate input
-    const validationResult = validation.validatePaymentInput(req.body);
-    if (!validationResult.isValid) {
-      return responseHandler.badRequest(res, validationResult.errors[0], validationResult.errors);
+    const { orderID } = req.body;
+    const { isValid, errors } = validation.validatePaymentInput({ orderID });
+    if (!isValid) {
+    return responseHandler.badRequest(res, 'Order ID is required', errors);
     }
 
     // Step 2: Sanitize input
-    const sanitizedOrderID = validation.sanitizeInteger(req.body.orderID);
+    const sanitizedOrderID = validation.parseId(orderID);
 
     // Step 3: Retrieve order
     const order = await Order.getById(sanitizedOrderID);

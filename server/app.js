@@ -12,11 +12,11 @@ const responseHandler = require('./src/utils/responseHandler');
 
 // Import routes
 const userRoutes = require('./src/routes/userRoute');
-const paymentRoutes = require("./src/routes/paymentRoute");
 
 // product
 // order
 // payment
+const paymentRoutes = require("./src/routes/paymentRoute");
 // delivery
 
 // Initialize Express app
