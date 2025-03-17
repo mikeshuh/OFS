@@ -3,6 +3,8 @@ const responseHandler = require('../utils/responseHandler');
 const validation = require('../utils/validationUtils');
 const deliveryService = require('../services/deliveryService');
 
+const WAREHOUSE_ADDRESS = "1 Washington Sq, San Jose, Californi, United States, 95192"
+
 // get the coordinate from address
 const getGeocode = async (req, res) => {
   try {
@@ -90,7 +92,7 @@ const getOptimalRoute = async (req, res) => {
     }
 
     // The warehouse location is stored in the environment variable
-    const warehouse = process.env.WAREHOUSE_ADDRESS;
+    const warehouse = WAREHOUSE_ADDRESS;
     const { addresses } = req.body;
     const sanitizedAddresses = addresses.map(address => {
       return validation.sanitizeString(`${address.streetAddress}, ${address.city}, California, United States, ${address.zipCode}`);
