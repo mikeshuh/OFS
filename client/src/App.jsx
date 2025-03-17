@@ -25,8 +25,8 @@ function App() {
         <Route path="/products" element={<Products />} />
         <Route path="/categories" element={<div>Food Category Page</div>} />
         <Route element={<ProtectedRoute />}>
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/profile" element={<Profile />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/orders" element={<Orders />} />

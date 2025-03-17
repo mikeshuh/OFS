@@ -55,6 +55,8 @@ const toOrder = () => {
         </tr>
         </table>
 
+        <br/>
+
         <h1 className="text-3xl font-bold text-gray-800 mb-6">Cart Details</h1>
         <table className="mx-auto border-collapse border-[3px] border-solid border-green-500 font-size: 16px">
         <tr className="border-[#28a745]">
