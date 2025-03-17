@@ -1,5 +1,7 @@
 // Utility for input validation and sanitization
 // Provides functions for validating and sanitizing user inputs
+const { body, param, validationResult, sanitizeBody } = require('express-validator');
+
 
 // Validate email format
 const isValidEmail = (email) => {
@@ -187,6 +189,76 @@ const parseId = (id) => {
   return parseInt(id, 10);
 };
 
+//validate product
+
+const validateProductBody = [
+
+  //sanitize category
+  body('category')
+  .trim()
+  .escape()
+  //validate
+  .notEmpty()
+  .withMessage('Category is required')
+  .isString({max: 16}).withMessage('Category must be less than 16 characters'),
+
+
+  //sanitize name
+  body('name')
+  .trim()
+  .escape()
+  //validate
+  .notEmpty()
+  .withMessage('Name is required')
+  .isString({max: 16}).withMessage('Name must be less than 32 characters'),
+
+  //sanitize
+  body('price')
+  .trim()
+  .escape()
+  //validate
+  .notEmpty()
+  .withMessage('Price is required')
+  .toFloat()
+  .isFloat({min: 0})
+  .withMessage('Price must be positive'),
+
+
+  //sanitize
+  body('pounds')
+  .trim()
+  .escape()
+  //validate
+  .notEmpty()
+  .withMessage('Pounds is required')
+  .toFloat()
+  .isFloat({min: 0})
+  .withMessage('Pounds must be positive'),
+
+  //sanitize
+  body('quantity')
+  .trim()
+  .escape()
+  //validate
+  .notEmpty()
+  .withMessage('Quantity is required')
+  .toFloat()
+  .isFloat({min: 0})
+  .withMessage('Quantity must be positive'),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  },
+
+
+]
+
+
+
 module.exports = {
   isValidEmail,
   isValidPassword,
@@ -202,6 +274,6 @@ module.exports = {
   parseId,
   validateProductId,
   validateCategory,
-  validateProduct
-
+  validateProduct,
+  validateProductBody
 };
