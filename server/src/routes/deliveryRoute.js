@@ -13,4 +13,6 @@ router.get('/duration', protect, deliveryController.getDuration);
 
 router.get('/optimize', protect, deliveryController.getOptimalRoute);
 
+router.get('/check', protect, deliveryController.checkDeliveryRadius);
+
 module.exports = router;
