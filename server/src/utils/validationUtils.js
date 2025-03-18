@@ -1,6 +1,6 @@
 // Utility for input validation and sanitization
 // Provides functions for validating and sanitizing user inputs
-const { body, param, validationResult, sanitizeBody } = require('express-validator');
+const { body, param, validationResult } = require('express-validator');
 
 
 // Validate email format
@@ -125,74 +125,8 @@ const validatePasswordChange = (passwordData) => {
   };
 };
 
-const validateProductId = (productData) => {
-  const { productId} = productData;
-  const errors = [];
-
-  // Check required fields
-  if (!productId ) {
-    errors.push(`Product ID is required `);
-  }
-
-  return {
-    isValid: errors.length === 0,
-    errors
-  };
-};
-
-const validateCategory = (categoryData) => {
-  const { category } = categoryData;
-  const errors = [];
-
-  // Check required fields
-  if (!category) {
-    errors.push('Category is required');
-  }
-
-  return {
-    isValid: errors.length === 0,
-    errors
-  };
-}
-
-const validateProduct = (productData) => {
-  const { category, name, price, pounds, quantity } = productData;
-  const errors = [];
-
-  // Check required fields
-  if (!category || !name || !price || !pounds || !quantity) {
-    errors.push('All fields are required (category, name, price, pounds, quantity)');
-  }
-
-  // Validate price
-  if (price && price < 0) {
-    errors.push('Price must be a positive number');
-  }
-
-  // Validate pounds
-  if (pounds && pounds < 0) {
-    errors.push('Pounds must be a positive number');
-  }
-
-  // Validate quantity
-  if (quantity && quantity < 0) {
-    errors.push('Quantity must be a positive number');
-  }
-
-  return {
-    isValid: errors.length === 0,
-    errors
-  };
-};
-// Parse ID from string to integer
-const parseId = (id) => {
-  return parseInt(id, 10);
-};
-
 //validate product
-
-const validateProductBody = [
-
+const validateProduct = [
   //sanitize category
   body('category')
   .trim()
@@ -200,7 +134,9 @@ const validateProductBody = [
   //validate
   .notEmpty()
   .withMessage('Category is required')
-  .isString({max: 16}).withMessage('Category must be less than 16 characters'),
+  .isString()
+  .isLength({min: 0, max: 16})
+  .withMessage('Category must be less than 16 characters'),
 
 
   //sanitize name
@@ -210,7 +146,9 @@ const validateProductBody = [
   //validate
   .notEmpty()
   .withMessage('Name is required')
-  .isString({max: 16}).withMessage('Name must be less than 32 characters'),
+  .isString()
+  .isLength({min: 0, max: 32})
+  .withMessage('Name must be less than 32 characters'),
 
   //sanitize
   body('price')
@@ -221,8 +159,7 @@ const validateProductBody = [
   .withMessage('Price is required')
   .toFloat()
   .isFloat({min: 0})
-  .withMessage('Price must be positive'),
-
+  .withMessage('Price must be positive a positive float'),
 
   //sanitize
   body('pounds')
@@ -233,7 +170,7 @@ const validateProductBody = [
   .withMessage('Pounds is required')
   .toFloat()
   .isFloat({min: 0})
-  .withMessage('Pounds must be positive'),
+  .withMessage('Pounds must be a positive float'),
 
   //sanitize
   body('quantity')
@@ -242,9 +179,9 @@ const validateProductBody = [
   //validate
   .notEmpty()
   .withMessage('Quantity is required')
-  .toFloat()
-  .isFloat({min: 0})
-  .withMessage('Quantity must be positive'),
+  .toInt()
+  .isInt({min: 0})
+  .withMessage('Quantity must be a positive integer'),
 
   (req, res, next) => {
     const errors = validationResult(req);
@@ -253,8 +190,39 @@ const validateProductBody = [
     }
     next();
   },
+]
 
+const validateProductId = [
+  param('productId')
+  .escape()
+  .trim()
+  .toInt()
+  .isInt({min: 1})
+  .withMessage('ProductID must be an integer greater than 1'),
 
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  },
+]
+const validateCategory = [
+  param('category')
+  .escape()
+  .trim()
+  .isString()
+  .isLength({min : 1, max : 16})
+  .withMessage('Category must be less than 16 characters'),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    next();
+  },
 ]
 
 
@@ -271,9 +239,8 @@ module.exports = {
   validateLogin,
   validateProfileUpdate,
   validatePasswordChange,
-  parseId,
-  validateProductId,
-  validateCategory,
+  //Product Route Validation
   validateProduct,
-  validateProductBody
+  validateProductId,
+  validateCategory
 };
