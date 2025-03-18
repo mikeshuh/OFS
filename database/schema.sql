@@ -17,11 +17,11 @@ CREATE TABLE User (
 CREATE TABLE `Order` (
     orderID INT PRIMARY KEY AUTO_INCREMENT,
     userID INT NOT NULL,
-    totalPrice DECIMAL(10,2) NOT NULL,
-    totalPounds DECIMAL(10,2) NOT NULL,
-    deliveryFee BOOL NOT NULL,
+    productsPrice DECIMAL(5,2) NOT NULL DEFAULT 0,
+    deliveryFee DECIMAL(4,2) NOT NULL DEFAULT 0,
+    totalPounds DECIMAL(6,2) NOT NULL,
     orderTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    orderStatus BOOL NOT NULL,
+    deliveryStatus BOOL NOT NULL,
     streetAddress VARCHAR(64) NOT NULL,
     city VARCHAR(32) NOT NULL,
     zipCode INT NOT NULL,
@@ -46,4 +46,18 @@ CREATE TABLE OrderProduct (
     quantity INT NOT NULL,
     FOREIGN KEY (orderID) REFERENCES `Order`(orderID) ON DELETE CASCADE,
     FOREIGN KEY (productID) REFERENCES Product(productID) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- Create the Payment table
+CREATE TABLE Payment (
+    paymentID INT AUTO_INCREMENT PRIMARY KEY,
+    orderID INT NOT NULL,
+    userID INT NOT NULL,
+    paymentIntentID VARCHAR(255) NOT NULL,
+    totalPrice DECIMAL(10, 2) NOT NULL,
+    paymentStatus ENUM('Pending', 'Paid', 'Failed') DEFAULT 'Pending',
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (orderID) REFERENCES `Order`(orderID) ON DELETE CASCADE,
+    FOREIGN KEY (userID) REFERENCES User(userID) ON DELETE CASCADE
 ) ENGINE=InnoDB;

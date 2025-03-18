@@ -1,6 +1,7 @@
 // Main Express application configuration
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const env = require('./src/config/env');
 
 // Validate environment variables
@@ -22,6 +23,10 @@ const paymentRoutes = require("./src/routes/paymentRoute");
 // Initialize Express app
 const app = express();
 
+app.use(express.static(path.join(__dirname, '../public')));
+// Raw body parser for Stripe Webhook
+app.use('/payment/webhook', express.raw({ type: 'application/json' }));
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -40,7 +45,7 @@ app.use('/api/users', userRoutes);
 // product
 // order
 // payment
-app.use('/payment', paymentRoutes); // let all /api/users/* though userRoute.js
+app.use('/payment', paymentRoutes);
 // delivery
 
 // Health check route

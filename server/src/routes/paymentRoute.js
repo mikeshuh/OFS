@@ -1,9 +1,12 @@
-const express = require("express");
-const { processPayment } = require("../controllers/paymentController");
-const { protect } = require("../middleware/authMiddleware");
-
+const express = require('express');
 const router = express.Router();
+const { protect } = require('../middleware/authMiddleware');
+const { processPayment, handleStripeWebhook } = require('../controllers/paymentController');
 
-router.post("/", protect, processPayment);
+// User initiates payment
+router.post('/', protect, processPayment);
+
+// Stripe Webhook
+router.post('/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
 
 module.exports = router;

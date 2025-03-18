@@ -1,29 +1,26 @@
 const db = require('../config/db');
 
 const Payment = {
-  create: async (orderID, userID, paymentIntentID, amount) => {
+  create: async (orderID, userID, paymentIntentID, totalPrice, paymentStatus) => {
     const query = `
-      INSERT INTO payments (orderID, userID, paymentIntentID, amount, currency, status)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO Payment (orderID, userID, paymentIntentID, totalPrice, paymentStatus)
+      VALUES (?, ?, ?, ?, ?)
     `;
-    const currency = 'usd';
-    const status = 'PENDING';
 
     const [result] = await db.execute(query, [
       orderID,
       userID,
       paymentIntentID,
-      amount,
-      currency,
-      status
+      totalPrice,
+      paymentStatus
     ]);
 
     return result.insertId;
   },
 
-  updateStatus: async (paymentID, status) => {
-    const query = `UPDATE payments SET status = ? WHERE paymentID = ?`;
-    await db.execute(query, [status, paymentID]);
+  updateStatusByIntentID: async (paymentIntentID, newStatus) => {
+    const query = `UPDATE Payment SET paymentStatus = ? WHERE paymentIntentID = ?`;
+    await db.execute(query, [newStatus, paymentIntentID]);
   }
 };
 
