@@ -139,6 +139,8 @@ const validateProduct = [
   .withMessage('Category must be less than 16 characters'),
 
 
+
+
   //sanitize name
   body('name')
   .trim()
@@ -226,6 +228,63 @@ const validateCategory = [
 ]
 
 
+const validateOptimalRoute = (req) => {
+  const { addresses } = req;
+  const errors = [];
+  if (!addresses || addresses.length < 2) {
+    errors.push('At least two addresses are required');
+  }
+  for (let i = 0; i < addresses.length; i++) {
+    if (!validateAddress(addresses[i]).isValid) {
+      errors.push(`Invalid address at index ${i}`);
+    }
+  }
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+}
+
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+
+const validateAddress = (req) => {
+  const { streetAddress,zipCode,city } = req;
+  const errors = [];
+
+  // Check required fields
+  if (!streetAddress || !zipCode || !city) {
+    errors.push('All fields are required (streetAddress, city, zipCode)');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+}
+const validateRoute = (req) => {
+  const { origin, destination } = req;
+  const errors = [];
+
+  if (!validateAddress(origin).isValid) {
+    errors.push('Invalid origin address');
+  }
+
+  if (!validateAddress(destination).isValid) {
+    errors.push('Invalid destination address');
+  }
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+}
+
+// Parse ID from string to integer
+const parseId = (id) => {
+  return parseInt(id, 10);
+};
 
 module.exports = {
   isValidEmail,
@@ -242,5 +301,10 @@ module.exports = {
   //Product Route Validation
   validateProduct,
   validateProductId,
-  validateCategory
+  validateCategory,
+  validateProduct,
+  validateRoute,
+  validateAddress,
+  validateOptimalRoute,
+  validateProduct
 };

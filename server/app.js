@@ -15,9 +15,9 @@ const userRoutes = require('./src/routes/userRoute');
 // product
 const productRoutes = require('./src/routes/productRoute');
 // order:w
-
 // payment
 // delivery
+const deliveryRoutes = require('./src/routes/deliveryRoute');
 
 // Initialize Express app
 const app = express();
@@ -42,6 +42,7 @@ app.use('/api/products', productRoutes);
 // order
 // payment
 // delivery
+app.use('/api/delivery', deliveryRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {
