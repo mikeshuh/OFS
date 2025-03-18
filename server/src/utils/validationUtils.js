@@ -245,10 +245,7 @@ const validateOptimalRoute = (req) => {
   };
 }
 
-  return {
-    isValid: errors.length === 0,
-    errors
-  };
+
 
 const validateAddress = (req) => {
   const { streetAddress,zipCode,city } = req;
@@ -264,6 +261,7 @@ const validateAddress = (req) => {
     errors
   };
 }
+
 const validateRoute = (req) => {
   const { origin, destination } = req;
   const errors = [];
@@ -302,9 +300,7 @@ module.exports = {
   validateProduct,
   validateProductId,
   validateCategory,
-  validateProduct,
   validateRoute,
   validateAddress,
   validateOptimalRoute,
-  validateProduct
 };
