@@ -7,20 +7,20 @@ function ShoppingCart() {
 
   const handleSearch = () => {
     alert(`Searching for: ${searchQuery}`);
-};
+  };
 
-const [viewMode, setView] = useState(true);
+  const [viewMode, setView] = useState(true);
     const EditButton = () => {
             setView(!viewMode);
     };
 
-const toCheckout = () => {
-  window.location.href="./checkout";
-};
+  const toCheckout = () => {
+    window.location.href="./checkout";
+  };
 
-const discardCart = () => {
-  alert("This function should cancel shopping");
-};
+  const discardCart = () => {
+    alert("This function should cancel shopping");
+  };
 
   return (
     <div classname="flex flex-col min-h-screen">

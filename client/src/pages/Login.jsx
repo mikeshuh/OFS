@@ -4,7 +4,8 @@ import Navbar from "../components/Navbar.jsx";
 import DiscountBanner from "../components/DiscountBanner.jsx";
 import { requestServer, checkLogin  } from "../utils/Utility.jsx";
 import { useAuth } from "../components/AuthContext.jsx";
-const Login = () => {
+
+function Login() {
   const navigate = useNavigate();
 
   // Check if user is logged in

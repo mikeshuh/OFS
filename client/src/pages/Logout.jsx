@@ -3,7 +3,8 @@ import Navbar from "../components/Navbar";
 import DiscountBanner from "../components/DiscountBanner";
 import { requestServer} from "../utils/Utility";
 import { useAuth } from "../components/AuthContext";
-const Logout = () => {
+
+function Logout() {
   const auth = useAuth();
   useEffect(() => {
      (async () => {

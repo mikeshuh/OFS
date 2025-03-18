@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import DiscountBanner from "../components/DiscountBanner";
 import Navbar from "../components/Navbar.jsx";
 
-function Orders() {
+function OrderDetails() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = () => {
@@ -83,4 +83,4 @@ const toOrder = () => {
   );
 };
 
-export default Orders;
+export default OrderDetails;

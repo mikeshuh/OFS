@@ -7,10 +7,10 @@ function Checkout() {
 
   const handleSearch = () => {
     alert(`Searching for: ${searchQuery}`);
-};
+  };
 
-const [method1, setView1] = useState(true);
-const [method2, setView2] = useState(false);
+  const [method1, setView1] = useState(true);
+  const [method2, setView2] = useState(false);
 
     const changeMethod1 = () => {
       if (!method1) {
@@ -30,13 +30,13 @@ const [method2, setView2] = useState(false);
     }
   };
 
-const toTransaction = () => {
+  const toTransaction = () => {
     window.location.href="./orders";
-};
+  };
 
-const toCart = () => {
-  window.location.href="./cart";
-};
+  const toCart = () => {
+    window.location.href="./cart";
+  };
 
   return (
     <div classname="flex flex-col min-h-screen">

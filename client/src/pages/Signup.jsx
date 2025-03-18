@@ -5,7 +5,7 @@ import { requestServer } from "../utils/Utility";
 import DiscountBanner from "../components/DiscountBanner";
 
 const API_URL = import.meta.env.VITE_API_URL;
-const Signup = () => {
+function Signup() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
