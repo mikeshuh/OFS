@@ -1,6 +1,7 @@
 // Utility for input validation and sanitization
 // Provides functions for validating and sanitizing user inputs
 const { body, param, validationResult } = require('express-validator');
+const responseHandler = require('../utils/responseHandler');
 
 
 // Validate email format
@@ -138,9 +139,6 @@ const validateProduct = [
   .isLength({min: 0, max: 16})
   .withMessage('Category must be less than 16 characters'),
 
-
-
-
   //sanitize name
   body('name')
   .trim()
@@ -188,45 +186,47 @@ const validateProduct = [
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return responseHandler.badRequest(res, null, errors);
     }
     next();
   },
 ]
 
-const validateProductId = [
-  param('productId')
-  .escape()
-  .trim()
-  .toInt()
-  .isInt({min: 1})
-  .withMessage('ProductID must be an integer greater than 1'),
+const validateParamInt = (paramName) => {
+  return [
+    param(paramName)
+    .escape()
+    .trim()
+    .toInt()
+    .isInt()
+    .withMessage('Param must be an integer'),
 
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    next();
-  },
-]
-const validateCategory = [
-  param('category')
-  .escape()
-  .trim()
-  .isString()
-  .isLength({min : 1, max : 16})
-  .withMessage('Category must be less than 16 characters'),
+    (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return responseHandler.badRequest(res, null, errors);
+      }
+      next();
+    },
+  ]
+}
+const validateParamString = (paramName) => {
+  return [
+    param(paramName)
+    .escape()
+    .trim()
+    .isString()
+    .withMessage('Param must be a string'),
 
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    next();
-  },
-]
-
+    (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return responseHandler.badRequest(res, null, errors);
+      }
+      next();
+    },
+  ]
+}
 
 const validateOptimalRoute = (req) => {
   const { addresses } = req;
@@ -298,8 +298,8 @@ module.exports = {
   validatePasswordChange,
   //Product Route Validation
   validateProduct,
-  validateProductId,
-  validateCategory,
+  validateParamInt,
+  validateParamString,
   validateRoute,
   validateAddress,
   validateOptimalRoute,

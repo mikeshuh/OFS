@@ -6,10 +6,9 @@ const validation = require('../utils/validationUtils');
 // get single product, route: /api/products/info/:productId
 const getProduct = async (req, res) => {
   try {
-    //find product by sanitized id
+    //find product by productId
     const { productId } = req.params;
     const product = await Product.findById(productId)
-
 
     if (!product) {
       return responseHandler.notFound(res, 'Product not found.');
@@ -26,6 +25,7 @@ const getProduct = async (req, res) => {
 // select all products from a category, route: /api/products/category/:category
 const getByCategory = async (req, res) => {
   try {
+    //find product by category
     const { category } = req.params;
     const products = await Product.findByCategory(category);
 
@@ -44,9 +44,6 @@ const getByCategory = async (req, res) => {
 // create a new product, route: /api/products/create-product, admin only
 const createProduct = async (req, res) => {
   try{
-
-
-    // sanitize input data
     const { category, name, price, pounds, quantity, imageBinary } = req.body;
     const productData = {
       category: category,
@@ -86,6 +83,7 @@ const getAllProduct = async (req, res) => {
 // update a product, route: /api/products/update/:productId, admin only
 const updateProduct = async (req, res) => {
   try {
+    //update product
     const { productId } = req.params;
     const { category, name, price, pounds, quantity, imageBinary} = req.body;
 
@@ -112,7 +110,7 @@ const updateProduct = async (req, res) => {
 // delete a product, route: /api/products/delete/:productId, admin only
 const deleteProduct = async (req, res) => {
   try {
-    // sanitize input data
+    //Delete Product
     const { productId } = req.params;
     const deleted = await Product.delete(productId);
 
