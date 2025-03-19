@@ -73,30 +73,29 @@ const handleStripeWebhook = async (req, res) => {
   let event;
 
   try {
-    event = stripeClient.webhooks.constructEvent(req.body, sig, stripeWebhookSecret);
-  } catch (err) {
-    console.error(`Webhook signature verification failed.`, err);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
+    console.log("Webhook received, verifying signature...");
 
-  try {
+    event = stripeClient.webhooks.constructEvent(req.body, sig, stripeWebhookSecret);
+    console.log("Webhook verified:", event.id, event.type);
+
     if (event.type === 'payment_intent.succeeded') {
+      console.log("Payment Succeeded Event Handling Start");
       const paymentIntent = event.data.object;
-      console.log(`Payment succeeded for PaymentIntent: ${paymentIntent.id}`);
       await Payment.updateStatusByIntentID(paymentIntent.id, 'Paid');
+      console.log(`Database updated for PaymentIntent ${paymentIntent.id}`);
     } else if (event.type === 'payment_intent.payment_failed') {
       const paymentIntent = event.data.object;
-      console.log(`Payment failed for PaymentIntent: ${paymentIntent.id}`);
       await Payment.updateStatusByIntentID(paymentIntent.id, 'Failed');
     } else {
       console.log(`Unhandled event type: ${event.type}`);
     }
-  } catch (dbError) {
-    console.error(`Database update failed for PaymentIntent ${event.data.object.id}`, dbError);
-    return res.status(500).send('Database update failed');
-  }
 
-  res.json({ received: true });
+    // Must always respond:
+    res.json({ received: true });
+  } catch (err) {
+    console.error(`Webhook signature verification failed or DB error:`, err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
 };
 
 module.exports = { processPayment, handleStripeWebhook };

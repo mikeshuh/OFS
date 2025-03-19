@@ -23,7 +23,7 @@ const paymentRoutes = require("./src/routes/paymentRoute");
 // Initialize Express app
 const app = express();
 
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, 'public')));
 // Raw body parser for Stripe Webhook
 app.use('/payment/webhook', express.raw({ type: 'application/json' }));
 
