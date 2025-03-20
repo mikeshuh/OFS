@@ -26,14 +26,15 @@ function App() {
         <Route path="/products" element={<Products />} />
         <Route path="/productDetails" element={<ProductDetails />} />
         <Route path="/categories" element={<div>Food Category Page</div>} />
-
+        
+        <Route element={<ProtectedRoute />}>
           <Route path="/cart" element={<Cart />} />
           <Route path="/profile" element={<Profile />} />
         
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/orderDetails" element={<OrderDetails />} />
-
+        </Route>
 
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
