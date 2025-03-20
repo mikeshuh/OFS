@@ -34,18 +34,18 @@ function ShoppingCart() {
       <div className="flex-1 flex-col items-center justify-center text-center p-12">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">Shopping Cart</h1>
         
-        <table className="mx-auto border-collapse border-[3px] border-solid border-green-500 font-size: 16px">
+        <table className="mx-auto border-collapse border-[3px] border-solid border-gray-500 font-size: 16px">
         <tr className="border-[#28a745]">
-            <th className="w-[150px] text-white bg-green-500">Item</th>
-            <th className="w-[150px] text-white bg-green-500">Individual Cost</th>
-            <th className="w-[150px] text-white bg-green-500">Individual Pounds</th>
-            <th className="w-[150px] text-white bg-green-500">Quantity</th>
+            <th className="w-[150px] text-white bg-gray-500">Item</th>
+            <th className="w-[150px] text-white bg-gray-500">Individual Cost</th>
+            <th className="w-[150px] text-white bg-gray-500">Individual Pounds</th>
+            <th className="w-[150px] text-white bg-gray-500">Quantity</th>
         </tr>
         <tr className="border-[#28a745]">
-            <td className="w-[150px] border border-solid border-green-500">Apple</td>
-            <td className="w-[150px] border border-solid border-green-500">0.89</td>
-            <td className="w-[150px] border border-solid border-green-500">0.33</td>
-            <td className="w-[150px] border border-solid border-green-500">12
+            <td className="w-[150px] border border-solid border-gray-500">Apple</td>
+            <td className="w-[150px] border border-solid border-gray-500">0.89</td>
+            <td className="w-[150px] border border-solid border-gray-500">0.33</td>
+            <td className="w-[150px] border border-solid border-gray-500">12
             {!viewMode && <input
               type="number"
               placeholder="Num"
@@ -59,23 +59,23 @@ function ShoppingCart() {
         </tr>
         </table>
         
-        {viewMode && <button className="m-[10px] bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-300" onClick={toCheckout} >
+        {viewMode && <button className="m-[10px] bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded transition-colors duration-300" onClick={toCheckout} >
           Purchase
         </button>}
         
-        {viewMode && <button className="m-[10px] bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-300" onClick={EditButton}>
+        {viewMode && <button className="m-[10px] bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded transition-colors duration-300" onClick={EditButton}>
           Edit Cart
         </button>}
 
-        {viewMode && <button className="m-[10px] bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-300" onClick={discardCart}>
+        {viewMode && <button className="m-[10px] bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded transition-colors duration-300" onClick={discardCart}>
           Discard Cart
         </button>}
 
-        {!viewMode && <button className="m-[10px] bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-300" onClick={EditButton}>
+        {!viewMode && <button className="m-[10px] bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded transition-colors duration-300" onClick={EditButton}>
           Save Changes
         </button>}
 
-        {!viewMode && <button className="m-[10px] bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-300" onClick={EditButton}>
+        {!viewMode && <button className="m-[10px] bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded transition-colors duration-300" onClick={EditButton}>
           Cancel Changes
         </button>}
 
