@@ -6,8 +6,7 @@ import DiscountBanner from "../components/DiscountBanner";
 import signupBackground from "../assets/signup.jpg"
 
 const API_URL = import.meta.env.VITE_API_URL;
-
-const Signup = () => {
+function Signup () {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",

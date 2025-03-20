@@ -5,7 +5,8 @@ import { requestServer } from "../utils/Utility";
 import DiscountBanner from "../components/DiscountBanner";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
-const Profile = () => {
+
+function Profile() {
   const navigate = useNavigate();
   const auth = useAuth();
   const [formData, setFormData] = useState({
