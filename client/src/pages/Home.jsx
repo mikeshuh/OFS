@@ -231,7 +231,7 @@ const Home = () => {
         <ProductGrid
           products={products}
           onAddToCart={handleAddToCart}
-          title="Recent Products"
+          title="Featured Products"
         />
       </div>
     </div>

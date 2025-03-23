@@ -8,7 +8,7 @@ import NotFoundPage from "./pages/NotFoundPage.jsx";
 import Redirect404 from "./pages/Redirect404.jsx";
 import Signup from "./pages/Signup.jsx";
 import Logout from "./pages/Logout.jsx";
-import TestPage from "./pages/TestPage.jsx";
+import Cart from "./pages/Cart.jsx";
 import AuthProvider from "./components/AuthContext.jsx";
 import CartProvider from "./components/CartContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
@@ -21,9 +21,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<Products />} />
-            <Route path="/test" element={<TestPage />} />
             <Route element={<ProtectedRoute />}>
-              <Route path="/cart" element={<div>Shopping Cart Page</div>} />
+              <Route path="/cart" element={<Cart />} />
               <Route path="/profile" element={<Profile />} />
             </Route>
             <Route path="/login" element={<Login />} />
