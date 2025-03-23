@@ -18,7 +18,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
-          <Route path="/categories" element={<div>Food Category Page</div>} />
           <Route element={<ProtectedRoute />}>
             <Route path="/cart" element={<div>Shopping Cart Page</div>} />
             <Route path="/profile" element={<Profile />} />
