@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import ProductGrid from "../components/ProductGrid"; // Import the ProductGrid component
 import Banner from "../assets/banner.webp";
 import fruitImage from "../assets/fruits.jpg";
 import vegetablesImage from "../assets/vegetables.jpg";
@@ -9,7 +10,9 @@ import dairyImage from "../assets/dairy.jpg";
 
 const Home = () => {
   const navigate = useNavigate();
+  const [cartItems, setCartItems] = useState([]);
 
+  // Sample products data
   const products = [
     {
       id: 1,
@@ -98,6 +101,13 @@ const Home = () => {
       ),
     },
   ];
+
+  // Handle adding product to cart
+  const handleAddToCart = (product) => {
+    setCartItems([...cartItems, product]);
+    // You can also show a notification or update a cart count in the navbar
+    alert(`Added ${product.name} to cart!`);
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
@@ -216,47 +226,14 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Recent Products */}
+      {/* Recent Products - Using our new ProductGrid component */}
       <div className="w-full px-4 md:px-12 py-6 mb-10">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-800 relative inline-block">
-            Recent Product
-            <div className="absolute left-0 right-0 border-t border-gray-300 border-dashed top-1/2 -z-10"></div>
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          {products.map(product => (
-            <div key={product.id} className="bg-white rounded border border-gray-200 p-4 hover:shadow-md transition-shadow">
-              <div className="bg-gray-50 rounded-lg p-2 mb-3">
-                <span className="inline-block bg-gray-200 rounded-full px-2 py-1 text-xs text-gray-700 mb-2">{product.category}</span>
-                <div className="h-40 w-full bg-gray-200 flex items-center justify-center mb-2">
-                  <span className="text-gray-500 text-sm">{product.name}</span>
-                </div>
-                <p className="text-sm text-gray-500">{product.unit}</p>
-              </div>
-              <h3 className="font-medium text-gray-800 mb-1">{product.name}</h3>
-              <div className="flex items-center mb-2">
-                <div className="flex text-amber-400">
-                  {'★'.repeat(Math.floor(product.rating))}
-                  {'☆'.repeat(5 - Math.floor(product.rating))}
-                </div>
-                <span className="text-xs text-gray-500 ml-1">({product.reviews})</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-lg font-bold text-gray-800">${product.price}</span>
-              </div>
-              <button className="w-full mt-3 bg-green-600 hover:bg-green-700 text-white py-2 rounded flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3z" />
-                </svg>
-                Add to cart
-              </button>
-            </div>
-          ))}
-        </div>
+        <ProductGrid
+          products={products}
+          onAddToCart={handleAddToCart}
+          title="Recent Products"
+        />
       </div>
-
     </div>
   );
 };
