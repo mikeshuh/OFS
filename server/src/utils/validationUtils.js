@@ -1,5 +1,8 @@
 // Utility for input validation and sanitization
 // Provides functions for validating and sanitizing user inputs
+const { body, param, validationResult } = require('express-validator');
+const responseHandler = require('../utils/responseHandler');
+
 
 // Validate email format
 const isValidEmail = (email) => {
@@ -123,6 +126,108 @@ const validatePasswordChange = (passwordData) => {
   };
 };
 
+//validate product
+const validateProduct = [
+  //sanitize category
+  body('category')
+  .trim()
+  .escape()
+  //validate
+  .notEmpty()
+  .withMessage('Category is required')
+  .isString()
+  .isLength({min: 0, max: 16})
+  .withMessage('Category must be less than 16 characters'),
+
+  //sanitize name
+  body('name')
+  .trim()
+  .escape()
+  //validate
+  .notEmpty()
+  .withMessage('Name is required')
+  .isString()
+  .isLength({min: 0, max: 32})
+  .withMessage('Name must be less than 32 characters'),
+
+  //sanitize
+  body('price')
+  .trim()
+  .escape()
+  //validate
+  .notEmpty()
+  .withMessage('Price is required')
+  .toFloat()
+  .isFloat({min: 0})
+  .withMessage('Price must be positive a positive float'),
+
+  //sanitize
+  body('pounds')
+  .trim()
+  .escape()
+  //validate
+  .notEmpty()
+  .withMessage('Pounds is required')
+  .toFloat()
+  .isFloat({min: 0})
+  .withMessage('Pounds must be a positive float'),
+
+  //sanitize
+  body('quantity')
+  .trim()
+  .escape()
+  //validate
+  .notEmpty()
+  .withMessage('Quantity is required')
+  .toInt()
+  .isInt({min: 0})
+  .withMessage('Quantity must be a positive integer'),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return responseHandler.badRequest(res, null, errors);
+    }
+    next();
+  },
+]
+
+const validateParamInt = (paramName) => {
+  return [
+    param(paramName)
+    .escape()
+    .trim()
+    .toInt()
+    .isInt()
+    .withMessage('Param must be an integer'),
+
+    (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return responseHandler.badRequest(res, null, errors);
+      }
+      next();
+    },
+  ]
+}
+const validateParamString = (paramName) => {
+  return [
+    param(paramName)
+    .escape()
+    .trim()
+    .isString()
+    .withMessage('Param must be a string'),
+
+    (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return responseHandler.badRequest(res, null, errors);
+      }
+      next();
+    },
+  ]
+}
+
 const validateOptimalRoute = (req) => {
   const { addresses } = req;
   const errors = [];
@@ -139,65 +244,8 @@ const validateOptimalRoute = (req) => {
     errors
   };
 }
-const validateProductId = (productData) => {
-  const { productId} = productData;
-  const errors = [];
 
-  // Check required fields
-  if (!productId ) {
-    errors.push(`Product ID is required `);
-  }
 
-  return {
-    isValid: errors.length === 0,
-    errors
-  };
-};
-
-const validateCategory = (categoryData) => {
-  const { category } = categoryData;
-  const errors = [];
-
-  // Check required fields
-  if (!category) {
-    errors.push('Category is required');
-  }
-
-  return {
-    isValid: errors.length === 0,
-    errors
-  };
-}
-
-const validateProduct = (productData) => {
-  const { category, name, price, pounds, quantity } = productData;
-  const errors = [];
-
-  // Check required fields
-  if (!category || !name || !price || !pounds || !quantity) {
-    errors.push('All fields are required (category, name, price, pounds, quantity)');
-  }
-
-  // Validate price
-  if (price && price < 0) {
-    errors.push('Price must be a positive number');
-  }
-
-  // Validate pounds
-  if (pounds && pounds < 0) {
-    errors.push('Pounds must be a positive number');
-  }
-
-  // Validate quantity
-  if (quantity && quantity < 0) {
-    errors.push('Quantity must be a positive number');
-  }
-
-  return {
-    isValid: errors.length === 0,
-    errors
-  };
-};
 
 const validateAddress = (req) => {
   const { streetAddress,zipCode,city } = req;
@@ -213,6 +261,7 @@ const validateAddress = (req) => {
     errors
   };
 }
+
 const validateRoute = (req) => {
   const { origin, destination } = req;
   const errors = [];
@@ -247,12 +296,11 @@ module.exports = {
   validateLogin,
   validateProfileUpdate,
   validatePasswordChange,
-  parseId,
-  validateProductId,
-  validateCategory,
+  //Product Route Validation
   validateProduct,
+  validateParamInt,
+  validateParamString,
   validateRoute,
   validateAddress,
   validateOptimalRoute,
-  validateProduct
 };

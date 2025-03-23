@@ -6,15 +6,9 @@ const validation = require('../utils/validationUtils');
 // get single product, route: /api/products/info/:productId
 const getProduct = async (req, res) => {
   try {
-    const validationResult = validation.validateProductId(req.params);
-    if (!validationResult.isValid) {
-      return responseHandler.badRequest(res, validationResult.errors[0], validationResult.errors);
-    }
-
-    //find product by sanitized id
+    //find product by productId
     const { productId } = req.params;
-    const sanitizedProductId = validation.sanitizeInteger(productId);
-    const product = await Product.findById(sanitizedProductId);
+    const product = await Product.findById(productId)
 
     if (!product) {
       return responseHandler.notFound(res, 'Product not found.');
@@ -31,13 +25,10 @@ const getProduct = async (req, res) => {
 // select all products from a category, route: /api/products/category/:category
 const getByCategory = async (req, res) => {
   try {
-    const validationResult = validation.validateCategory(req.params);
-    if (!validationResult.isValid) {
-      return responseHandler.badRequest(res, validationResult.errors[0], validationResult.errors);
-    }
-
+    //find product by category
     const { category } = req.params;
     const products = await Product.findByCategory(category);
+
     // check for either an empty array or undefined
     if (!products || products.length === 0) {
       return responseHandler.notFound(res, 'Products not found.');
@@ -53,20 +44,14 @@ const getByCategory = async (req, res) => {
 // create a new product, route: /api/products/create-product, admin only
 const createProduct = async (req, res) => {
   try{
-    const validationResult = validation.validateProduct(req.body);
-    if (!validationResult.isValid) {
-      return responseHandler.badRequest(res, validationResult.errors[0], validationResult.errors);
-    }
-
-    // sanitize input data
     const { category, name, price, pounds, quantity, imageBinary } = req.body;
     const productData = {
-      category: validation.sanitizeString(category),
-      name: validation.sanitizeString(name),
-      price: validation.sanitizeFloat(price),
-      pounds: validation.sanitizeFloat(pounds),
-      quantity: validation.sanitizeInteger(quantity),
-      imageBinary: validation.sanitizeBLOB(imageBinary)
+      category: category,
+      name: name,
+      price: price,
+      pounds: pounds,
+      quantity: quantity,
+      imageBinary: imageBinary
     };
 
     // create product
@@ -98,26 +83,20 @@ const getAllProduct = async (req, res) => {
 // update a product, route: /api/products/update/:productId, admin only
 const updateProduct = async (req, res) => {
   try {
-    const validationResult = validation.validateProduct(req.body);
-    if (!validationResult.isValid) {
-      return responseHandler.badRequest(res, validationResult.errors[0], validationResult.errors);
-    }
-
+    //update product
     const { productId } = req.params;
     const { category, name, price, pounds, quantity, imageBinary} = req.body;
 
-    // sanitize input data
     const productData = {
-      category: validation.sanitizeString(category),
-      name: validation.sanitizeString(name),
-      price: validation.sanitizeFloat(price),
-      pounds: validation.sanitizeFloat(pounds),
-      quantity: validation.sanitizeInteger(quantity),
-      imageBinary: validation.sanitizeBLOB(imageBinary)
+      category: category,
+      name: name,
+      price: price,
+      pounds: pounds,
+      quantity: quantity,
+      imageBinary: imageBinary
     };
 
-    const sanitizedProductId = validation.sanitizeInteger(productId);
-    const updated = await Product.update(sanitizedProductId, productData);
+    const updated = await Product.update(productId, productData);
     if (!updated) {
       return responseHandler.notFound(res, 'Product not found.');
     }
@@ -131,15 +110,10 @@ const updateProduct = async (req, res) => {
 // delete a product, route: /api/products/delete/:productId, admin only
 const deleteProduct = async (req, res) => {
   try {
-    const validationResult = validation.validateProductId(req.params);
-    if (!validationResult.isValid) {
-      return responseHandler.badRequest(res, validationResult.errors[0], validationResult.errors);
-    }
-
-    // sanitize input data
+    //Delete Product
     const { productId } = req.params;
-    const sanitizedProductId = validation.sanitizeInteger(productId);
-    const deleted = await Product.delete(sanitizedProductId);
+    const deleted = await Product.delete(productId);
+
     if (!deleted) {
       return responseHandler.notFound(res, 'Product not found.');
     }
