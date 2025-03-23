@@ -1,4 +1,4 @@
-import { useContext, createContext, useState, useEffect } from "react";
+import { useContext, createContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { requestServer } from "../utils/Utility";
 import { jwtDecode } from "jwt-decode";

@@ -1,7 +1,5 @@
-import { use, useEffect } from "react";
+import { useEffect } from "react";
 import Navbar from "../components/Navbar";
-import DiscountBanner from "../components/DiscountBanner";
-import { requestServer} from "../utils/Utility";
 import { useAuth } from "../components/AuthContext";
 const Logout = () => {
   const auth = useAuth();
@@ -15,9 +13,6 @@ const Logout = () => {
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Navbar */}
       <Navbar />
-
-      {/* Discount Banner */}
-      <DiscountBanner />
 
       {/* Logout Content */}
       <div className="flex flex-col items-center justify-center py-16 px-4">

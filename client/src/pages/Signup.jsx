@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { requestServer } from "../utils/Utility";
-import DiscountBanner from "../components/DiscountBanner";
 import signupBackground from "../assets/signup.jpg"
 
 const API_URL = import.meta.env.VITE_API_URL;

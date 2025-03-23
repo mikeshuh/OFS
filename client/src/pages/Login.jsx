@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar.jsx";
-import DiscountBanner from "../components/DiscountBanner.jsx";
-import { requestServer, checkLogin  } from "../utils/Utility.jsx";
-import { useAuth } from "../components/AuthContext.jsx";
+import Navbar from "../components/Navbar";
+import { checkLogin  } from "../utils/Utility";
+import { useAuth } from "../components/AuthContext";
 import loginBackground from "../assets/login.jpg"
 
 const Login = () => {
