@@ -36,16 +36,16 @@ function ShoppingCart() {
         
         <table className="mx-auto border-collapse border-[3px] border-solid border-gray-500 font-size: 16px">
         <tr className="border-[#28a745]">
-            <th className="w-[150px] text-white bg-gray-500">Item</th>
-            <th className="w-[150px] text-white bg-gray-500">Individual Cost</th>
-            <th className="w-[150px] text-white bg-gray-500">Individual Pounds</th>
-            <th className="w-[150px] text-white bg-gray-500">Quantity</th>
+            <th className="w-[150px] h-[45px] text-white bg-gray-500">Item</th>
+            <th className="w-[150px] h-[45px] text-white bg-gray-500">Individual Cost</th>
+            <th className="w-[150px] h-[45px] text-white bg-gray-500">Individual Pounds</th>
+            <th className="w-[150px] h-[45px] text-white bg-gray-500">Quantity</th>
         </tr>
         <tr className="border-[#28a745]">
-            <td className="w-[150px] border border-solid border-gray-500">Apple</td>
-            <td className="w-[150px] border border-solid border-gray-500">0.89</td>
-            <td className="w-[150px] border border-solid border-gray-500">0.33</td>
-            <td className="w-[150px] border border-solid border-gray-500">12
+            <td className="w-[150px] h-[85px]">Apple</td>
+            <td className="w-[150px] h-[85px]">0.89</td>
+            <td className="w-[150px] h-[85px]">0.33</td>
+            <td className="w-[150px] h-[85px]">12
             {!viewMode && <input
               type="number"
               placeholder="Num"

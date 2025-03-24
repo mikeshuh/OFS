@@ -39,14 +39,14 @@ const [searchQuery, setSearchQuery] = useState("");
       
         <table className="mx-auto border-collapse border-[3px] border-solid border-gray-500 font-size: 16px">
         <tr className="border-[#28a745]">
-            <th className="w-[150px] text-white bg-gray-500">Cost</th>
-            <th className="w-[150px] text-white bg-gray-500">Pounds</th>
-            <th className="w-[150px] text-white bg-gray-500">In Stock</th>
+            <th className="w-[150px] h-[45px] text-white bg-gray-500">Cost</th>
+            <th className="w-[150px] h-[45px] text-white bg-gray-500">Pounds</th>
+            <th className="w-[150px] h-[45px] text-white bg-gray-500">In Stock</th>
         </tr>
         <tr className="border-[#28a745]">
-            <td className="w-[150px] border border-solid border-gray-500">$4.99</td>
-            <td className="w-[150px] border border-solid border-gray-500">10</td>
-            <td className="w-[150px] border border-solid border-gray-500">100</td>
+            <td className="w-[150px] h-[85px]">$4.99</td>
+            <td className="w-[150px] h-[85px]">10</td>
+            <td className="w-[150px] h-[85px]">100</td>
         </tr>
         </table>
       
