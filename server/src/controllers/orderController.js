@@ -4,7 +4,7 @@ const responseHandler = require('../utils/responseHandler');
 const createOrder = async (req, res) => {
   try{
     const {totalPrice, totalPounds, deliveryFee, orderStatus, streetAddress, city, zipCode} = req.body;
-    const userID = req.userID;
+    const userID = req.user.userID;
 
     const orderData = {
       userID: userID,
