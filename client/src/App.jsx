@@ -15,7 +15,6 @@ import Signup from "./pages/Signup.jsx";
 import Logout from "./pages/Logout.jsx";
 import AuthProvider from "./components/AuthContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
-import "./App.css";
 
 function App() {
   return (

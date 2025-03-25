@@ -32,26 +32,27 @@ const toProfile = () => {
 
       {/* Main page information */}
       <div className="flex-1 flex-col items-center justify-center p-12 text-center">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Orders</h1>
-        <table className="rounded-[5px] mx-auto border-collapse border-[3px] border-solid border-gray-500 font-size: 16px text-left">
-        <tr className="border-[#28a745]">
-            <th className="w-[150px] h-[45px] text-white bg-gray-500 text-center">Order ID</th>
-            <th className="w-[150px] h-[45px] text-white bg-gray-500">Total Cost</th>
-            <th className="w-[150px] h-[45px] text-white bg-gray-500">Date</th>
-            <th className="w-[150px] h-[45px] text-white bg-gray-500 text-center">Details</th>
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">Your Order History</h1>
+        
+        <table className="mx-auto border-collapse shadow-md border-solid border-gray-500 text-left">
+        <tr className="border-b-[1px]">
+            <th className="w-[150px] h-[45px] p-[10px]">Order ID</th>
+            <th className="w-[150px] h-[45px] p-[10px]">Total Cost</th>
+            <th className="w-[150px] h-[45px] p-[10px]">Date</th>
+            <th className="w-[150px] h-[45px] text-center"></th>
         </tr>
-        <tr className="border-[#28a745]">
-            <td className="w-[150px] h-[85px] text-center">1</td>
-            <td className="w-[150px] h-[85px]">10.68</td>
-            <td className="w-[150px] h-[85px]">2025-03-01 12:54:39</td>
+        <tr>
+            <td className="w-[150px] h-[85px] p-[10px]">1</td>
+            <td className="w-[150px] h-[85px] p-[10px]">10.68</td>
+            <td className="w-[150px] h-[85px] p-[10px]">2025-03-01 12:54:39</td>
             <td className="w-[150px] h-[85px] text-center">
             <button className="m-[10px] bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded transition-colors duration-300" onClick={toOrderDetails}>
-                View
+                Details
             </button>
             </td>
         </tr>
         </table>
-        
+
         <br/>
         <button className="m-[10px] bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded transition-colors duration-300" onClick={toProfile}>
                 Back to Profile
