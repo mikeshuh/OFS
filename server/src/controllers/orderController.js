@@ -29,7 +29,6 @@ const createOrder = async (req, res) => {
   }
 }
 
-// get single product, route: /api/order/details/:orderId
 const getOrderByUserID = async (req, res) =>{
   try {
     //find all orders associated with logged in users userID
