@@ -33,7 +33,7 @@ const createOrder = async (req, res) => {
 const getOrderByUserID = async (req, res) =>{
   try {
     //find all orders associated with logged in users userID
-    const userID = req.userID;
+    const userID = req.user.userID;
     const order = await Order.findByUser(userID);
 
     if (!order) {
