@@ -3,7 +3,9 @@ const responseHandler = require('../utils/responseHandler');
 
 const createOrder = async (req, res) => {
   try{
-    const {userID, totalPrice, totalPounds, deliveryFee, orderStatus, streetAddress, city, zipCode} = req.body;
+    const {totalPrice, totalPounds, deliveryFee, orderStatus, streetAddress, city, zipCode} = req.body;
+    const userID = req.userID;
+
     const orderData = {
       userID: userID,
       totalPrice: totalPrice,
@@ -14,7 +16,6 @@ const createOrder = async (req, res) => {
       city: city,
       zipCode: zipCode
     }
-
 
     const orderID = await Order.create(orderData);
     if(!orderID){
@@ -31,7 +32,7 @@ const createOrder = async (req, res) => {
 // get single product, route: /api/order/details/:orderId
 const getOrderByUserID = async (req, res) =>{
   try {
-    //find order by userID
+    //find all orders associated with logged in users userID
     const userID = req.userID;
     const order = await Order.findByUser(userID);
 
