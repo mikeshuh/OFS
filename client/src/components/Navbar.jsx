@@ -62,7 +62,11 @@ function Navbar() {
             <div className="ml-2">
               <div className="text-sm text-gray-600">Account</div>
               {auth.loggedIn ? (
-                <Link to="/logout" className="text-sm font-medium hover:underline">Logout</Link>
+                <div className="flex gap-1 text-sm font-medium">
+                  <Link to="/profile" className="hover:underline">Profile</Link>
+                  <span>/</span>
+                  <Link to="/logout" className="hover:underline">Logout</Link>
+                </div>
               ) : (
                 <div className="flex gap-1 text-sm font-medium">
                   <Link to="/login" className="hover:underline">Login</Link>

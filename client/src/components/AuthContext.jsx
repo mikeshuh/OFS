@@ -61,7 +61,7 @@ const AuthProvider = ({ children }) => {
         setToken(data.data?.token);
         await getProfile(data.data?.token);
         setLoggedIn(true);
-        navigate("/profile");
+        navigate("/");
       }
       return response;
     } catch (err) {

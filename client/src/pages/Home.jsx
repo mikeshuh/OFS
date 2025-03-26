@@ -181,7 +181,9 @@ const Home = () => {
             </div>
             <div className="absolute inset-0 flex flex-col justify-center p-6 bg-gradient-to-r from-black/50 to-transparent">
               <h3 className="text-2xl font-bold text-white mb-2">Fresh Fruit<br />Direct To Your<br />Doorstep</h3>
-              <button className="bg-white hover:bg-gray-100 text-gray-800 text-sm font-semibold py-2 px-4 rounded w-24 mt-2">
+              <button className="bg-white hover:bg-gray-100 text-gray-800 text-sm font-semibold py-2 px-4 rounded w-24 mt-2"
+                onClick={() => navigate("/products/fruit")}
+              >
                 Shop Now
               </button>
             </div>
@@ -196,7 +198,9 @@ const Home = () => {
             </div>
             <div className="absolute inset-0 flex flex-col justify-center p-6 bg-gradient-to-r from-black/50 to-transparent">
               <h3 className="text-2xl font-bold text-white mb-2">Farm Fresh<br />Vegetables<br />For Everyday</h3>
-              <button className="bg-white hover:bg-gray-100 text-gray-800 text-sm font-semibold py-2 px-4 rounded w-24 mt-2">
+              <button className="bg-white hover:bg-gray-100 text-gray-800 text-sm font-semibold py-2 px-4 rounded w-24 mt-2"
+                onClick={() => navigate("/products/vegetable")}
+              >
                 Shop Now
               </button>
             </div>
@@ -211,7 +215,9 @@ const Home = () => {
             </div>
             <div className="absolute inset-0 flex flex-col justify-center p-6 bg-gradient-to-r from-black/50 to-transparent">
               <h3 className="text-2xl font-bold text-white mb-2">Cruelty Free<br />100% Organic<br />Dairy Products</h3>
-              <button className="bg-white hover:bg-gray-100 text-gray-800 text-sm font-semibold py-2 px-4 rounded w-24 mt-2">
+              <button className="bg-white hover:bg-gray-100 text-gray-800 text-sm font-semibold py-2 px-4 rounded w-24 mt-2"
+                onClick={() => navigate("/products/dairy")}
+              >
                 Shop Now
               </button>
             </div>

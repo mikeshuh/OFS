@@ -1,12 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { requestServer } from "../utils/Utility";
+import { requestServer, checkLogin } from "../utils/Utility";
 import signupBackground from "../assets/signup.jpg"
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Signup = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    (async () => {
+      const response = await checkLogin();
+      if (response) {
+        navigate("/");
+      }
+
+    })();
+  }, []);
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -14,7 +26,7 @@ const Signup = () => {
     password: "",
     passwordConfirmed: ""
   });
-  const navigate = useNavigate();
+
   const [errorMessage, setMessage] = useState("");
   const [signupError, setSignupError] = useState(false);
 

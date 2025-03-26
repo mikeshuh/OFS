@@ -9,13 +9,13 @@ const Login = () => {
   const navigate = useNavigate();
 
   // Check if user is logged in
-  // Direct user to profile page if already logged in
+  // Direct user home if already logged in
   const auth = useAuth();
   useEffect(() => {
     (async () => {
       const response = await checkLogin();
       if (response) {
-        navigate("/profile");
+        navigate("/");
       }
 
     })();
