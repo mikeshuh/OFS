@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
-import { jwtDecode } from "jwt-decode";
-import { requestServer } from "../utils/Utility";
-import DiscountBanner from "../components/DiscountBanner";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
 const Profile = () => {
@@ -42,9 +39,6 @@ const Profile = () => {
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Navbar */}
       <Navbar />
-
-      {/* Discount Banner */}
-      <DiscountBanner />
 
       {/* Profile Section */}
       <div className="flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">

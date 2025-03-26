@@ -1,22 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar.jsx";
-import DiscountBanner from "../components/DiscountBanner.jsx";
-import { requestServer, checkLogin  } from "../utils/Utility.jsx";
-import { useAuth } from "../components/AuthContext.jsx";
+import Navbar from "../components/Navbar";
+import { checkLogin  } from "../utils/Utility";
+import { useAuth } from "../components/AuthContext";
 import loginBackground from "../assets/login.jpg"
 
 const Login = () => {
   const navigate = useNavigate();
 
   // Check if user is logged in
-  // Direct user to profile page if already logged in
+  // Direct user home if already logged in
   const auth = useAuth();
   useEffect(() => {
     (async () => {
       const response = await checkLogin();
       if (response) {
-        navigate("/profile");
+        navigate("/");
       }
 
     })();
