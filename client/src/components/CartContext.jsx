@@ -4,9 +4,29 @@ import { useAuth } from './AuthContext';
 // Create the context
 const CartContext = createContext(null);
 
+// Cart storage key for localStorage
+const CART_STORAGE_KEY = 'ofs_shopping_cart';
+
 // Create the provider
 const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+  // Initialize state from localStorage if available
+  const [cartItems, setCartItems] = useState(() => {
+    try {
+      // Try to get the cart from localStorage
+      const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+
+      if (savedCart) {
+        // Parse and return the saved cart
+        return JSON.parse(savedCart);
+      }
+    } catch (error) {
+      console.error('Error loading cart from localStorage:', error);
+    }
+
+    // Return empty array if no saved cart or on error
+    return [];
+  });
+
   const auth = useAuth();
 
   // Register the clearCart function with the AuthContext
@@ -15,6 +35,15 @@ const CartProvider = ({ children }) => {
       auth.registerCartFunctions(clearCart);
     }
   }, [auth]);
+
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
+    } catch (error) {
+      console.error('Error saving cart to localStorage:', error);
+    }
+  }, [cartItems]);
 
   // Add item to cart
   const addToCart = (product) => {
@@ -71,6 +100,8 @@ const CartProvider = ({ children }) => {
   // Clear the entire cart
   const clearCart = () => {
     setCartItems([]);
+    // Also clear from localStorage
+    localStorage.removeItem(CART_STORAGE_KEY);
   };
 
   // Calculate total price
