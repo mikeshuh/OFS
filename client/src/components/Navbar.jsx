@@ -2,13 +2,23 @@ import logo from "../assets/OFS_logo.png";
 import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { useAuth } from "./AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useGetProducts } from "./GetProducts";
 
 function Navbar() {
   const auth = useAuth();
+  const getProd = useGetProducts();
+  const navigate = useNavigate();
+  console.log(useGetProducts())
+  console.log(useAuth())
   const [searchQuery, setSearchQuery] = useState("");
 
-  const handleSearch = () => {
+  const handleSearch = async (e) => {
     alert(`Searching for: ${searchQuery}`);
+    console.log(getProd)
+    const response = await getProd.getProductMatch(searchQuery);
+    navigate("/products");
+    window.location.reload(false);
   };
 
   return (
@@ -21,6 +31,8 @@ function Navbar() {
             <img src={logo} alt="OFS Logo" className="h-10" />
           </Link>
         </div>
+
+        {console.log("hi")}
 
         {/* Search Bar */}
         <div className="relative w-96">

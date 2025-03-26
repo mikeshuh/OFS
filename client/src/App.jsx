@@ -10,11 +10,13 @@ import Signup from "./pages/Signup.jsx";
 import Logout from "./pages/Logout.jsx";
 import AuthProvider from "./components/AuthContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import GetProducts from "./components/GetProducts.jsx";
 
 function App() {
   return (
     <Router>
       <AuthProvider>
+      <GetProducts>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
@@ -29,6 +31,7 @@ function App() {
           <Route path="/404" element={<NotFoundPage />} />
           <Route path="*" element={<Redirect404 />} />
         </Routes>
+      </GetProducts>
       </AuthProvider>
     </Router>
   );

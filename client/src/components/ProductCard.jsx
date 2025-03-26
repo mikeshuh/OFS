@@ -1,26 +1,29 @@
 import React from 'react'
+import placeholderImage from "../assets/placeholderItem.jpg"
+import { useContext, createContext, useState, useEffect } from "react";
 
 function ProductCard() {
+    const [product, setProduct] = useState(JSON.parse(localStorage.getItem("itemData")));
     return(
-        <section>
+        <div class="flex flex-nowrap items-center gap-100 border-b-5 border-solid border-green-500">
+            {
             <img align="left"
-            src="https://watermark.lovepik.com/photo/20211201/large/lovepik-celery-picture_501339548.jpg"
+            src={placeholderImage}
             width={175}
             height={175}
             alt="katherine johnson"
-            />
-            <h1>
-                Celery
-            </h1>
+            />}
             <h2>
-                Price per Unit: $3
+                {product[0].name}
                 <br />
-                Weight: 0.5 lbs
+                Price per Unit: ${product[0].price}
                 <br />
-                Category: Vegetables
+                Weight: {product[0].pounds} lbs
+                <br />
+                Category: {product[0].category}
                 <br />
             </h2>
-        </section>
+        </div>
     );
 }
 
