@@ -34,7 +34,8 @@ const processPayment = async (req, res) => {
     await Order.updateDeliveryInfo(
       sanitizedOrderID,
       deliveryFee,
-      order.productsPrice
+      order.productsPrice,
+      order.totalPrice
     );
 
     const amount = calculateTotalAmount(order); // returns amount in cents

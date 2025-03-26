@@ -7,6 +7,6 @@ const { processPayment, handleStripeWebhook } = require('../controllers/paymentC
 router.post('/', protect, processPayment);
 
 // Stripe Webhook
-router.post('/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook);
+router.post('/webhook', handleStripeWebhook);
 
 module.exports = router;
