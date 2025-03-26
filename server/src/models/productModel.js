@@ -9,6 +9,16 @@ const Product = {
     return rows;
   },
 
+    // find products by name
+  findByName: async (name) => {
+    const [rows] = await db.execute(
+      'SELECT * FROM Product WHERE name = ?',
+      [name]
+    );
+    return rows;
+  },
+  
+
   // find products by category
   findByCategory: async (category) => {
     const [rows] = await db.execute(
