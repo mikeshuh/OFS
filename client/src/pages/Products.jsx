@@ -7,44 +7,43 @@ import { requestServer } from "../utils/Utility";
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Products = () => {
-  const { category } = useParams(); // Get category from URL parameter
+  const { category } = useParams();
   const navigate = useNavigate();
 
   const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(category || 'all');
+  const [categories, setCategories] = useState(['all']);
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
-  // Fetch products from API
+  // Initial data load
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchAllProducts = async () => {
       try {
         setLoading(true);
-
-        // Fetch all products from the API
         const response = await requestServer(`${API_URL}/api/products`, "GET");
 
-        if (response && response.data && response.data.success) {
-          // Set products from the API response if no category is selected
-          if (!category || category === 'all') {
-            setProducts(response.data.data);
-          }
+        if (response?.data?.success) {
+          const productsData = response.data.data;
+          setAllProducts(productsData);
 
-          // Extract unique categories from the API data and ensure they're lowercase for URL
-          const uniqueCategories = ['all', ...new Set(response.data.data.map(product =>
-            product.category.toLowerCase() // Ensure categories are lowercase
+          // Extract unique categories
+          const uniqueCategories = ['all', ...new Set(productsData.map(product =>
+            product.category.toLowerCase()
           ))];
           setCategories(uniqueCategories);
 
-          // If category is specified in URL but not valid, reset to 'all'
-          if (category && category !== 'all' && !uniqueCategories.includes(category.toLowerCase())) {
+          // Initialize with the URL category if valid, or 'all' otherwise
+          const urlCategory = category?.toLowerCase() || 'all';
+          const validCategory = uniqueCategories.includes(urlCategory) ? urlCategory : 'all';
+
+          if (validCategory !== urlCategory) {
             navigate('/products/all');
-            setSelectedCategory('all');
-          } else if (category && category !== 'all') {
-            // If valid category is in URL, fetch those products
-            fetchProductsByCategory(category);
           }
+
+          setSelectedCategory(validCategory);
+          filterProducts(productsData, validCategory);
         } else {
           throw new Error(response?.data?.message || "Failed to fetch products");
         }
@@ -56,59 +55,49 @@ const Products = () => {
       }
     };
 
-    fetchProducts();
-  }, [category]);
+    fetchAllProducts();
+  }, []);
 
-  // Fetch products by category
-  const fetchProductsByCategory = async (categoryName) => {
-    try {
-      setLoading(true);
-
-      if (categoryName === 'all') {
-        // Fetch all products
-        const response = await requestServer(`${API_URL}/api/products`, "GET");
-
-        if (response && response.data && response.data.success) {
-          setProducts(response.data.data);
-        } else {
-          throw new Error(response?.data?.message || "Failed to fetch products");
-        }
+  // Update when URL category changes
+  useEffect(() => {
+    if (allProducts.length > 0 && category) {
+      const urlCategory = category.toLowerCase();
+      if (categories.includes(urlCategory)) {
+        setSelectedCategory(urlCategory);
+        filterProducts(allProducts, urlCategory);
       } else {
-        const response = await requestServer(`${API_URL}/api/products/category/${categoryName}`, "GET");
-
-        if (response && response.data && response.data.success) {
-          setProducts(response.data.data);
-        } else {
-          throw new Error(response?.data?.message || "Failed to fetch products by category");
-        }
+        navigate('/products/all');
       }
-    } catch (err) {
-      console.error("Error fetching products:", err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    }
+  }, [category, allProducts, categories, navigate]);
+
+  // Filter products based on selected category
+  const filterProducts = (productsData, categoryName) => {
+    if (categoryName === 'all') {
+      setProducts(productsData);
+    } else {
+      setProducts(productsData.filter(
+        product => product.category.toLowerCase() === categoryName
+      ));
     }
   };
 
   // Handle category change
   const handleCategoryChange = (categoryName) => {
     setSelectedCategory(categoryName);
-    // Update URL when category changes - ensure lowercase for URL
-    navigate(`/products/${categoryName.toLowerCase()}`);
+    navigate(`/products/${categoryName}`);
   };
 
-  // Get display name of category (for UI display purposes)
+  // Get properly formatted category name for display
   const getCategoryDisplayName = (categoryName) => {
     if (categoryName === 'all') return 'All';
 
-    // Find the original category name from the products for proper display
-    const product = products.find(p => p.category.toLowerCase() === categoryName.toLowerCase());
-    if (product) {
-      return product.category; // Use the original casing from the data
-    }
+    const product = allProducts.find(p =>
+      p.category.toLowerCase() === categoryName
+    );
 
-    // Fallback: capitalize first letter
-    return categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
+    return product ? product.category :
+      categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
   };
 
   return (
@@ -137,7 +126,7 @@ const Products = () => {
               <button
                 key={cat}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  selectedCategory.toLowerCase() === cat.toLowerCase()
+                  selectedCategory === cat
                     ? 'bg-green-600 text-white'
                     : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
                 }`}
