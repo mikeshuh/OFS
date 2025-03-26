@@ -97,6 +97,11 @@ const AuthProvider = ({ children }) => {
       const decode = jwtDecode(token);
       const response = await requestServer(`${API_URL}/api/users/change-password/${decode.id}`, "PUT", token, data);
       if (response.data?.success) {
+        // Clear the cart when the user changes password
+        if (cartFunctions.clearCart) {
+          cartFunctions.clearCart();
+        }
+
         navigate("/login");
         setToken("");
         setLoggedIn(false);

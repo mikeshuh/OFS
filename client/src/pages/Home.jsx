@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import ProductGrid from "../components/ProductGrid"; // Import the ProductGrid component
+import ProductGrid from "../components/ProductGrid";
 import Banner from "../assets/banner.webp";
 import fruitImage from "../assets/fruits.jpg";
 import vegetablesImage from "../assets/vegetables.jpg";
@@ -105,7 +105,6 @@ const Home = () => {
   // Handle adding product to cart
   const handleAddToCart = (product) => {
     setCartItems([...cartItems, product]);
-    // You can also show a notification or update a cart count in the navbar
     alert(`Added ${product.name} to cart!`);
   };
 
@@ -116,7 +115,7 @@ const Home = () => {
         <Navbar />
       </div>
 
-      {/* Banner Section - Full Width */}
+      {/* Banner Section */}
       <div className="w-full px-4 md:px-12 py-4">
         <div className="relative w-full rounded-lg overflow-hidden">
           <div className="w-full aspect-[2.5/1] relative">
@@ -168,7 +167,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Featured Products Cards */}
+      {/* Featured Category Cards */}
       <div className="w-full px-4 md:px-12 py-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="relative rounded overflow-hidden shadow-md">
@@ -232,7 +231,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Recent Products - Using our new ProductGrid component */}
+      {/* Featured Products */}
       <div className="w-full px-4 md:px-12 py-6 mb-10">
         <ProductGrid
           products={products}
