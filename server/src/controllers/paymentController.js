@@ -34,7 +34,8 @@ const processPayment = async (req, res) => {
     await Order.updateDeliveryInfo(
       sanitizedOrderID,
       deliveryFee,
-      order.productsPrice
+      order.productsPrice,
+      order.totalPrice
     );
 
     const amount = calculateTotalAmount(order); // returns amount in cents
@@ -86,6 +87,7 @@ const handleStripeWebhook = async (req, res) => {
     } else if (event.type === 'payment_intent.payment_failed') {
       const paymentIntent = event.data.object;
       await Payment.updateStatusByIntentID(paymentIntent.id, 'Failed');
+      console.log(`Database updated for PaymentIntent ${paymentIntent.id} to status Failed`);
     } else {
       console.log(`Unhandled event type: ${event.type}`);
     }
