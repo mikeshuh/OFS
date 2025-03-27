@@ -296,6 +296,7 @@ module.exports = {
   validateLogin,
   validateProfileUpdate,
   validatePasswordChange,
+  parseId,
   //Product Route Validation
   validateProduct,
   validateParamInt,
