@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import DiscountBanner from "../components/DiscountBanner";
 import Navbar from "../components/Navbar.jsx";
 
 import fruitImage from "../assets/fruits.jpg";
@@ -23,8 +22,6 @@ const [searchQuery, setSearchQuery] = useState("");
   return (
     <div>
       <Navbar />
-
-      <DiscountBanner />
 
       <div className="flex-1 flex-col items-center justify-center text-center p-12">
         <h1 className="text-3xl font-bold text-gray-800 mb-4">Product Name</h1>

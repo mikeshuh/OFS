@@ -5,7 +5,6 @@ import { checkLogin  } from "../utils/Utility";
 import { useAuth } from "../components/AuthContext";
 import loginBackground from "../assets/login.jpg"
 
-import loginBackground from "../assets/login.jpg"
 function Login() {
   const navigate = useNavigate();
 
