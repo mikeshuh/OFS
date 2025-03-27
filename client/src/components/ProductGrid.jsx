@@ -1,12 +1,6 @@
 import React from 'react';
 import ProductCard from './ProductCard';
 
-<<<<<<< HEAD
-=======
-/**
- * ProductGrid component for displaying a grid of products from the database
- */
->>>>>>> 99cad11dbc2c87e2fbe92bc54016ccd97d718cc6
 const ProductGrid = ({
   products = [],
   title = '',

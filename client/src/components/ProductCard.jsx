@@ -2,13 +2,6 @@ import React from 'react';
 import { useCart } from './CartContext';
 import { useAuth } from './AuthContext';
 
-<<<<<<< HEAD
-=======
-/**
- * ProductCard component for displaying product information from the database
- * With cart integration and quantity controls
- */
->>>>>>> 99cad11dbc2c87e2fbe92bc54016ccd97d718cc6
 const ProductCard = ({ product }) => {
   const { addToCart, removeFromCart, updateQuantity, cartItems } = useCart();
   const { loggedIn } = useAuth();
@@ -102,11 +95,7 @@ const ProductCard = ({ product }) => {
       </div>
 
       {cartQuantity > 0 ? (
-<<<<<<< HEAD
         // When item is in cart
-=======
-        // Quantity controls when item is in cart
->>>>>>> 99cad11dbc2c87e2fbe92bc54016ccd97d718cc6
         <div className="mt-3">
           <div className="flex items-center justify-between border rounded">
             <button

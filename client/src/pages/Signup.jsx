@@ -5,7 +5,6 @@ import { requestServer, checkLogin } from "../utils/Utility";
 import signupBackground from "../assets/signup.jpg"
 
 const API_URL = import.meta.env.VITE_API_URL;
-<<<<<<< HEAD
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -20,9 +19,6 @@ const Signup = () => {
     })();
   }, []);
 
-=======
-function Signup () {
->>>>>>> 99cad11dbc2c87e2fbe92bc54016ccd97d718cc6
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",

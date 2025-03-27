@@ -1,8 +1,4 @@
 import React, { useState } from "react";
-<<<<<<< HEAD
-=======
-import DiscountBanner from "../components/DiscountBanner";
->>>>>>> 99cad11dbc2c87e2fbe92bc54016ccd97d718cc6
 import Navbar from "../components/Navbar.jsx";
 
 function Orders() {
@@ -30,12 +26,6 @@ const toProfile = () => {
       {/* Navi Bar */}
       <Navbar />
 
-<<<<<<< HEAD
-=======
-      {/* Discount */}
-      <DiscountBanner />
-
->>>>>>> 99cad11dbc2c87e2fbe92bc54016ccd97d718cc6
       {/* Main page information */}
       <div className="flex-1 flex-col items-center justify-center p-12 text-center">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">Your Order History</h1>

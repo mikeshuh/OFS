@@ -1,16 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-<<<<<<< HEAD
 import Navbar from "../components/Navbar";
 import { checkLogin  } from "../utils/Utility";
 import { useAuth } from "../components/AuthContext";
 import loginBackground from "../assets/login.jpg"
-=======
-import Navbar from "../components/Navbar.jsx";
-import DiscountBanner from "../components/DiscountBanner.jsx";
-import { requestServer, checkLogin  } from "../utils/Utility.jsx";
-import { useAuth } from "../components/AuthContext.jsx";
->>>>>>> 99cad11dbc2c87e2fbe92bc54016ccd97d718cc6
 
 import loginBackground from "../assets/login.jpg"
 function Login() {
