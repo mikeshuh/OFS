@@ -16,7 +16,7 @@ const processPayment = async (req, res) => {
 
     const sanitizedOrderID = validation.sanitizeInteger(req.body.orderID);
 
-    const order = await Order.getById(sanitizedOrderID);
+    const order = await Order.findById(sanitizedOrderID);
     if (!order) {
       return responseHandler.notFound(res, 'Order not found.');
     }

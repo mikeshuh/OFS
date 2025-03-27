@@ -16,7 +16,8 @@ const userRoutes = require('./src/routes/userRoute');
 
 // product
 const productRoutes = require('./src/routes/productRoute');
-// order:w
+// order:
+const orderRoutes = require('./src/routes/orderRoute');
 // payment
 const paymentRoutes = require("./src/routes/paymentRoute");
 // delivery
@@ -47,8 +48,10 @@ app.use('/api/users', userRoutes);
 // product
 app.use('/api/products', productRoutes);
 // order
+app.use('/api/orders', orderRoutes);
 // payment
 app.use('/payment', paymentRoutes);
+
 // delivery
 app.use('/api/delivery', deliveryRoutes);
 
