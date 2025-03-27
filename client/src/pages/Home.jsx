@@ -8,7 +8,7 @@ import vegetablesImage from "../assets/vegetables.jpg";
 import dairyImage from "../assets/dairy.jpg";
 
 
-const Home = () => {
+function Home() {
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
 
