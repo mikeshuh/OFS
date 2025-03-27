@@ -1,4 +1,8 @@
 import React, { useState } from "react";
+<<<<<<< HEAD
+=======
+import DiscountBanner from "../components/DiscountBanner";
+>>>>>>> 99cad11dbc2c87e2fbe92bc54016ccd97d718cc6
 import Navbar from "../components/Navbar.jsx";
 
 function Checkout() {
@@ -42,6 +46,12 @@ function Checkout() {
       {/* Navi Bar */}
       <Navbar />
 
+<<<<<<< HEAD
+=======
+      {/* Discount */}
+      <DiscountBanner />
+
+>>>>>>> 99cad11dbc2c87e2fbe92bc54016ccd97d718cc6
       {/* Main page information */}
       <div className="flex-col flex-1 justify-center items-center text-center px-4">
 

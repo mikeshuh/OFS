@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
-const Profile = () => {
+
+function Profile() {
   const navigate = useNavigate();
   const auth = useAuth();
   const [formData, setFormData] = useState({
