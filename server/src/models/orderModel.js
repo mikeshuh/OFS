@@ -36,7 +36,8 @@ const Order = {
     }
   },
 
-  getById: async (orderID) => {
+  // Find an order by ID
+  findById: async (orderID) => {
     const [rows] = await db.execute(
       'SELECT * FROM `Order` WHERE orderID = ?',
       [orderID]
@@ -44,7 +45,8 @@ const Order = {
     return rows[0];
   },
 
-  getByUser: async (userID) => {
+  // Find all orders for a specific user
+  findByUser: async (userID) => {
     const [rows] = await db.execute(
       'SELECT * FROM `Order` WHERE userID = ? ORDER BY orderTime DESC',
       [userID]
@@ -85,7 +87,8 @@ const Order = {
     }
   },
 
-  getOrderDetails: async (orderID) => {
+  // Get order details with joined product information
+  findOrderDetails: async (orderID) => {
     const [rows] = await db.execute(
       `SELECT o.*, op.quantity, p.*
        FROM \`Order\` o

@@ -15,10 +15,12 @@ const responseHandler = require('./src/utils/responseHandler');
 const userRoutes = require('./src/routes/userRoute');
 
 // product
-// order
+const productRoutes = require('./src/routes/productRoute');
+// order:w
 // payment
 const paymentRoutes = require("./src/routes/paymentRoute");
 // delivery
+const deliveryRoutes = require('./src/routes/deliveryRoute');
 
 // Initialize Express app
 const app = express();
@@ -43,10 +45,12 @@ if (env.nodeEnv === 'development') {
 // API Routes
 app.use('/api/users', userRoutes);
 // product
+app.use('/api/products', productRoutes);
 // order
 // payment
 app.use('/payment', paymentRoutes);
 // delivery
+app.use('/api/delivery', deliveryRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {

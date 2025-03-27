@@ -3,14 +3,14 @@ const db = require('../config/db');
 
 // Product model with database operations
 const Product = {
-  // Get all products
-  getAll: async () => {
+  // find all products
+  findAll: async () => {
     const [rows] = await db.execute('SELECT * FROM Product');
     return rows;
   },
 
-  // Get products by category
-  getByCategory: async (category) => {
+  // find products by category
+  findByCategory: async (category) => {
     const [rows] = await db.execute(
       'SELECT * FROM Product WHERE category = ?',
       [category]
@@ -18,8 +18,8 @@ const Product = {
     return rows;
   },
 
-  // Get a product by ID
-  getById: async (productID) => {
+  // find a product by ID
+  findById: async (productID) => {
     const [rows] = await db.execute(
       'SELECT * FROM Product WHERE productID = ?',
       [productID]
@@ -29,11 +29,11 @@ const Product = {
 
   // Create a new product
   create: async (productData) => {
-    const { category, name, price, pounds, quantity } = productData;
+    const { category, name, price, pounds, quantity,imageBinary } = productData;
 
     const [result] = await db.execute(
-      'INSERT INTO Product (category, name, price, pounds, quantity) VALUES (?, ?, ?, ?, ?)',
-      [category, name, price, pounds, quantity]
+      'INSERT INTO Product (category, name, price, pounds, quantity,imageBinary) VALUES (?, ?, ?, ?, ?, ?)',
+      [category, name, price, pounds, quantity, imageBinary]
     );
 
     return result.insertId; // Return the ID of the newly created product
@@ -41,11 +41,11 @@ const Product = {
 
   // Update a product
   update: async (productID, productData) => {
-    const { category, name, price, pounds, quantity } = productData;
+    const { category, name, price, pounds, quantity, imageBinary } = productData;
 
     const [result] = await db.execute(
-      'UPDATE Product SET category = ?, name = ?, price = ?, pounds = ?, quantity = ? WHERE productID = ?',
-      [category, name, price, pounds, quantity, productID]
+      'UPDATE Product SET category = ?, name = ?, price = ?, pounds = ?, quantity = ?, imageBinary = ? WHERE productID = ?',
+      [category, name, price, pounds, quantity, imageBinary, productID]
     );
 
     return result.affectedRows > 0; // Return true if update was successful
