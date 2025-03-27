@@ -15,7 +15,7 @@ const createOrder = async (req, res) => {
 
     let totalPounds = 0;
     let totalPrice = 0;
-
+    let deliveryFee = 0;
     //calculate total pounds and total price
     for (const orderProduct of orderProducts) {
       const productDetails = await Product.findById(orderProduct.productID);
@@ -99,12 +99,12 @@ const getOrderByUserID = async (req, res) =>{
     }
 
     //if the user is associated with the order return the associated order products
-    const orderProduct = await OrderProduct.findByOrderId(orderID);
+    const orderDetails = await Order.findOrderDetails(orderID);
 
-    if (!orderProduct) {
-      return responseHandler.notFound(res, 'OrderProducts not found.');
+    if (!orderDetails) {
+      return responseHandler.notFound(res, 'order details not found.');
     }
-    return responseHandler.success(res, orderProduct, 'Order retrieved succesfully');
+    return responseHandler.success(res, orderDetails, 'Order retrieved succesfully');
 } catch (error) {
     console.error(`Get order error: ${error.message}`, error);
     return responseHandler.error(res, 'Failed to retrieve order.');
