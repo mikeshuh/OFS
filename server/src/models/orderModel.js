@@ -3,7 +3,6 @@ const db = require('../config/db');
 
 // Order model with database operations
 const Order = {
-  // Create a new order
   create: async (orderData) => {
     const {
       userID,
@@ -16,12 +15,10 @@ const Order = {
       zipCode
     } = orderData;
 
-    // Begin a transaction
     const connection = await db.getConnection();
     try {
       await connection.beginTransaction();
 
-      // Insert the order into the database
       const [result] = await connection.execute(
         'INSERT INTO `Order` (userID, totalPrice, totalPounds, deliveryFee, orderStatus, streetAddress, city, zipCode) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
         [userID, totalPrice, totalPounds, deliveryFee, orderStatus, streetAddress, city, zipCode]
@@ -30,12 +27,12 @@ const Order = {
       const orderID = result.insertId;
 
       await connection.commit();
-      return orderID; // Return the ID of the newly created order
+      return orderID;
     } catch (error) {
-      await connection.rollback();  // Rollback transaction on error
+      await connection.rollback();
       throw error;
     } finally {
-      connection.release(); // Release the connection back to the pool
+      connection.release();
     }
   },
 
@@ -45,7 +42,7 @@ const Order = {
       'SELECT * FROM `Order` WHERE orderID = ?',
       [orderID]
     );
-    return rows[0]; // Return the order object or undefined
+    return rows[0];
   },
 
   // Find all orders for a specific user
@@ -57,41 +54,36 @@ const Order = {
     return rows;
   },
 
-  // Update order status
   updateStatus: async (orderID, orderStatus) => {
     const [result] = await db.execute(
       'UPDATE `Order` SET orderStatus = ? WHERE orderID = ?',
       [orderStatus, orderID]
     );
-    return result.affectedRows > 0; // Return true if update was successful
+    return result.affectedRows > 0;
   },
 
-  // Delete an order
   delete: async (orderID) => {
-    // Begin a transaction
     const connection = await db.getConnection();
     try {
       await connection.beginTransaction();
 
-      // Delete related order products first (cascade should handle this, but being explicit)
       await connection.execute(
         'DELETE FROM OrderProduct WHERE orderID = ?',
         [orderID]
       );
 
-      // Delete the order
       const [result] = await connection.execute(
         'DELETE FROM `Order` WHERE orderID = ?',
         [orderID]
       );
 
       await connection.commit();
-      return result.affectedRows > 0; // Return true if deletion was successful
+      return result.affectedRows > 0;
     } catch (error) {
-      await connection.rollback(); // Rollback transaction on error
+      await connection.rollback();
       throw error;
     } finally {
-      connection.release(); // Release the connection back to the pool
+      connection.release();
     }
   },
 
@@ -106,6 +98,22 @@ const Order = {
       [orderID]
     );
     return rows;
+  },
+
+  getTotalWeight: async (orderID) => {
+    const query = `
+      SELECT SUM(p.pounds * op.quantity) AS totalWeight
+      FROM OrderProduct op
+      JOIN Product p ON op.productID = p.productID
+      WHERE op.orderID = ?
+    `;
+    const [rows] = await db.execute(query, [orderID]);
+    return rows[0].totalWeight || 0;
+  },
+
+  updateDeliveryInfo: async (orderID, deliveryFee, productsPrice) => {
+    const query = `UPDATE \`Order\` SET deliveryFee = ?, productsPrice = ? WHERE orderID = ?`;
+    await db.execute(query, [deliveryFee, productsPrice, orderID]);
   }
 };
 

@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 const { protect, admin } = require('../middleware/authMiddleware');
+const paymentRoutes = require("./paymentRoute");
 
 // Public routes (no authentication required)
 // POST /api/users/register - Register a new user

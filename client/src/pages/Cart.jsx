@@ -1,7 +1,10 @@
 import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useCart } from "../components/CartContext";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../components/AuthContext";
 
 const Cart = () => {
   const {
@@ -11,6 +14,58 @@ const Cart = () => {
     clearCart,
     calculateTotal
   } = useCart();
+
+  const navigate = useNavigate(); //new added
+  const { user } = useAuth();
+
+  const handleCheckout = async () => { 
+    try {
+      const token = localStorage.getItem("authToken");
+
+      const res = await fetch("http://localhost:5000/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          cartItems,
+          userID: user.userID
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Order creation failed");
+
+      const orderID = data.orderID;
+      clearCart(); 
+      navigate(`/payment/${orderID}`);
+    } catch (err) {
+      console.error("Checkout failed:", err.message);
+      alert("Checkout failed: " + err.message);
+    }
+  };  //new added till here
+  
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+
+    const fetchOrders = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/orders", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+        if (data.orders) setOrders(data.orders);
+      } catch (err) {
+        console.error("Failed to fetch orders:", err);
+      }
+    };
+
+    fetchOrders();
+  }, []); // This part is for the backend syn
 
   console.log("Cart rendering with items:", cartItems);
 
@@ -199,7 +254,10 @@ const Cart = () => {
                 </div>
               </div>
 
-              <button className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white py-3 rounded font-medium">
+              <button 
+                onClick={handleCheckout}
+                className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white py-3 rounded font-medium"
+              >
                 Proceed to Checkout
               </button>
             </div>

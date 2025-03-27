@@ -8,6 +8,8 @@ import NotFoundPage from "./pages/NotFoundPage.jsx";
 import Redirect404 from "./pages/Redirect404.jsx";
 import Signup from "./pages/Signup.jsx";
 import Logout from "./pages/Logout.jsx";
+import PaymentPage from "./pages/PaymentPage.jsx";
+import "./App.css";
 import Cart from "./pages/Cart.jsx";
 import AuthProvider from "./components/AuthContext.jsx";
 import CartProvider from "./components/CartContext.jsx";
@@ -29,6 +31,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/payment" element={<PaymentPage/>}/>
             <Route path="/404" element={<NotFoundPage />} />
             <Route path="*" element={<Redirect404 />} />
           </Routes>

@@ -4,8 +4,11 @@ env.validateEnv();
 const { redisClient } = require('./src/config/redis');
 const app = require('./app');
 const userRoutes = require("./src/routes/userRoute");
+const express = require('express');
+const path = require('path');
 
 // Import Stripe Payment Routes
+const paymentRoutes = require("./src/routes/paymentRoute");
 
 // Get port from environment or use default
 const PORT = env.port;
@@ -64,4 +67,7 @@ process.on('uncaughtException', (err) => {
 process.on('SIGTERM', gracefulShutdown);
 process.on('SIGINT', gracefulShutdown);
 
-
+// Existing routes
+app.use("/api/users", userRoutes); // let all /api/users/* though userRoute.js
+app.use("/payment", paymentRoutes); // payment route including webhook
+app.use(express.static(path.join(__dirname, 'public')));
