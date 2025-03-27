@@ -192,6 +192,50 @@ const validateProduct = [
   },
 ]
 
+//validate order
+const validateOrder = [
+  body('userID')
+  .trim()
+  .escape()
+  .toInt()
+  .isInt(),
+
+  body('totalPrice')
+  .trim()
+  .escape()
+  .toFloat()
+  .isFloat(),
+
+  body('totalPounds')
+  .trim()
+  .escape()
+  .toInt()
+  .isInt(),
+
+  body('deliveryFee')
+  .trim()
+  .escape(),
+
+  body('orderStatus')
+  .trim()
+  .escape(),
+
+  body('streetAddress')
+  .trim()
+  .escape()
+  .isString(),
+
+  body('city')
+  .trim()
+  .escape()
+  .isString(),
+
+  body('zipCode')
+  .trim()
+  .escape()
+  .toInt()
+  .isInt()
+]
 const validateParamInt = (paramName) => {
   return [
     param(paramName)
@@ -299,9 +343,11 @@ module.exports = {
   parseId,
   //Product Route Validation
   validateProduct,
+  validateOrder,
   validateParamInt,
   validateParamString,
   validateRoute,
   validateAddress,
   validateOptimalRoute,
+
 };
