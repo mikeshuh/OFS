@@ -35,7 +35,7 @@ const MapComponent = () => {
     const addressData = {
       origin:{
         zipCode: retrieve.features[0].properties.context.postcode.name,
-        streetAddress: retrieve.features[0].properties.address,
+        streetAddress: retrieve.features[0].properties["full_address"],
         city: retrieve.features[0].properties.context.place.name
       },
       destination:{
@@ -46,9 +46,9 @@ const MapComponent = () => {
     }
     // console.log(addressData);
     const token = localStorage.getItem("authToken");
-    const response = await requestServer(`${API_URL}/api/delivery/distance`, "GET", token,JSON.stringify(addressData));
+    const response = await requestServer(`${API_URL}/api/delivery/distance`, "POST", token, JSON.stringify(addressData));
     console.log(JSON.stringify(addressData));
-    // console.log(response);
+    console.log(response);
     if (response.data.success) {
 
       console.log(response);
