@@ -46,7 +46,7 @@ const getRoute = async (req, res, dataType = "") => {
   try {
     const validationResult = validation.validateRoute(req.body);
     if (!validationResult.isValid) {
-      responseHandler.error(res, validationResult.errors);
+      responseHandler.badRequest(res, validationResult.errors);
       return null;
     }
 
@@ -64,22 +64,22 @@ const getRoute = async (req, res, dataType = "") => {
       switch (dataType) {
         case "distance":
           const distance = Math.round(route.routes[0].distance * 10 / 1609.34) / 10;
-          responseHandler.success(res, `${distance} miles`);
+          responseHandler.success(res, {distance:distance,message:`${distance} miles`});
           break;
         case "checkDeliveryRadius":
           return Math.round(route.routes[0].distance * 10 / 1609.34) / 10 <= DELIVERY_RADIUS;
         case "duration":
           const minutes = Math.ceil(route.routes[0].duration / 60);
-          responseHandler.success(res, `${minutes} minutes`);
+          responseHandler.success(res, {duration:minutes,message:`${minutes} minutes`});
           break;
         default:
           responseHandler.success(res, route);
       }
     } else {
-      responseHandler.error(res, 'Could not find route');
+      responseHandler.badRequest(res, 'Could not find route');
     }
   } catch (error) {
-    responseHandler.error(res, error.message);
+    responseHandler.badRequest(res, error.message);
   }
 }
 
@@ -107,14 +107,18 @@ const getDuration = async (req, res) => {
   Example: localhost:5000/api/delivery/check
 */
 const checkDeliveryRadius = async (req, res) => {
-  req.origin = WAREHOUSE_ADDRESS;
+  req.body.origin = {
+    streetAddress:"1 Washington Sq",
+    city:"San Jose",
+    zipCode:"95192"
+  }
   const isWithinRadius = await getRoute(req, res, "checkDeliveryRadius");
 
   //Not checking error because it should be handled in the getRoute function
   if (isWithinRadius) {
-    responseHandler.success(res, 'deliverable');
+    responseHandler.success(res, {message:'Congradulation! Your address is within our delivery radius'});
   }else if (isWithinRadius === false) {
-    responseHandler.error(res, 'undeliverable');
+    responseHandler.success(res, {message:'Sorry! Your address is outside our delivery zone'});
   }
 }
 /*
@@ -128,7 +132,7 @@ const getOptimalRoute = async (req, res) => {
     const navigationInstruction = [];
     const validationResult = validation.validateOptimalRoute(req.body);
     if (!validationResult.isValid) {
-      responseHandler.error(res, validationResult.errors);
+      responseHandler.badRequest(res, validationResult.errors);
       return;
     }
 
@@ -177,7 +181,7 @@ const getOptimalRoute = async (req, res) => {
       });
       responseHandler.success(res, navigationInstruction);
     } else {
-      responseHandler.error(res, 'Could not find route');
+      responseHandler.badRequest(res, 'Could not find route');
     }
   } catch (error) {
     console.log(error)

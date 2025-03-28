@@ -4,13 +4,19 @@ import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import Navbar from "../components/Navbar";
 import { SearchBox } from "@mapbox/search-js-react";
 import { requestServer } from "../utils/Utility";
+import * as turf from "@turf/turf";
+
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 const API_URL = import.meta.env.VITE_API_URL;
+const FIXED_CENTER = [-121.879695,37.33599];
+const RADIUS_MILES = 25;
+
 const MapComponent = () => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
+  const markerRef = useRef(null);
   const [value, setValue] = useState("");
-  const [text,setText] = useState("Enter your location to see if your address is in our delivery area.");
+  const [text, setText] = useState("Enter your location to see if your address is in our delivery area.");
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -20,10 +26,33 @@ const MapComponent = () => {
       accessToken: MAPBOX_ACCESS_TOKEN,
       container: mapContainerRef.current,
       style: "mapbox://styles/mapbox/streets-v12",
-      center: [-121, 37], // Initial center
-      zoom: 14,
+      center: FIXED_CENTER,
+      zoom: 8.8,
     });
 
+    const createCircle = (center, radiusInMiles) => {
+      const options = { steps: 64, units: "miles" };
+      return turf.circle(center, radiusInMiles, options);
+    };
+
+    const circleGeoJSON = createCircle(FIXED_CENTER, RADIUS_MILES);
+
+    mapRef.current.on("load", () => {
+      mapRef.current.addSource("circle-source", {
+        type: "geojson",
+        data: circleGeoJSON,
+      });
+
+      mapRef.current.addLayer({
+        id: "circle-layer",
+        type: "fill",
+        source: "circle-source",
+        paint: {
+          "fill-color": "#1E90FF",
+          "fill-opacity": 0.2,
+        },
+      });
+    });
     mapRef.current.addControl(new mapboxgl.NavigationControl(), "top-left");
 
     return () => mapRef.current.remove(); // Cleanup on unmount
@@ -31,62 +60,63 @@ const MapComponent = () => {
 
   const handleRetrieve = async (retrieve) => {
     if (!mapRef.current || !retrieve.features[0]) return;
-    console.log(retrieve.features[0].properties);
+
+    // Set the text to the address
+    // Get the distance between the warehouse and the given address
     const addressData = {
-      origin:{
+      destination: {
         zipCode: retrieve.features[0].properties.context.postcode.name,
         streetAddress: retrieve.features[0].properties["full_address"],
-        city: retrieve.features[0].properties.context.place.name
+        city: retrieve.features[0].properties.context.place.name,
       },
-      destination:{
-        zipCode: "95192",
-        streetAddress: "1 Washington Sq",
-        city: "San Jose"
-      }
-    }
-    // console.log(addressData);
+    };
     const token = localStorage.getItem("authToken");
-    const response = await requestServer(`${API_URL}/api/delivery/distance`, "POST", token, JSON.stringify(addressData));
-    console.log(JSON.stringify(addressData));
-    console.log(response);
-    if (response.data.success) {
+    const response = await requestServer(`${API_URL}/api/delivery/check`, "POST", token, JSON.stringify(addressData));
 
-      console.log(response);
-      setText("We do not deliver to your location.");
+    // Display the message for whether the address is in the delivery area
+    if (response.data.success) {
+      if (markerRef.current) {
+        markerRef.current.remove();
+      }
+      setText(response.data.data.message);
+      const [lng, lat] = retrieve.features[0].geometry.coordinates;
+
+      // Fly to the new location
+      mapRef.current.flyTo({ center: [lng, lat], zoom: 14, speed: 3.5 });
+      markerRef.current = new mapboxgl.Marker()
+        .setLngLat([lng, lat])
+        .addTo(mapRef.current);
+    } else {
+      setText("The address is either not valid or out of the country, please try again with a different address.");
     }
-    const [lng, lat] = retrieve.features[0].geometry.coordinates;
-    // Fly to the new location
-    mapRef.current.flyTo({
-      center: [lng, lat],
-      zoom: 14,
-    });
- };
+  };
 
   return (
-    <div>
+    <div className="relative min-h-screen">
       {/* Navbar - Fixed at the top */}
       <div className="sticky top-0 z-50">
         <Navbar />
       </div>
 
+
       {/* Container for layout */}
-      <div className="relative min-h-screen flex">
+      <div className="flex h-screen">
         {/* Sidebar (Search Box & Content) */}
-        <div className="w-1/3 p-4 bg-gray-50 overflow-auto h-screen">
-          <SearchBox
-            value={value}
-            onChange={setValue}
-            accessToken={MAPBOX_ACCESS_TOKEN}
-            onRetrieve={handleRetrieve}
-          />
-          <div className="mt-4">
-            <h2 className="text-lg font-bold">Locations</h2>
-            <p>{text}</p>
+        <div className="w-1/3 p-6 bg-white shadow-lg border-r border-gray-200 flex flex-col gap-4">
+          {/* Title */}
+          <div class="heading-text heading-section">
+
+          </div>
+          <h1 className="text-2xl font-semibold   text-left">Food Delivery Coverage Checker</h1>
+          <SearchBox value={value} onChange={setValue} accessToken={MAPBOX_ACCESS_TOKEN} onRetrieve={handleRetrieve} />
+          <div className="bg-gray-100 p-4 rounded-lg shadow-sm">
+            <h2 className="text-xl font-semibold text-gray-800">Delivery Check</h2>
+            <p className="text-gray-600 mt-2">{text}</p>
           </div>
         </div>
 
         {/* Map Container - Fixed in place */}
-        <div className="w-2/3 h-screen fixed right-0 top-0">
+        <div className="w-2/3 h-screen">
           <div ref={mapContainerRef} className="w-full h-full" />
         </div>
       </div>
