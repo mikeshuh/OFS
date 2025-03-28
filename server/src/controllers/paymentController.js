@@ -64,7 +64,7 @@ const handleWebhook = async (req, res) => {
   try {
     // Verify webhook signature
     event = stripe.webhooks.constructEvent(
-      req.rawBody,
+      req.body,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET
     );
