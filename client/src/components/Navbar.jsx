@@ -112,7 +112,7 @@ function Navbar() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </Link>
-          <Link to="/about" className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center">
+         <Link to="/about" className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center">
             About Us
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />

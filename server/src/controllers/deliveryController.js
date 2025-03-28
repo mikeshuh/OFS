@@ -32,7 +32,6 @@ const getGeocode = async (req, res) => {
     const coordinates = await deliveryService.getGeocode(sanitizedAddress);
     responseHandler.success(res, coordinates);
   } catch (error) {
-    console.log(error)
     responseHandler.error(res, error.message);
   }
 }
@@ -184,7 +183,6 @@ const getOptimalRoute = async (req, res) => {
       responseHandler.badRequest(res, 'Could not find route');
     }
   } catch (error) {
-    console.log(error)
     responseHandler.error(res, error.message);
   }
 }
