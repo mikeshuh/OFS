@@ -8,11 +8,11 @@ const Payment = {
     const {
       orderID,
       amount,
-      paymentType,
+      paymentType = 'payment',
       stripePaymentIntentID,
-      cardLastFour,
-      cardBrand,
-      status
+      cardLastFour = null,
+      cardBrand = null,
+      status = 'pending'
     } = paymentData;
 
     const [result] = await db.execute(
@@ -46,6 +46,15 @@ const Payment = {
     const [result] = await db.execute(
       'UPDATE Payment SET status = ? WHERE paymentID = ?',
       [status, paymentID]
+    );
+    return result.affectedRows > 0; // Return true if update was successful
+  },
+
+  // Update payment card details
+  updateCardDetails: async (paymentID, cardLastFour, cardBrand) => {
+    const [result] = await db.execute(
+      'UPDATE Payment SET cardLastFour = ?, cardBrand = ? WHERE paymentID = ?',
+      [cardLastFour, cardBrand, paymentID]
     );
     return result.affectedRows > 0; // Return true if update was successful
   },

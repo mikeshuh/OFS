@@ -46,9 +46,9 @@ const createPaymentIntent = async (req, res) => {
     });
 
     // Return client secret to frontend
-    responseHandler.success(res, {
+    responseHandler.created(res, {
       clientSecret: paymentIntent.client_secret
-    });
+    }, 'Payment intent created successfully');
 
   } catch (error) {
     console.error('Payment intent error:', error);
@@ -101,15 +101,20 @@ const handlePaymentIntentSucceeded = async (paymentIntent) => {
     const orderID = paymentIntent.metadata.orderID;
 
     // Get payment details from the Stripe API to access payment method details
-    const paymentDetails = await stripe.paymentIntents.retrieve(paymentIntent.id, {
-      expand: ['payment_method']
-    });
+    let paymentDetails;
+    try {
+      paymentDetails = await stripe.paymentIntents.retrieve(paymentIntent.id, {
+        expand: ['payment_method']
+      });
+    } catch (error) {
+      console.error('Error retrieving payment details from Stripe:', error);
+    }
 
     // Extract card details if available
     let cardLastFour = null;
     let cardBrand = null;
 
-    if (paymentDetails.payment_method && paymentDetails.payment_method.card) {
+    if (paymentDetails && paymentDetails.payment_method && paymentDetails.payment_method.card) {
       cardLastFour = paymentDetails.payment_method.card.last4;
       cardBrand = paymentDetails.payment_method.card.brand;
     }
@@ -120,6 +125,11 @@ const handlePaymentIntentSucceeded = async (paymentIntent) => {
     if (payment) {
       // Update payment record
       await Payment.updateStatus(payment.paymentID, 'completed');
+
+      // Update card details if they were provided by Stripe
+      if (cardLastFour && cardBrand) {
+        await Payment.updateCardDetails(payment.paymentID, cardLastFour, cardBrand);
+      }
     } else {
       // Create a new payment record if it doesn't exist
       await Payment.create({
@@ -180,24 +190,31 @@ const handleChargeRefunded = async (charge) => {
     // Get the payment intent ID from the charge
     const paymentIntentID = charge.payment_intent;
 
-    // Find the original payment in our database
+    // Find the original payment
     const originalPayment = await Payment.findByPaymentIntentID(paymentIntentID);
 
     if (originalPayment) {
-      // Calculate refund amount (may be partial or full)
-      const refundAmount = charge.amount_refunded / 100; // Convert cents to dollars
+      // Check if we already processed this refund
+      const existingRefund = await Payment.findByPaymentIntentID(charge.id);
 
-      // Create a refund record
-      await Payment.createRefund({
-        orderID: originalPayment.orderID,
-        amount: refundAmount,
-        stripePaymentIntentID: charge.id, // Use charge ID for refund record
-        status: 'completed'
-      });
+      if (!existingRefund) {
+        // Calculate refund amount
+        const refundAmount = charge.amount_refunded / 100;
 
-      // If this was a full refund, update order status
-      if (charge.refunded) {
-        await Order.updatePaymentStatus(originalPayment.orderID, 'refunded');
+        // Create a refund record
+        await Payment.createRefund({
+          orderID: originalPayment.orderID,
+          amount: refundAmount,
+          stripePaymentIntentID: charge.id,
+          status: 'completed'
+        });
+
+        // If this was a full refund, update order status
+        if (charge.refunded) {
+          await Order.updatePaymentStatus(originalPayment.orderID, 'refunded');
+        }
+      } else {
+        console.log(`Refund for charge ${charge.id} already processed, skipping`);
       }
     }
 
