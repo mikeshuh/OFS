@@ -12,7 +12,7 @@ import Cart from "./pages/Cart.jsx";
 import AuthProvider from "./components/AuthContext.jsx";
 import CartProvider from "./components/CartContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
-
+import Map from "./pages/Map.jsx";
 function App() {
   return (
     <Router>
@@ -25,6 +25,7 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/cart" element={<Cart />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/map" element={<Map />} />
             </Route>
             <Route path="/login" element={<Login />} />
             <Route path="/logout" element={<Logout />} />

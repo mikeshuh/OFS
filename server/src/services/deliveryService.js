@@ -33,7 +33,7 @@ const deliveryService = {
       }).send();
       return response.body;
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       throw new Error(error.message);
     }
   },
