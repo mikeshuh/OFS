@@ -246,7 +246,7 @@ const Home = () => {
           </div>
           <div className="absolute inset-0 flex items-center">
             <div className="w-full px-6 md:px-12 text-right"> {/* Align text to the right */}
-              <div className="max-w-lg mr-10 sm:mr-10 md:mr-20 lg:mr-40 xl:mr-60 2xl:mr-80 ml-auto"> {/* Move text to the right */}
+              <div className="max-w-lg mr-10 sm:mr-10 md:mr-20 lg:mr-40 xl:mr-60 2xl:mr-50 ml-auto"> {/* Move text to the right */}
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 drop-shadow-lg">
                   Check If We Deliver To Your Area
                 </h1>
