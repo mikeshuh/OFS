@@ -66,16 +66,29 @@ const Map = () => {
     // Control panel for the map, for zooming in and out and rotation
     mapRef.current.addControl(new mapboxgl.NavigationControl(), "top-left");
 
-    return () => mapRef.current.remove(); // Cleanup on unmount
+    // Unmounting the map and marker when the component is unmounted, not necessary but good to have
+    return () => {
+      if (markerRef.current) {
+        markerRef.current.remove();
+        markerRef.current = null;
+      }
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
   }, []);
 
   const handleRetrieve = async (retrieve) => {
     if (!mapRef.current || !retrieve.features[0]) return;
 
+    // This ensures that only one marker will be shown on the screen
+
     if (markerRef.current) {
       markerRef.current.remove();
     }
-
+    // Set the text to the address
+    // Get the distance between the warehouse and the given address
     const addressData = {
       destination: {
         zipCode: retrieve.features[0].properties.context.postcode.name,
@@ -86,12 +99,17 @@ const Map = () => {
     const token = localStorage.getItem("authToken");
     const response = await requestServer(`${API_URL}/api/delivery/check`, "POST", token, JSON.stringify(addressData));
 
+    // Display the message for whether the address is in the delivery area
     if (response.data.success) {
       setText(response.data.data.message);
       setBackgroundColor(response.data.data.message.includes("Congradulation") ? "bg-green-100" : "bg-yellow-100");
 
       const [lng, lat] = retrieve.features[0].geometry.coordinates;
+
+      // Move the center to the new location
       mapRef.current.flyTo({ center: [lng, lat], zoom: 14, speed: 3.5 });
+
+      // Add a marker to the new center
       markerRef.current = new mapboxgl.Marker().setLngLat([lng, lat]).addTo(mapRef.current);
     } else {
       setBackgroundColor("bg-red-100");
@@ -101,13 +119,22 @@ const Map = () => {
 
   return (
     <div className="w-screen h-screen flex flex-col">
+
+      {/* Navbar - Fixed at the top */}
       <div className="w-full border-b-4 border-gray-300 shadow-md">
         <Navbar />
       </div>
 
+      {/* Container for layout */}
       <div className="flex h-full">
+
+        {/* Sidebar (Search Box & Content) */}
         <div className="w-1/3 h-full p-6 bg-white shadow-lg border-r-2 border-gray-300 flex flex-col">
+
+          {/* Title */}
           <h1 className="text-2xl font-semibold text-left mb-4">Food Delivery Coverage Checker</h1>
+
+          {/* Search Box */}
           <div>
             <SearchBox value={value} onChange={setValue} accessToken={MAPBOX_ACCESS_TOKEN} onRetrieve={handleRetrieve} />
           </div>
@@ -117,6 +144,7 @@ const Map = () => {
           </div>
         </div>
 
+        {/* Map Container - Fixed in place */}
         <div className="w-2/3 h-full">
           <div ref={mapContainerRef} className="w-full h-full" />
         </div>
