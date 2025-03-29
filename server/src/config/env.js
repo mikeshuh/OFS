@@ -14,6 +14,11 @@ module.exports = {
   redisHost: process.env.REDIS_HOST || 'localhost',
   redisPort: process.env.REDIS_PORT || 6379,
 
+  // Stripe configuration
+  stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+  stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+  stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+
   // Validation to ensure critical variables exist
   validateEnv: () => {
     const required = [
@@ -21,7 +26,10 @@ module.exports = {
       'DB_USER',
       'DB_PASS',
       'DB_NAME',
-      'JWT_SECRET'
+      'JWT_SECRET',
+      'STRIPE_SECRET_KEY',
+      'STRIPE_PUBLISHABLE_KEY',
+      'STRIPE_WEBHOOK_SECRET'
     ];
 
     // Optional but recommended Redis variables

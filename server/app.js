@@ -17,6 +17,7 @@ const productRoutes = require('./src/routes/productRoute');
 // order:
 const orderRoutes = require('./src/routes/orderRoute');
 // payment
+const paymentRoutes = require('./src/routes/paymentRoute');
 // delivery
 const deliveryRoutes = require('./src/routes/deliveryRoute');
 
@@ -24,6 +25,7 @@ const deliveryRoutes = require('./src/routes/deliveryRoute');
 const app = express();
 
 // Middleware
+app.use('/api/payments/webhook', express.raw({ type: 'application/json' })); // Middleware to parse raw JSON for Stripe webhook
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -43,7 +45,7 @@ app.use('/api/products', productRoutes);
 // order
 app.use('/api/orders', orderRoutes);
 // payment
-
+app.use('/api/payments', paymentRoutes);
 // delivery
 app.use('/api/delivery', deliveryRoutes);
 
