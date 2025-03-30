@@ -1,18 +1,18 @@
 import logo from "../assets/OFS_logo.png";
 import { Link } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "./AuthContext";
-import { useNavigate } from "react-router-dom";
-import { useGetProducts } from "./GetProducts";
 import { useCart } from "./CartContext";
+import { useNavigate } from "react-router-dom";
+import { useGetProducts } from "./GetProducts"
 
 function Navbar() {
   const auth = useAuth();
   const getProd = useGetProducts();
   const navigate = useNavigate();
-  const { cartItemsCount, calculateTotal } = useCart();
   console.log(useGetProducts())
   console.log(useAuth())
+  const { cartItemsCount, calculateTotal } = useCart();
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = async (e) => {

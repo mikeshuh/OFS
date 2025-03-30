@@ -11,15 +11,16 @@ import Logout from "./pages/Logout.jsx";
 import Cart from "./pages/Cart.jsx";
 import AuthProvider from "./components/AuthContext.jsx";
 import CartProvider from "./components/CartContext.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import GetProducts from "./components/GetProducts.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 function App() {
   return (
     <Router>
       <AuthProvider>
         <CartProvider>
-          <Routes>
+        <GetProducts>
+        <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<Navigate to="/products/all" replace />} />
             <Route path="/products/:category" element={<Products />} />
@@ -33,6 +34,7 @@ function App() {
             <Route path="/404" element={<NotFoundPage />} />
             <Route path="*" element={<Redirect404 />} />
           </Routes>
+        </GetProducts>
         </CartProvider>
       </AuthProvider>
     </Router>

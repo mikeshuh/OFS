@@ -22,11 +22,11 @@ const getProduct = async (req, res) => {
   }
 }
 
-const getByName = async (req, res) => {
+const getBySearch = async (req, res) => {
   try {
     //find product by category
     const { name } = req.params;
-    const products = await Product.findByName(name);
+    const products = await Product.findBySearch(name);
 
     // check for either an empty array or undefined
     if (!products || products.length === 0) {
@@ -143,7 +143,7 @@ const deleteProduct = async (req, res) => {
 }
 module.exports = {
   getProduct,
-  getByName,
+  getBySearch,
   getByCategory,
   createProduct,
   getAllProduct,
