@@ -101,20 +101,13 @@ const handlePaymentIntentSucceeded = async (paymentIntent) => {
     const orderID = paymentIntent.metadata.orderID;
 
     // Get payment details from the Stripe API to access payment method details
-    let paymentDetails;
-    try {
-      paymentDetails = await stripe.paymentIntents.retrieve(paymentIntent.id, {
-        expand: ['payment_method']
-      });
-    } catch (error) {
-      console.error('Error retrieving payment details from Stripe:', error);
-    }
+    let paymentDetails = await getPaymentDetailsFromPaymentIntent(paymentIntent.id);
 
     // Extract card details if available
     let cardLastFour = null;
     let cardBrand = null;
 
-    if (paymentDetails && paymentDetails.payment_method && paymentDetails.payment_method.card) {
+    if (paymentDetails?.payment_method?.type === 'card') {
       cardLastFour = paymentDetails.payment_method.card.last4;
       cardBrand = paymentDetails.payment_method.card.brand;
     }
@@ -160,18 +153,37 @@ const handlePaymentIntentFailed = async (paymentIntent) => {
   try {
     const orderID = paymentIntent.metadata.orderID;
 
+    // Get payment details from the Stripe API to access payment method details
+    let paymentDetails = await getPaymentDetailsFromPaymentIntent(paymentIntent.id);
+
+    // Extract card details if available
+    let cardLastFour = null;
+    let cardBrand = null;
+
+    if (paymentDetails?.payment_method?.type === 'card') {
+      cardLastFour = paymentDetails.payment_method.card.last4;
+      cardBrand = paymentDetails.payment_method.card.brand;
+    }
+
     // Find the payment record in our database
     const payment = await Payment.findByPaymentIntentID(paymentIntent.id);
 
     if (payment) {
       // Update payment record
       await Payment.updateStatus(payment.paymentID, 'failed');
+
+      // Update card details if they were provided by Stripe
+      if (cardLastFour && cardBrand) {
+        await Payment.updateCardDetails(payment.paymentID, cardLastFour, cardBrand);
+      }
     } else {
       // Create a new payment record if it doesn't exist
       await Payment.create({
         orderID,
         amount: paymentIntent.amount / 100, // Convert cents to dollars
         stripePaymentIntentID: paymentIntent.id,
+        cardLastFour,
+        cardBrand,
         status: 'failed'
       });
     }
@@ -190,6 +202,15 @@ const handleChargeRefunded = async (charge) => {
     // Get the payment intent ID from the charge
     const paymentIntentID = charge.payment_intent;
 
+    // Extract card details if available
+    let cardLastFour = null;
+    let cardBrand = null;
+
+    if (charge.payment_method_details?.type === 'card') {
+      cardLastFour = charge.payment_method_details.card.last4;
+      cardBrand = charge.payment_method_details.card.brand;
+    }
+
     // Find the original payment
     const originalPayment = await Payment.findByPaymentIntentID(paymentIntentID);
 
@@ -206,6 +227,8 @@ const handleChargeRefunded = async (charge) => {
           orderID: originalPayment.orderID,
           amount: refundAmount,
           stripePaymentIntentID: charge.id,
+          cardLastFour,
+          cardBrand,
           status: 'completed'
         });
 
@@ -220,6 +243,18 @@ const handleChargeRefunded = async (charge) => {
 
   } catch (error) {
     console.error('Error handling refund:', error);
+  }
+};
+
+// Get card details from payment intent
+const getPaymentDetailsFromPaymentIntent = async (paymentIntentID) => {
+  try {
+    let paymentDetails = await stripe.paymentIntents.retrieve(paymentIntentID, {
+      expand: ['payment_method']
+    });
+    return paymentDetails;
+  } catch (error) {
+    console.error('Error retrieving card details from Stripe:', error);
   }
 };
 
