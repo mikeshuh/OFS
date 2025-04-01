@@ -106,6 +106,30 @@ const Order = {
       [orderID]
     );
     return rows;
+  },
+
+  // Update payment status
+  updatePaymentStatus: async (orderID, paymentStatus) => {
+    const [result] = await db.execute(
+      'UPDATE `Order` SET paymentStatus = ? WHERE orderID = ?',
+      [paymentStatus, orderID]
+    );
+    return result.affectedRows > 0; // Return true if update was successful
+  },
+
+  // Get order with payment information
+  findOrderWithPayment: async (orderID) => {
+    const [rows] = await db.execute(
+      `SELECT o.*, p.stripePaymentIntentID, p.status AS paymentDetailStatus,
+              p.cardLastFour, p.cardBrand, p.createdAt AS paymentCreatedAt
+      FROM \`Order\` o
+      LEFT JOIN Payment p ON o.orderID = p.orderID AND p.paymentType = 'payment'
+      WHERE o.orderID = ?
+      ORDER BY p.createdAt DESC
+      LIMIT 1`,
+      [orderID]
+    );
+    return rows[0]; // Return the order with payment info
   }
 };
 

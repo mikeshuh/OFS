@@ -190,7 +190,7 @@ const validateProduct = [
     }
     next();
   },
-]
+];
 
 //validate order
 const validateOrder = [
@@ -234,8 +234,17 @@ const validateOrder = [
   .trim()
   .escape()
   .toInt()
-  .isInt()
-]
+  .isInt(),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return responseHandler.badRequest(res, null, errors);
+    }
+    next();
+  },
+];
+
 const validateParamInt = (paramName) => {
   return [
     param(paramName)
@@ -253,7 +262,8 @@ const validateParamInt = (paramName) => {
       next();
     },
   ]
-}
+};
+
 const validateParamString = (paramName) => {
   return [
     param(paramName)
@@ -270,7 +280,7 @@ const validateParamString = (paramName) => {
       next();
     },
   ]
-}
+};
 
 const validateOptimalRoute = (req) => {
   const { addresses } = req;
@@ -287,9 +297,7 @@ const validateOptimalRoute = (req) => {
     isValid: errors.length === 0,
     errors
   };
-}
-
-
+};
 
 const validateAddress = (req) => {
   const { streetAddress,zipCode,city } = req;
@@ -304,7 +312,7 @@ const validateAddress = (req) => {
     isValid: errors.length === 0,
     errors
   };
-}
+};
 
 const validateRoute = (req) => {
   const { origin, destination } = req;
@@ -321,12 +329,30 @@ const validateRoute = (req) => {
     isValid: errors.length === 0,
     errors
   };
-}
+};
 
 // Parse ID from string to integer
 const parseId = (id) => {
   return parseInt(id, 10);
 };
+
+// Payment intent req body validation
+const validatePaymentIntent = [
+  body('orderID')
+  .trim()
+  .escape()
+  .toInt()
+  .isInt({ max: 1000000000 })
+  .withMessage('Order ID must be an integer'),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return responseHandler.badRequest(res, null, errors);
+    }
+    next();
+  },
+];
 
 module.exports = {
   isValidEmail,
@@ -349,5 +375,5 @@ module.exports = {
   validateRoute,
   validateAddress,
   validateOptimalRoute,
-
+  validatePaymentIntent,
 };
