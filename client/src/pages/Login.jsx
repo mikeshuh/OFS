@@ -5,7 +5,7 @@ import { checkLogin  } from "../utils/Utility";
 import { useAuth } from "../components/AuthContext";
 import loginBackground from "../assets/login.jpg"
 
-const Login = () => {
+function Login() {
   const navigate = useNavigate();
 
   // Check if user is logged in
