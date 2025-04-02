@@ -91,13 +91,11 @@ const Map = () => {
       const properties = retrieve.features[0].properties;
       const context = properties.context;
 
-      // Forcefully quit if the address is not in the US to avoid data in a different format
-      if (context.country?.name !== "United States") {
+      if (!properties["address"] || !context.place || !context.region || !context.country) {
+        setText("Please enter a valid address.");
         setBackgroundColor("bg-red-100");
-        setText("The address is either not valid or out of the country, please try again with a different address.");
         return;
       }
-
       // Set the text to the address
       // Get the distance between the warehouse and the given address
       // SearchKey is to force the searchbar to re-render
@@ -155,7 +153,12 @@ const Map = () => {
 
           {/* Search Box */}
           <div>
-            <SearchBox key={searchKey} value={value} accessToken={MAPBOX_ACCESS_TOKEN} onRetrieve={handleRetrieve} />
+            <SearchBox
+              options={{ country: "us" }}
+              key={searchKey}
+              value={value}
+              accessToken={MAPBOX_ACCESS_TOKEN}
+              onRetrieve={handleRetrieve} />
           </div>
           <div>
             <p value={value}>  </p>
