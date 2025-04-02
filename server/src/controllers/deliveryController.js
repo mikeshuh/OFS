@@ -15,7 +15,6 @@ const getEuclidieanDistance = async (req, res) => {
   const [lon1, lat1] = await deliveryService.getGeocode(`${origin.streetAddress}, ${origin.city}, ${origin.state || "California"}, ${origin.country || "United States"}, ${origin.zipCode}`);
   const [lon2, lat2] = await deliveryService.getGeocode(`${destination.streetAddress}, ${destination.city}, ${destination.state || "California"}, ${destination.country || "United States"}, ${destination.zipCode}`);
   const distance = turf.distance(turf.point([lon1, lat1]), turf.point([lon2, lat2]), { units: 'miles' });
-  console.log(distance);
   return distance <= DELIVERY_RADIUS;
 }
 

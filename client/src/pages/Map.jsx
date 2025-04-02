@@ -27,6 +27,7 @@ const Map = () => {
   const [value, setValue] = useState("");
   const [text, setText] = useState("Enter your location to see if your address is in our delivery area.");
   const [backgroundColor, setBackgroundColor] = useState("bg-gray-100");
+  const [searchKey, setSearchKey] = useState(0);
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -89,9 +90,19 @@ const Map = () => {
       if (!mapRef.current || !retrieve.features[0]?.properties?.context) return;
       const properties = retrieve.features[0].properties;
       const context = properties.context;
-      setValue(`${properties["address"]}, ${context.place.name}, ${context.region.name}, ${context.country.name}`);
+
+      // Forcefully quit if the address is not in the US to avoid data in a different format
+      if (context.country?.name!== "United States") {
+        setBackgroundColor("bg-red-100");
+        setText("The address is either not valid or out of the country, please try again with a different address.");
+        return;
+      }
+
       // Set the text to the address
       // Get the distance between the warehouse and the given address
+      // SearchKey is to force the searchbar to re-render
+      setValue(`${properties["address"]}, ${context.place.name}, ${context.region.name}, ${context.country.name}`);
+      setSearchKey(searchKey + 1);
       const addressData = {
         destination: {
           zipCode: context.postcode.name,
@@ -118,12 +129,15 @@ const Map = () => {
         markerRef.current = new mapboxgl.Marker().setLngLat([lng, lat]).addTo(mapRef.current);
       } else {
         setBackgroundColor("bg-red-100");
-        setText("The address is either not valid or out of the country, please try again with a different address.");
+        setText(error.includes("properties of undefined") ?
+                      "The address is either not valid or out of the country, please try again with a different address."
+                    : "An error occued while checking the address, please try again.");
       }
     }catch (error) {
       console.error("Error retrieving address:", error);
       setBackgroundColor("bg-red-100");
-      setText("An error occurred while checking the address. Please try again.");
+
+      setText("The address is either not valid or out of the country, please try again with a different address.");
     }
   };
 
@@ -146,7 +160,10 @@ const Map = () => {
 
           {/* Search Box */}
           <div>
-            <SearchBox value={value} onChange={setValue} accessToken={MAPBOX_ACCESS_TOKEN} onRetrieve={handleRetrieve} />
+            <SearchBox key={searchKey} value={value} accessToken={MAPBOX_ACCESS_TOKEN} onRetrieve={handleRetrieve} />
+          </div>
+          <div>
+            <p value={value}>  </p>
           </div>
           <div className={`mt-4 p-4 rounded-lg shadow-sm ${backgroundColor}`}>
             <h2 className="text-lg font-semibold text-gray-800">Delivery Check</h2>
