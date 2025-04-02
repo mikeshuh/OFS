@@ -130,7 +130,7 @@ const Map = () => {
       console.error("Error retrieving address:", error);
       setBackgroundColor("bg-red-100");
 
-      setText("an error occurred while checking the address, please try again.");
+      setText("An error occurred while checking the address, please try again.");
     }
   };
 
@@ -154,7 +154,11 @@ const Map = () => {
           {/* Search Box */}
           <div>
             <SearchBox
-              options={{ country: "us" }}
+              options={{
+                country: "us",
+                bbox: [-124.4096, 32.5343, -114.1312, 42.0095], // Bounding box for California (West, South, East, North)
+                proximity: FIXED_CENTER, // Prioritize searches near the warehouse
+              }}
               key={searchKey}
               value={value}
               accessToken={MAPBOX_ACCESS_TOKEN}
