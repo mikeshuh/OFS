@@ -14,6 +14,10 @@ const Cart = () => {
 
   console.log("Cart rendering with items:", cartItems);
 
+  const toCheckout = () => {
+    window.location.href="./checkout";
+  };
+
   // If cart is empty, show message and link to products
   if (!cartItems || cartItems.length === 0) {
     return (
@@ -199,7 +203,7 @@ const Cart = () => {
                 </div>
               </div>
 
-              <button className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white py-3 rounded font-medium">
+              <button className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white py-3 rounded font-medium" onClick={toCheckout}>
                 Proceed to Checkout
               </button>
             </div>
