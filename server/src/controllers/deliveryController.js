@@ -6,6 +6,30 @@ const deliveryService = require('../services/deliveryService');
 const WAREHOUSE_ADDRESS = "1 Washington Sq, San Jose, Californi, United States, 95192"
 const DELIVERY_RADIUS = 25; // miles
 
+// Calculate the distance between two coordinates
+// using the Haversine formula
+const getEuclidieanDistance = async (req, res) => {
+  const { origin, destination } = req.body;
+  const [lon1, lat1] = await deliveryService.getGeocode(`${origin.streetAddress}, ${origin.city}, ${origin.state || "California"}, ${origin.country || "United States"}, ${origin.zipCode}`);
+  const [lon2, lat2] = await deliveryService.getGeocode(`${destination.streetAddress}, ${destination.city}, ${destination.state || "California"}, ${destination.country || "United States"}, ${destination.zipCode}`);
+
+  // This is the formula I found online. I didn't modify it nor attempt to understand
+  var R = 6371; // Radius of the earth in km
+  var dLat = deg2rad(lat2 - lat1);  // deg2rad below
+  var dLon = deg2rad(lon2 - lon1);
+  var a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2)
+    ;
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  var d = R * c * 0.621371; // Distance in miles
+  return d <= DELIVERY_RADIUS;
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI / 180)
+}
 /*
   Get the coordinates of an address
   Usage: body contains the address
@@ -63,13 +87,13 @@ const getRoute = async (req, res, dataType = "") => {
       switch (dataType) {
         case "distance":
           const distance = Math.round(route.routes[0].distance * 10 / 1609.34) / 10;
-          responseHandler.success(res, {distance:distance,message:`${distance} miles`});
+          responseHandler.success(res, { distance: distance, message: `${distance} miles` });
           break;
         case "checkDeliveryRadius":
           return Math.round(route.routes[0].distance * 10 / 1609.34) / 10 <= DELIVERY_RADIUS;
         case "duration":
           const minutes = Math.ceil(route.routes[0].duration / 60);
-          responseHandler.success(res, {duration:minutes,message:`${minutes} minutes`});
+          responseHandler.success(res, { duration: minutes, message: `${minutes} minutes` });
           break;
         default:
           responseHandler.success(res, route);
@@ -106,18 +130,22 @@ const getDuration = async (req, res) => {
   Example: localhost:5000/api/delivery/check
 */
 const checkDeliveryRadius = async (req, res) => {
-  req.body.origin = {
-    streetAddress:"1 Washington Sq",
-    city:"San Jose",
-    zipCode:"95192"
-  }
-  const isWithinRadius = await getRoute(req, res, "checkDeliveryRadius");
+  try {
+    req.body.origin = {
+      streetAddress: "1 Washington Sq",
+      city: "San Jose",
+      zipCode: "95192"
+    }
+    // This is modified to use the Euclidean distance instead
+    const isWithinRadius = await getEuclidieanDistance(req, res);
 
-  //Not checking error because it should be handled in the getRoute function
-  if (isWithinRadius) {
-    responseHandler.success(res, {message:'Congradulation! Your address is within our delivery radius'});
-  }else if (isWithinRadius === false) {
-    responseHandler.success(res, {message:'Sorry! Your address is outside our delivery zone'});
+    if (isWithinRadius) {
+      responseHandler.success(res, { message: 'Congratulation! Your address is within our delivery radius' });
+    } else if (isWithinRadius === false) {
+      responseHandler.success(res, { message: 'Sorry! Your address is outside our delivery zone' });
+    }
+  } catch (error){
+    responseHandler.error(res, error.message);
   }
 }
 /*

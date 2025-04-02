@@ -241,8 +241,6 @@ const Home = () => {
               alt="Delivery Area"
               className="absolute inset-0 w-full h-full object-cover"
             />
-            {/* Darker overlay */}
-            <div className="absolute inset-0 bg-black/50"></div>
           </div>
           <div className="absolute inset-0 flex items-center">
             <div className="w-full px-6 md:px-12 text-right"> {/* Align text to the right */}

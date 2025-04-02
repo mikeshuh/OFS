@@ -3,9 +3,7 @@ import {jwtDecode} from 'jwt-decode';
 
 const API_URL = import.meta.env.VITE_API_URL;
 export const requestServer = async (url, method, token, data = {}) => {
-  console.log(data)
   try {
-    console.log(url, method, token, data);
     const response = await axios({
       method,
       url,

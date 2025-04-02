@@ -26,7 +26,7 @@ const Map = () => {
   const markerRef = useRef(null);
   const [value, setValue] = useState("");
   const [text, setText] = useState("Enter your location to see if your address is in our delivery area.");
-  const [backgroundColor, setBackgroundColor] = useState("text-gray-600");
+  const [backgroundColor, setBackgroundColor] = useState("bg-gray-100");
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -80,40 +80,50 @@ const Map = () => {
   }, []);
 
   const handleRetrieve = async (retrieve) => {
-    if (!mapRef.current || !retrieve.features[0]) return;
+    try {
+      // This ensures that only one marker will be shown on the screen
+      if (markerRef.current) {
+        markerRef.current.remove();
+      }
 
-    // This ensures that only one marker will be shown on the screen
+      if (!mapRef.current || !retrieve.features[0]?.properties?.context) return;
+      const properties = retrieve.features[0].properties;
+      const context = properties.context;
+      // Set the text to the address
+      // Get the distance between the warehouse and the given address
+      console.log(context)
+      const addressData = {
+        destination: {
+          zipCode: context.postcode.name,
+          streetAddress: properties["address"],
+          city: context.place.name,
+          country: context.country.name,
+          state: context.region.name
+        },
+      };
+      const token = localStorage.getItem("authToken");
+      const response = await requestServer(`${API_URL}/api/delivery/check`, "POST", token, JSON.stringify(addressData));
 
-    if (markerRef.current) {
-      markerRef.current.remove();
-    }
-    // Set the text to the address
-    // Get the distance between the warehouse and the given address
-    const addressData = {
-      destination: {
-        zipCode: retrieve.features[0].properties.context.postcode.name,
-        streetAddress: retrieve.features[0].properties["full_address"],
-        city: retrieve.features[0].properties.context.place.name,
-      },
-    };
-    const token = localStorage.getItem("authToken");
-    const response = await requestServer(`${API_URL}/api/delivery/check`, "POST", token, JSON.stringify(addressData));
+      // Display the message for whether the address is in the delivery area
+      if (response.data.success) {
+        setText(response.data.data.message);
+        setBackgroundColor(response.data.data.message.includes("Congratulation") ? "bg-green-100" : "bg-yellow-100");
 
-    // Display the message for whether the address is in the delivery area
-    if (response.data.success) {
-      setText(response.data.data.message);
-      setBackgroundColor(response.data.data.message.includes("Congradulation") ? "bg-green-100" : "bg-yellow-100");
+        const [lng, lat] = retrieve.features[0].geometry.coordinates;
 
-      const [lng, lat] = retrieve.features[0].geometry.coordinates;
+        // Move the center to the new location
+        mapRef.current.flyTo({ center: [lng, lat], zoom: 14, speed: 3.5 });
 
-      // Move the center to the new location
-      mapRef.current.flyTo({ center: [lng, lat], zoom: 14, speed: 3.5 });
-
-      // Add a marker to the new center
-      markerRef.current = new mapboxgl.Marker().setLngLat([lng, lat]).addTo(mapRef.current);
-    } else {
+        // Add a marker to the new center
+        markerRef.current = new mapboxgl.Marker().setLngLat([lng, lat]).addTo(mapRef.current);
+      } else {
+        setBackgroundColor("bg-red-100");
+        setText("The address is either not valid or out of the country, please try again with a different address.");
+      }
+    }catch (error) {
+      console.error("Error retrieving address:", error);
       setBackgroundColor("bg-red-100");
-      setText("The address is either not valid or out of the country, please try again with a different address.");
+      setText("An error occurred while checking the address. Please try again.");
     }
   };
 
