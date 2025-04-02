@@ -2,34 +2,23 @@ const Order = require('../models/orderModel');
 const responseHandler = require('../utils/responseHandler');
 const validation = require('../utils/validationUtils');
 const deliveryService = require('../services/deliveryService');
+const turf = require('@turf/turf');
 
 const WAREHOUSE_ADDRESS = "1 Washington Sq, San Jose, Californi, United States, 95192"
 const DELIVERY_RADIUS = 25; // miles
 
 // Calculate the distance between two coordinates
-// using the Haversine formula
+// Uses turf.js which mapbox heavily depends on
+// Document: https://stackoverflow.com/questions/69520848/how-to-get-distance-between-two-coordinates-with-mapbox
 const getEuclidieanDistance = async (req, res) => {
   const { origin, destination } = req.body;
   const [lon1, lat1] = await deliveryService.getGeocode(`${origin.streetAddress}, ${origin.city}, ${origin.state || "California"}, ${origin.country || "United States"}, ${origin.zipCode}`);
   const [lon2, lat2] = await deliveryService.getGeocode(`${destination.streetAddress}, ${destination.city}, ${destination.state || "California"}, ${destination.country || "United States"}, ${destination.zipCode}`);
-
-  // This is the formula I found online. I didn't modify it nor attempt to understand
-  var R = 6371; // Radius of the earth in km
-  var dLat = deg2rad(lat2 - lat1);  // deg2rad below
-  var dLon = deg2rad(lon2 - lon1);
-  var a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2)
-    ;
-  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  var d = R * c * 0.621371; // Distance in miles
-  return d <= DELIVERY_RADIUS;
+  const distance = turf.distance(turf.point([lon1, lat1]), turf.point([lon2, lat2]), { units: 'miles' });
+  console.log(distance);
+  return distance <= DELIVERY_RADIUS;
 }
 
-function deg2rad(deg) {
-  return deg * (Math.PI / 180)
-}
 /*
   Get the coordinates of an address
   Usage: body contains the address
@@ -140,7 +129,7 @@ const checkDeliveryRadius = async (req, res) => {
     const isWithinRadius = await getEuclidieanDistance(req, res);
 
     if (isWithinRadius) {
-      responseHandler.success(res, { message: 'Congratulation! Your address is within our delivery radius' });
+      responseHandler.success(res, { message: 'Congratulations! Your address is within our delivery zone' });
     } else if (isWithinRadius === false) {
       responseHandler.success(res, { message: 'Sorry! Your address is outside our delivery zone' });
     }

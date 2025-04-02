@@ -89,9 +89,9 @@ const Map = () => {
       if (!mapRef.current || !retrieve.features[0]?.properties?.context) return;
       const properties = retrieve.features[0].properties;
       const context = properties.context;
+      setValue(`${properties["address"]}, ${context.place.name}, ${context.region.name}, ${context.country.name}`);
       // Set the text to the address
       // Get the distance between the warehouse and the given address
-      console.log(context)
       const addressData = {
         destination: {
           zipCode: context.postcode.name,
@@ -107,7 +107,7 @@ const Map = () => {
       // Display the message for whether the address is in the delivery area
       if (response.data.success) {
         setText(response.data.data.message);
-        setBackgroundColor(response.data.data.message.includes("Congratulation") ? "bg-green-100" : "bg-yellow-100");
+        setBackgroundColor(response.data.data.message.includes("Congratulations") ? "bg-green-100" : "bg-yellow-100");
 
         const [lng, lat] = retrieve.features[0].geometry.coordinates;
 
