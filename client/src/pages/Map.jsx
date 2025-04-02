@@ -92,7 +92,7 @@ const Map = () => {
       const context = properties.context;
 
       // Forcefully quit if the address is not in the US to avoid data in a different format
-      if (context.country?.name!== "United States") {
+      if (context.country?.name !== "United States") {
         setBackgroundColor("bg-red-100");
         setText("The address is either not valid or out of the country, please try again with a different address.");
         return;
@@ -127,17 +127,12 @@ const Map = () => {
 
         // Add a marker to the new center
         markerRef.current = new mapboxgl.Marker().setLngLat([lng, lat]).addTo(mapRef.current);
-      } else {
-        setBackgroundColor("bg-red-100");
-        setText(error.includes("properties of undefined") ?
-                      "The address is either not valid or out of the country, please try again with a different address."
-                    : "An error occued while checking the address, please try again.");
       }
-    }catch (error) {
+    } catch (error) {
       console.error("Error retrieving address:", error);
       setBackgroundColor("bg-red-100");
 
-      setText("The address is either not valid or out of the country, please try again with a different address.");
+      setText("an error occurred while checking the address, please try again.");
     }
   };
 
