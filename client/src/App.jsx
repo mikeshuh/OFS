@@ -9,10 +9,14 @@ import Redirect404 from "./pages/Redirect404.jsx";
 import Signup from "./pages/Signup.jsx";
 import Logout from "./pages/Logout.jsx";
 import Cart from "./pages/Cart.jsx";
+import StripeCheckoutWrapper from "./pages/StripeCheckoutWrapper.jsx";
+import OrderConfirmation from "./pages/OrderConfirmation.jsx";
+import CheckoutMap from "./pages/CheckoutMap.jsx";
 import AuthProvider from "./components/AuthContext.jsx";
 import CartProvider from "./components/CartContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Map from "./pages/Map.jsx";
+
 function App() {
   return (
     <Router>
@@ -26,6 +30,9 @@ function App() {
               <Route path="/cart" element={<Cart />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/map" element={<Map />} />
+              <Route path="/checkout-map" element={<CheckoutMap />} />
+              <Route path="/checkout" element={<StripeCheckoutWrapper />} />
+              <Route path="/order-confirmation/:orderID" element={<OrderConfirmation />} />
             </Route>
             <Route path="/login" element={<Login />} />
             <Route path="/logout" element={<Logout />} />

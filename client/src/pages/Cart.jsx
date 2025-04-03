@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useCart } from "../components/CartContext";
 
@@ -11,8 +11,18 @@ const Cart = () => {
     clearCart,
     calculateTotal
   } = useCart();
+  const navigate = useNavigate();
 
   console.log("Cart rendering with items:", cartItems);
+
+  const handleCheckout = () => {
+    if (cartItems.length === 0) {
+      return; // Don't allow checkout with empty cart
+    }
+
+    // Navigate to the checkout map page for address selection
+    navigate("/checkout-map");
+  };
 
   // If cart is empty, show message and link to products
   if (!cartItems || cartItems.length === 0) {
@@ -199,7 +209,15 @@ const Cart = () => {
                 </div>
               </div>
 
-              <button className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white py-3 rounded font-medium">
+              <button
+                onClick={handleCheckout}
+                disabled={cartItems.length === 0}
+                className={`w-full mt-6 py-3 rounded font-medium ${
+                  cartItems.length === 0
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-green-600 hover:bg-green-700 text-white"
+                }`}
+              >
                 Proceed to Checkout
               </button>
             </div>
