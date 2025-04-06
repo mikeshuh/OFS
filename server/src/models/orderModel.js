@@ -4,13 +4,12 @@ const db = require('../config/db');
 // Order model with database operations
 const Order = {
   // Create a new order
-  create: async (orderData) => {
+  create: async (orderData, orderProducts) => {
     const {
       userID,
       totalPrice,
       totalPounds,
       deliveryFee,
-      orderStatus,
       streetAddress,
       city,
       zipCode
@@ -23,17 +22,44 @@ const Order = {
 
       // Insert the order into the database
       const [result] = await connection.execute(
-        'INSERT INTO `Order` (userID, totalPrice, totalPounds, deliveryFee, orderStatus, streetAddress, city, zipCode) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [userID, totalPrice, totalPounds, deliveryFee, orderStatus, streetAddress, city, zipCode]
+        'INSERT INTO `Order` (userID, totalPrice, totalPounds, deliveryFee, streetAddress, city, zipCode) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [userID, totalPrice, totalPounds, deliveryFee, streetAddress, city, zipCode]
       );
 
       const orderID = result.insertId;
+
+      // Check if all products have sufficient inventory
+      for (const orderProduct of orderProducts) {
+        const [inventoryResult] = await connection.execute(
+          'SELECT quantity FROM Product WHERE productID = ?',
+          [orderProduct.productID]
+        );
+
+        if (!inventoryResult[0] || inventoryResult[0].quantity < orderProduct.cartQuantity) {
+          throw new Error(`Insufficient inventory for product ID ${orderProduct.productID}. Requested: ${orderProduct.cartQuantity}, Available: ${inventoryResult[0]?.quantity || 0}`);
+        }
+      }
+
+      // All inventory checks passed, now add products to order
+      for (const orderProduct of orderProducts) {
+        // Insert the product into the OrderProduct table
+        await connection.execute(
+          'INSERT INTO OrderProduct (orderID, productID, quantity) VALUES (?, ?, ?)',
+          [orderID, orderProduct.productID, orderProduct.cartQuantity]
+        );
+
+        // Update product inventory (decrease available quantity)
+        await connection.execute(
+          'UPDATE Product SET quantity = quantity - ? WHERE productID = ?',
+          [orderProduct.cartQuantity, orderProduct.productID]
+        );
+      }
 
       await connection.commit();
       return orderID; // Return the ID of the newly created order
     } catch (error) {
       await connection.rollback();  // Rollback transaction on error
-      return null;
+      throw new Error(`Failed to create order: ${error.message}`);
     } finally {
       connection.release(); // Release the connection back to the pool
     }
@@ -98,11 +124,11 @@ const Order = {
   // Get order details with joined product information
   findOrderDetails: async (orderID) => {
     const [rows] = await db.execute(
-      `SELECT o.*, op.quantity, p.*
-       FROM \`Order\` o
-       JOIN OrderProduct op ON o.orderID = op.orderID
+      `SELECT op.quantity AS orderQuantity,
+              p.productID, p.category, p.name, p.price, p.pounds, p.imageBinary
+       FROM OrderProduct op
        JOIN Product p ON op.productID = p.productID
-       WHERE o.orderID = ?`,
+       WHERE op.orderID = ?`,
       [orderID]
     );
     return rows;

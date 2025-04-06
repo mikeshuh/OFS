@@ -21,7 +21,7 @@ CREATE TABLE `Order` (
     totalPounds DECIMAL(10,2) NOT NULL,
     deliveryFee BOOL NOT NULL,
     orderTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    orderStatus BOOL NOT NULL,
+    orderStatus BOOL NOT NULL DEFAULT FALSE,
     paymentStatus ENUM('pending', 'paid', 'failed', 'refunded') DEFAULT 'pending',
     streetAddress VARCHAR(64) NOT NULL,
     city VARCHAR(32) NOT NULL,

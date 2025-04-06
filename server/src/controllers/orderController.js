@@ -1,5 +1,4 @@
 const Order = require('../models/orderModel');
-const OrderProduct = require('../models/orderProductModel');
 const responseHandler = require('../utils/responseHandler');
 const orderService = require('../services/orderService');
 
@@ -7,37 +6,21 @@ const createOrder = async (req, res) => {
   try{
     const {streetAddress, city, zipCode, orderProducts} = req.body
     const userID = req.user.userID;
-    const orderStatus = 0; // 0 pending 1 delivered
 
     const { totalPrice, totalPounds, deliveryFee } = await orderService.calculateTotalPrice(orderProducts);
 
     //create the order
     const orderData = {
-      userID: userID,
-      totalPrice: totalPrice,
-      totalPounds: totalPounds,
-      deliveryFee: deliveryFee,
-      orderStatus: orderStatus,
-      streetAddress: streetAddress,
-      city: city,
-      zipCode: zipCode
+      userID,
+      totalPrice,
+      totalPounds,
+      deliveryFee,
+      streetAddress,
+      city,
+      zipCode
     }
 
-    //create the order
-    const orderID = await Order.create(orderData);
-
-    if (!orderID) {
-      return responseHandler.error(res, 'Error creating order entry');
-    }
-
-    // create OrderProducts
-    const orderProductSuccess = await OrderProduct.addProductsToOrder(orderID, orderProducts);
-
-    if(!orderProductSuccess){
-      await Order.delete(orderID); // Rollback order creation if OrderProduct creation fails
-      console.error('Error creating orderProduct entries, rolling back order creation.');
-      return responseHandler.error(res, 'Error creating orderProduct entry');
-    }
+    const orderID = await Order.create(orderData, orderProducts);
 
     return responseHandler.created(res, {orderID}, 'Order created succesfully');
   } catch (error) {
@@ -75,7 +58,7 @@ const getOrderByUserID = async (req, res) =>{
     }
 
     if(order.userID != userID) {
-      return responseHandler.badRequest(res, 'Order not associated with account');
+      return responseHandleder.forbidden(res, 'Order not associated with account');
     }
 
     //if the user is associated with the order return the associated order products

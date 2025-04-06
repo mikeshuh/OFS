@@ -13,8 +13,8 @@ const orderService = {
       if (!productDetails) {
         return responseHandler.error(res, `Product with ID ${orderProduct.productID} not found.`);
       }
-      totalPrice += productDetails.price * orderProduct.quantity;
-      totalPounds += productDetails.pounds * orderProduct.quantity;
+      totalPrice += productDetails.price * orderProduct.cartQuantity;
+      totalPounds += productDetails.pounds * orderProduct.cartQuantity;
     }
 
     //determine if there is a delivery fee
