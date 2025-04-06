@@ -124,11 +124,13 @@ const Order = {
   // Get order details with joined product information
   findOrderDetails: async (orderID) => {
     const [rows] = await db.execute(
-      `SELECT op.quantity AS orderQuantity,
+      `SELECT o.*,
+              op.quantity AS orderQuantity,
               p.productID, p.category, p.name, p.price, p.pounds, p.imageBinary
-       FROM OrderProduct op
+       FROM \`Order\` o
+       JOIN OrderProduct op ON o.orderID = op.orderID
        JOIN Product p ON op.productID = p.productID
-       WHERE op.orderID = ?`,
+       WHERE o.orderID = ?`,
       [orderID]
     );
     return rows;
