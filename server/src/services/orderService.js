@@ -11,7 +11,7 @@ const orderService = {
     for (const orderProduct of orderProducts) {
       const productDetails = await Product.findById(orderProduct.productID);
       if (!productDetails) {
-        return responseHandler.error(res, `Product with ID ${orderProduct.productID} not found.`);
+        throw new Error(`Product with ID ${orderProduct.productID} not found.`);
       }
       totalPrice += productDetails.price * orderProduct.cartQuantity;
       totalPounds += productDetails.pounds * orderProduct.cartQuantity;
