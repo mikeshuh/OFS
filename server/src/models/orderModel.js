@@ -33,7 +33,7 @@ const Order = {
       return orderID; // Return the ID of the newly created order
     } catch (error) {
       await connection.rollback();  // Rollback transaction on error
-      throw error;
+      return null;
     } finally {
       connection.release(); // Release the connection back to the pool
     }

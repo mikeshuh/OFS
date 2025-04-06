@@ -1,36 +1,15 @@
 const Order = require('../models/orderModel');
-const { addProductToOrder } = require('../models/orderProductModel');
-const Product = require('../models/productModel');
 const OrderProduct = require('../models/orderProductModel');
 const responseHandler = require('../utils/responseHandler');
-//currently hardcoded but within a variable to get rid of magic numbers
-const deliveryFeeAmount = 10;
+const orderService = require('../services/orderService');
 
 const createOrder = async (req, res) => {
   try{
-
     const {streetAddress, city, zipCode, orderProducts} = req.body
     const userID = req.user.userID;
     const orderStatus = 0; // 0 pending 1 delivered
 
-    let totalPounds = 0;
-    let totalPrice = 0;
-    let deliveryFee = 0;
-    //calculate total pounds and total price
-    for (const orderProduct of orderProducts) {
-      const productDetails = await Product.findById(orderProduct.productID);
-      if (!productDetails) {
-        return responseHandler.error(res, `Product with ID ${orderProduct.productID} not found.`);
-      }
-      totalPrice += productDetails.price * orderProduct.quantity;
-      totalPounds += productDetails.pounds * orderProduct.quantity;
-    }
-
-    //determine if there is a delivery fee
-    if(totalPounds < 20){
-      deliveryFee = 1;
-      totalPrice = totalPrice + deliveryFeeAmount;
-    }
+    const { totalPrice, totalPounds, deliveryFee } = await orderService.calculateTotalPrice(orderProducts);
 
     //create the order
     const orderData = {
@@ -47,19 +26,20 @@ const createOrder = async (req, res) => {
     //create the order
     const orderID = await Order.create(orderData);
 
-    if(!orderID){
-      return responseHandler.error(res, 'Error creating order');
+    if (!orderID) {
+      return responseHandler.error(res, 'Error creating order entry');
     }
 
-    //create OrderProducts
+    // create OrderProducts
     const orderProductSuccess = await OrderProduct.addProductsToOrder(orderID, orderProducts);
 
     if(!orderProductSuccess){
+      await Order.delete(orderID); // Rollback order creation if OrderProduct creation fails
+      console.error('Error creating orderProduct entries, rolling back order creation.');
       return responseHandler.error(res, 'Error creating orderProduct entry');
     }
+
     return responseHandler.created(res, {orderID}, 'Order created succesfully');
-
-
   } catch (error) {
     console.error(`Create order error: ${error.message}`, error);
     return responseHandler.error(res, 'Failed to create order.');

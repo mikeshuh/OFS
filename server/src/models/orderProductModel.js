@@ -10,6 +10,16 @@ const OrderProduct = {
     try {
       await connection.beginTransaction();
 
+      // Check if enough inventory is available
+      const [inventoryResult] = await connection.execute(
+        'SELECT quantity FROM Product WHERE productID = ?',
+        [productID]
+      );
+
+      if (!inventoryResult[0] || inventoryResult[0].quantity < quantity) {
+        throw new Error(`Insufficient inventory for product ID ${productID}. Requested: ${quantity}, Available: ${inventoryResult[0]?.quantity || 0}`);
+      }
+
       // Insert the product into the OrderProduct table
       const [result] = await connection.execute(
         'INSERT INTO OrderProduct (orderID, productID, quantity) VALUES (?, ?, ?)',
@@ -26,7 +36,7 @@ const OrderProduct = {
       return result.insertId; // Return the ID of the newly created order-product relation
     } catch (error) {
       await connection.rollback(); // Rollback transaction on error
-      throw error;
+      return null;
     } finally {
       connection.release(); // Release the connection back to the pool
     }
@@ -39,8 +49,21 @@ const OrderProduct = {
     try {
       await connection.beginTransaction();
 
-      // Insert each product into the OrderProduct table
+      // First, check if all products have sufficient inventory
       for (const product of products) {
+        const [inventoryResult] = await connection.execute(
+          'SELECT quantity FROM Product WHERE productID = ?',
+          [product.productID]
+        );
+
+        if (!inventoryResult[0] || inventoryResult[0].quantity < product.quantity) {
+          throw new Error(`Insufficient inventory for product ID ${product.productID}. Requested: ${product.quantity}, Available: ${inventoryResult[0]?.quantity || 0}`);
+        }
+      }
+
+      // All inventory checks passed, now add products to order
+      for (const product of products) {
+        // Insert the product into the OrderProduct table
         await connection.execute(
           'INSERT INTO OrderProduct (orderID, productID, quantity) VALUES (?, ?, ?)',
           [orderID, product.productID, product.quantity]
@@ -57,7 +80,7 @@ const OrderProduct = {
       return true; // Return true if all operations were successful
     } catch (error) {
       await connection.rollback(); // Rollback transaction on error
-      throw error;
+      return false;
     } finally {
       connection.release(); // Release the connection back to the pool
     }
@@ -72,7 +95,6 @@ const OrderProduct = {
        WHERE op.orderID = ?`,
       [orderID]
     );
-
     return rows;
   },
 
