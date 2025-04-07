@@ -194,32 +194,6 @@ const validateProduct = [
 
 //validate order
 const validateOrder = [
-  body('userID')
-  .trim()
-  .escape()
-  .toInt()
-  .isInt(),
-
-  body('totalPrice')
-  .trim()
-  .escape()
-  .toFloat()
-  .isFloat(),
-
-  body('totalPounds')
-  .trim()
-  .escape()
-  .toInt()
-  .isInt(),
-
-  body('deliveryFee')
-  .trim()
-  .escape(),
-
-  body('orderStatus')
-  .trim()
-  .escape(),
-
   body('streetAddress')
   .trim()
   .escape()
@@ -235,6 +209,10 @@ const validateOrder = [
   .escape()
   .toInt()
   .isInt(),
+
+  body('orderProducts')
+  .isArray({ min: 1 })
+  .withMessage('At least one order product is required'),
 
   (req, res, next) => {
     const errors = validationResult(req);
