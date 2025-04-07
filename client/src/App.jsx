@@ -5,6 +5,7 @@ import Products from "./pages/Products.jsx";
 import Profile from "./pages/Profile.jsx";
 import Login from "./pages/Login.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
+import AboutPage from "./pages/AboutPage.jsx";
 import Redirect404 from "./pages/Redirect404.jsx";
 import Signup from "./pages/Signup.jsx";
 import Logout from "./pages/Logout.jsx";
@@ -30,6 +31,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/about" element={<AboutPage />} />
             <Route path="/404" element={<NotFoundPage />} />
             <Route path="*" element={<Redirect404 />} />
           </Routes>
