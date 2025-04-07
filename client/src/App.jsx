@@ -30,11 +30,13 @@ function App() {
               <Route path="/cart" element={<Cart />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/map" element={<Map />} />
-
+              
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/orders" element={<Orders />} />
               <Route path="/orderDetails" element={<OrderDetails />} />
             </Route>
+              
+            {/*</Route>*/}
             <Route path="/login" element={<Login />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/signup" element={<Signup />} />
