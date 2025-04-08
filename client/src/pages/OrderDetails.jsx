@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Navbar from "../components/Navbar.jsx";
+import OrderDetailsTableDiv from "../components/OrderDetailsTableDiv.jsx";
 
 function OrderDetails() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -17,67 +18,56 @@ const toOrder = () => {
   window.location.href="./orders";
 }
 
+const ordersD = [
+  {
+    orderID: 1,
+    userID: 11,
+    totalPrice: "10.68",
+    totalPounds: 3.96,
+    deliveryFee: "No",
+    orderTime: "2025-03-01 12:54:39",
+    orderStatus: "True",
+    paymentStatus: "paid",
+    streetAddress: "2 East William Street",
+    city: "San Jose",
+    zipCode: "95112",
+  },
+];
+
+const orderProducts = [
+  {
+    orderProductID: 1,
+    orderID: 1,
+    productID: 1,
+    quantity: 12,
+  },
+  {
+    orderProductID: 1,
+    orderID: 1,
+    productID: 1,
+    quantity: 12,
+  },
+  {
+    orderProductID: 1,
+    orderID: 1,
+    productID: 1,
+    quantity: 12,
+  },
+];
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Navi Bar */}
       <Navbar />
 
-      {/* Main page information */}
-      <div className="flex-1 flex-col items-center justify-center text-center p-12">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6 ">Order Details: [ID#]</h1>
-
-        <table className="mx-auto border-collapse shadow-md border-solid border-gray-500 text-left">
-        <tr className="border-b-[1px]">
-            <th className="w-[150px] h-[45px] p-[10px]">Total Cost</th>
-            <th className="w-[150px] h-[45px] p-[10px]">Total Pounds</th>
-            <th className="w-[150px] h-[45px] p-[10px]">Devlivery Fee</th>
-            <th className="w-[150px] h-[45px] p-[10px]">Date</th>
-        </tr>
-        <tr>
-            <td className="w-[150px] h-[85px] p-[10px]">10.68</td>
-            <td className="w-[150px] h-[85px] p-[10px]">3.96</td>
-            <td className="w-[150px] h-[85px] p-[10px]">No</td>
-            <td className="w-[150px] h-[85px] p-[10px]">2025-03-01 12:54:39</td>
-        </tr>
-        </table>
-
-        <br/>
-
-        <table className="mx-auto border-collapse shadow-md border-solid border-gray-500 text-left">
-        <tr className="border-b-[1px]">
-            <th className="w-[150px] h-[45px] p-[10px]">Status</th>
-            <th className="w-[150px] h-[45px] p-[10px]">Address</th>
-            <th className="w-[150px] h-[45px] p-[10px]">City</th>
-            <th className="w-[150px] h-[45px] p-[10px]">Zip Code</th>
-        </tr>
-        <tr>
-            <td className="w-[150px] h-[85px] p-[10px]">Delivered</td>
-            <td className="w-[150px] h-[85px] p-[10px]">2 East William Street</td>
-            <td className="w-[150px] h-[85px] p-[10px]">San Jose</td>
-            <td className="w-[150px] h-[85px] p-[10px]">95112</td>
-        </tr>
-        </table>
-
-        <br/>
-
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Cart Details</h1>
-        <table className="mx-auto border-collapse shadow-md border-solid border-gray-500 text-left">
-        <tr className="border-b-[1px]">
-            <th className="w-[150px] h-[45px] p-[10px]">Product</th>
-            <th className="w-[150px] h-[45px] p-[10px]">Amount</th>
-            <th className="w-[150px] h-[45px] p-[10px]">Total Cost</th>
-            <th className="w-[150px] h-[45px] p-[10px]">Total Pounds</th>
-        </tr>
-        <tr>
-            <td className="w-[150px] h-[85px] p-[10px]">Apple</td>
-            <td className="w-[150px] h-[85px] p-[10px]">12</td>
-            <td className="w-[150px] h-[85px] p-[10px]">10.68</td>
-            <td className="w-[150px] h-[85px] p-[10px]">3.96</td>
-        </tr>
-        </table>
-        
-        <br/>
-
+      <div>
+      <OrderDetailsTableDiv
+        ordersD={ordersD}
+        orderProducts={orderProducts}
+      />
+      </div>
+      
+      <div className="flex-1 flex-col items-center justify-center text-center">
         <button className="m-[10px] bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded transition-colors duration-300" onClick={toOrder}>
                 Back
             </button>

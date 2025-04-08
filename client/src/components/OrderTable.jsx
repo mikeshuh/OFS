@@ -23,12 +23,16 @@ const OrderTable = ({ order }) => {
     zipCode,
   } = order;
 
-  // Handle quantity change
+  /*
+  Button should take orderID as a parameter?
+  OrderDetails should display a list of purchased products from that orderID
+  */
   const handleButton = () => {
     window.location.href="./orderDetails";
   };
 
   return (
+    <div>
     <table className="mx-auto border-collapse shadow-md border-solid border-gray-500 text-left">
         <tr className="border-b-[1px]">
             <th className="w-[150px] h-[45px] p-[10px]">Order ID</th>
@@ -47,6 +51,8 @@ const OrderTable = ({ order }) => {
             </td>
         </tr>
     </table>
+      <br/>
+    </div>
   );
 };
 
