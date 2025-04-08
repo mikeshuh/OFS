@@ -58,7 +58,7 @@ const getOrderByUserID = async (req, res) =>{
     }
 
     if(order.userID != userID) {
-      return responseHandleder.forbidden(res, 'Order not associated with account');
+      return responseHandler.forbidden(res, 'Order not associated with account');
     }
 
     //if the user is associated with the order return the associated order products
