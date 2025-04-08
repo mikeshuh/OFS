@@ -161,6 +161,17 @@ const Order = {
       [orderID]
     );
     return rows[0]; // Return the order with payment info
+  },
+
+  updateOrderAddress: async (orderID, deliveryAddress) => {
+    const { streetAddress, city, zipCode } = deliveryAddress;
+
+    const [result] = await db.execute(
+      'UPDATE `Order` SET streetAddress = ?, city = ?, zipCode = ? WHERE orderID = ?',
+      [streetAddress, city, zipCode, orderID]
+    );
+
+    return result.affectedRows > 0; // Return true if update was successful
   }
 };
 

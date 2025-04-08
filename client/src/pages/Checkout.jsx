@@ -25,6 +25,7 @@ const Checkout = () => {
   const [isOrderCreated, setIsOrderCreated] = useState(false);
   const hasInitialized = useRef(false);
   const justPaidRef = useRef(false);
+  const hasCheckedAddressRef = useRef(false);
 
   const deliveryAddress = useMemo(() => {
     return JSON.parse(localStorage.getItem(LS_DELIVERY_ADDRESS) || "{}");
@@ -61,6 +62,40 @@ const Checkout = () => {
       setOrderID(existingOrderID);
       setClientSecret(existingClientSecret);
       setIsOrderCreated(true);
+
+      if (!hasCheckedAddressRef.current) {
+        hasCheckedAddressRef.current = true;
+
+        const updateAddress = async () => {
+          try {
+            const orderDetails = await requestServer(
+              `${API_URL}/api/orders/details/${existingOrderID}`,
+              "GET",
+              token
+            );
+            const oldAddress = {
+              streetAddress: orderDetails.data.data[0].streetAddress,
+              city: orderDetails.data.data[0].city,
+              zipCode: orderDetails.data.data[0].zipCode,
+            };
+            const newAddress = JSON.parse(localStorage.getItem(LS_DELIVERY_ADDRESS) || "{}");
+            if (newAddress.streetAddress !== oldAddress.streetAddress) {
+              await requestServer(
+                `${API_URL}/api/orders/update-address/${existingOrderID}`,
+                "PUT",
+                token,
+                newAddress
+              );
+            }
+          } catch (error) {
+            console.error("Error fetching order details:", error);
+            setPaymentError("Failed to retrieve order details. Please try again.");
+          }
+        };
+
+        updateAddress();
+      }
+
       return;
     }
 
@@ -206,7 +241,15 @@ const Checkout = () => {
                 ))}
               </div>
               <div className="mb-6">
-                <h3 className="font-semibold text-gray-700 mb-2">Delivery Address</h3>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-gray-700">Delivery Address</h3>
+                  <button
+                    onClick={() => navigate("/checkout-map")}
+                    className="text-blue-600 text-sm underline hover:text-blue-800"
+                  >
+                    Edit
+                  </button>
+                </div>
                 <p>{deliveryAddress.streetAddress}</p>
                 <p>{deliveryAddress.city}, {deliveryAddress.state} {deliveryAddress.zipCode}</p>
               </div>

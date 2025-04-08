@@ -74,9 +74,35 @@ const getOrderByUserID = async (req, res) =>{
   }
 }
 
+const updateOrderAddress = async (req, res) => {
+  try {
+    const deliveryAddress = req.body;
+    const orderID = req.params.orderID;
+    const userID = req.user.userID;
+
+    // Check if the order exists and belongs to the user
+    const order = await Order.findById(orderID);
+    if (!order) {
+      return responseHandler.notFound(res, 'Order not found.');
+    }
+    if (order.userID !== userID) {
+      return responseHandler.forbidden(res, 'You do not have permission to update this order.');
+    }
+
+    // Update the order address
+    await Order.updateOrderAddress(orderID, deliveryAddress);
+
+    return responseHandler.success(res, null, 'Order address updated successfully.');
+  } catch (error) {
+    console.error(`Update order address error: ${error.message}`, error);
+    return responseHandler.error(res, 'Failed to update order address.');
+  }
+}
+
 
 module.exports = {
   getOrderByUserID,
   createOrder,
-  getOrderDetailsByOrderID
+  getOrderDetailsByOrderID,
+  updateOrderAddress,
 };
