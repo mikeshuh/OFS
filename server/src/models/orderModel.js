@@ -28,10 +28,13 @@ const Order = {
 
       const orderID = result.insertId;
 
+      // Always lock in a consistent order
+      orderProducts.sort((a, b) => a.productID - b.productID);
+
       // Check if all products have sufficient inventory
       for (const orderProduct of orderProducts) {
         const [inventoryResult] = await connection.execute(
-          'SELECT quantity FROM Product WHERE productID = ?',
+          'SELECT quantity FROM Product WHERE productID = ? FOR UPDATE',
           [orderProduct.productID]
         );
 
