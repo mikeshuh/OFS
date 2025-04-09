@@ -68,7 +68,7 @@ const Checkout = () => {
       const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
       const checkOrderPaymentStatus = async () => {
-        await delay(2500);
+        await delay(3000);
 
         try {
           const orderDetails = await requestServer(
