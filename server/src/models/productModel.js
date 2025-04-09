@@ -43,6 +43,7 @@ const Product = {
   update: async (productID, productData) => {
     const { category, name, price, pounds, quantity, imageBinary } = productData;
 
+    // console.log('all data', productData);
     const [result] = await db.execute(
       'UPDATE Product SET category = ?, name = ?, price = ?, pounds = ?, quantity = ?, imageBinary = ? WHERE productID = ?',
       [category, name, price, pounds, quantity, imageBinary, productID]

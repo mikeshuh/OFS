@@ -13,6 +13,7 @@ import AuthProvider from "./components/AuthContext.jsx";
 import CartProvider from "./components/CartContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Map from "./pages/Map.jsx";
+import AdminDashboard from "./pages/AdminDashboard.jsx";
 function App() {
   return (
     <Router>
@@ -23,6 +24,7 @@ function App() {
             <Route path="/products" element={<Navigate to="/products/all" replace />} />
             <Route path="/products/:category" element={<Products />} />
             <Route element={<ProtectedRoute />}>
+              <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/map" element={<Map />} />
