@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef,useRef} from "react";
 import logo from "../assets/OFS_logo.png";
 import notification from "../assets/notification.svg";
 import user from "../assets/user.svg";
 import { requestServer } from "../utils/Utility";
 import ProductCardAdmin from "../components/ProductCardAdmin.jsx";
+import Dropdown from 'react-bootstrap/Dropdown';
+import Form from 'react-bootstrap/Form';
 
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -15,7 +17,53 @@ const AdminDashboard = () => {
   const [categories, setCategories] = useState(['all']);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
+  const toggleRef = useRef();
   const itemsPerPage = 10;
+
+  const CustomToggle = forwardRef(({ children, onClick }, ref) => (
+    <button
+      ref={ref}
+      onClick={(e) => {
+        e.preventDefault();
+        onClick(e);
+      }}
+      className="w-full text-left text-[#304c57] text-sm font-medium flex items-center justify-between"
+    >
+      {children}
+      <span className="ml-2 text-gray-400">&#x25bc;</span> {/* Down arrow */}
+    </button>
+  ));
+  const CustomMenu = forwardRef(
+    ({ children, style, className, 'aria-labelledby': labeledBy }, ref) => {
+      const [value, setValue] = useState('');
+
+      return (
+        <div
+          ref={ref}
+          style={style}
+          className={`bg-white border border-gray-200 rounded-md shadow-md p-2 ${className}`}
+          aria-labelledby={labeledBy}
+        >
+          <input
+            autoFocus
+            type="text"
+            className="w-full px-3 py-1 mb-2 text-sm text-gray-700 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-green-200"
+            placeholder="Search..."
+            onChange={(e) => setValue(e.target.value)}
+            value={value}
+          />
+          <div className="flex flex-col">
+            {React.Children.toArray(children).filter(
+              (child) =>
+                !value || child.props.children.toLowerCase().startsWith(value),
+            )}
+          </div>
+
+        </div>
+      );
+    }
+  );
+
 
   const [totalPages, setTotalPage] = useState(Math.ceil(allProducts.length / itemsPerPage));
   // Initial data load
@@ -32,6 +80,13 @@ const AdminDashboard = () => {
           setTotalPage(Math.ceil(productsData.length / itemsPerPage));
           setPage(1);
           setProducts(productsData.slice(0, itemsPerPage));
+
+          // Extract unique categories
+          const uniqueCategories = ['all', ...new Set(productsData.map(product =>
+            product.category.toLowerCase()
+          ))];
+          setCategories(uniqueCategories);
+
         } else {
           throw new Error(response?.data?.message || "Failed to fetch products");
         }
@@ -83,17 +138,45 @@ const AdminDashboard = () => {
       </div>
 
       {/* Add margin to push content below navbar */}
-      <div className="w-full mt-[80px] p-[30px] flex flex-col gap-5 items-end justify-start w-[1280px] ps-5px overflow-hidden">
+      <div className="w-full mt-[80px] p-[30px] flex flex-col gap-5 items-end justify-start w-[1280px] ps-5px ">
         <div className="flex flex-row items-center justify-between self-stretch">
           <div className="flex flex-col gap-0 items-start w-[559.5px]">
             <div className="text-[#120213] font-['Roboto-SemiBold',_sans-serif] text-2xl font-semibold">Product Informations</div>
           </div>
-
         </div>
+
+
+
 
         <div className="flex flex-col gap-2.5 items-start justify-start self-stretch shrink-0 relative">
           <div className="flex flex-row items-end justify-between self-stretch shrink-0 relative">
             <div className="flex flex-row gap-2.5 items-start justify-start shrink-0 relative">
+              <div className="z-50 bg-[#ffffff] rounded-[10px] border border-[rgba(48,76,87,0.20)] pt-2.5 pr-[15px] pb-2.5 pl-[15px] flex items-center justify-start shrink-0 relative"
+                style={{ boxShadow: "0px 0px 5px 0px rgba(0, 0, 0, 0.10)", minWidth: "180px" }}>
+                <Dropdown>
+                  <Dropdown.Toggle
+                    ref= {toggleRef}
+                    as={CustomToggle}
+                    id="dropdown-custom-components"
+                    className="text-[#304c57] text-sm font-medium text-left bg-transparent border-none "
+                  >
+                    {selectedCategory || "Select Category"}
+                  </Dropdown.Toggle>
+
+                  <Dropdown.Menu as={CustomMenu}>
+                    {categories.map((category, idx) => (
+                      <Dropdown.Item
+                        key={idx}
+                        eventKey={category}
+                        onClick={() => setSelectedCategory(category)}
+                      >
+                        {category}
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
+
               <div className="bg-[#ffffff] rounded-[10px] border-solid border-[rgba(48,76,87,0.20)] border pt-2.5 pr-[15px] pb-2.5 pl-[15px] flex flex-row gap-2.5 items-center justify-start shrink-0 relative" style={{ boxShadow: "0px 0px 5px 0px rgba(0, 0, 0, 0.10)" }}>
                 <input type="category" id="category" placeholder="Enter a category" />
               </div>
