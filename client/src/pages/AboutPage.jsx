@@ -9,6 +9,10 @@ import nodeIcon from '../assets/nodeIcon.png';
 import mysqlIcon from '../assets/mysqlIcon.png';
 import stripeIcon from '../assets/stripeIcon.svg';
 import tailwindIcon from '../assets/tailwindIcon.svg';
+import viteIcon from '../assets/viteIcon.png';
+import redisIcon from '../assets/redisIcon.png';
+import mapBoxIcon from '../assets/mapBoxIcon.png';
+import expressIcon from '../assets/expressIcon.png';
 import { register } from 'swiper/element/bundle';
 
 
@@ -56,22 +60,24 @@ function AboutPage() {
 
   useEffect(() => {
     const imageCarouselParams = {
-      slidesPerView: 3,
-      spaceBetween: 10,
+      slidesPerView: 4,
+      spaceBetween: 20,
+      freeMode: true,
       loop: true,
+      transitionTimingFunction: 'linear',
       autoplay: {
-        delay: 0,
+        delay: 3000,
         disableOnInteraction: false,
       },
-      speed: 600,
+      speed: 5000,
       breakpoints: {
         640: {
           slidesPerView: 2,
-          spaceBetween: 20,
+          spaceBetween: 10,
         },
         768: {
           slidesPerView: 3,
-          spaceBetween: 30,
+          spaceBetween: 5,
         },
       },
     };
@@ -92,7 +98,7 @@ function AboutPage() {
         <div className="text-center ">
           <div className="flex items-center justify-center">
             <div className="border-t border-green-500 w-32"></div>
-            <h2 className="mx-4 text-2xl text-green-600 italic font-medium">Here At OFS Delivery Is</h2>
+            <h2 className="mx-4 text-2xl text-green-600 italic font-medium">OFS Delivery Is</h2>
             <div className="border-t border-green-500 w-32"></div>
           </div>
         </div>
@@ -121,13 +127,13 @@ function AboutPage() {
           <div className='md:w-1/2'>
             <h2 className='text-2xl font-semibold mb-4'>Why choose OFS?</h2>
             <p className='mb-4'>
-              Here at OFS we are committed to providing quality and organic products that are affordable and fresh. Our products are locally sourced so by supporting us you support the farms and communties near you.
+              At OFS, we are dedicated to bringing you fresh, organic products at affordable prices. By sourcing locally, we proudly support nearby farms and communities, ensuring that every purchase helps strengthen your local economy.
             </p>
             <p classname=''>
-              We strive to provide fast, reliable and on demand delivery to save you time to do things that really matter. In order to ensure convenience any order under 20lbs qualiies for free delivery meaning you don't have to worry about flat fees on small orders.
+              We prioritize your convenience with fast, reliable, and on-demand delivery, allowing you to spend more time on the things that matter most. As a bonus, orders under 20 lbs qualify for free delivery—no need to worry about extra fees on smaller purchases.
             </p>
             <p className='mt-4'>
-              We believe in clear communication and that means all your orders are saved for you to see. We also provide real time updates to the state of your delivery so you can be assured that your delivery is on the way.
+              Clear communication is central to our service. All your past orders are safely stored and easily accessible, and you'll always receive real-time updates on your deliveries, giving you peace of mind from checkout to your doorstep.
             </p>
 
           </div>
@@ -145,27 +151,27 @@ function AboutPage() {
         <div className='container mx-auto grid grid-cols-3 grid-rows-2 gap-8 px-8 items-center justify-center'>
           <div className='flex flex-col items-center justify-center bg-white max-w-[300px] h-[300px] drop-shadow-lg'>
           <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover' />
-          An Manager
+          An Ho
           </div>
           <div className='flex flex-col items-center justify-center bg-white max-w-[300px] h-[300px] drop-shadow-lg'>
           <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover' />
-          Trinity Manager
+          Trinity Manansala
           </div>
           <div className='flex flex-col items-center justify-center bg-white max-w-[300px] h-[300px] drop-shadow-lg'>
           <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover' />
-          Timothy Manager
+          Timothy Nguyen
           </div>
           <div className='flex flex-col items-center justify-center bg-white max-w-[300px] h-[300px] drop-shadow-lg'>
           <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover' />
-          Micheal Manager
+          Michael Huh
           </div>
           <div className='flex flex-col items-center justify-center bg-white max-w-[300px] h-[300px] drop-shadow-lg'>
           <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover' />
-          Danny Manager
+          Danny Xu
           </div>
           <div className='flex flex-col items-center justify-center bg-white max-w-[300px] h-[300px] drop-shadow-lg'>
           <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover' />
-          Ray Manager
+          Ray Zhang
           </div>
         </div>
       </section>
@@ -173,9 +179,9 @@ function AboutPage() {
       {/* Image Carousel */}
       <section className='container mx-auto px-6 py-12'>
         <h2 className='text-2xl font-semibold mb-4 text-center'>Technologies Used For This Website</h2>
-        <swiper-container ref={imageCarousel} className='myswiper' autoplay>
+        <swiper-container ref={imageCarousel} className='myswiper' autoplay transitionTimingFunction freeMode>
           <swiper-slide className='flex justify-center'>
-            <img src={reactIcon} alt='react' className='max-w-[200px] h-[200px] rounded-lg ' />
+            <img src={reactIcon} alt='react' className='max-w-[200px] h-[200px] w-full rounded-lg ' />
           </swiper-slide>
           <swiper-slide className='flex justify-center'>
             <img src={mysqlIcon} alt='mysql' className='max-w-[200px] h-[200px] w-full rounded-lg ' />
@@ -188,6 +194,18 @@ function AboutPage() {
           </swiper-slide>
           <swiper-slide className='flex justify-center'>
             <img src={tailwindIcon} alt='tailwind' className='max-w-[200px] h-[200px] w-full rounded-lg ' />
+          </swiper-slide>
+          <swiper-slide className='flex justify-center'>
+            <img src={redisIcon} alt='redis' className='max-w-[400px] h-[200px] w-full rounded-lg ' />
+          </swiper-slide>
+          <swiper-slide className='flex justify-center'>
+            <img src={viteIcon} alt='vite' className='max-w-[200px] h-[200px] w-full rounded-lg ' />
+          </swiper-slide>
+          <swiper-slide className='flex justify-center'>
+            <img src={expressIcon} alt='express' className='max-w-[200px] h-[200px] w-full rounded-lg ' />
+          </swiper-slide>
+          <swiper-slide className='flex justify-center'>
+            <img src={mapBoxIcon} alt='mapbox' className='max-w-[400px] h-[200px] w-full rounded-lg ' />
           </swiper-slide>
         </swiper-container>
       </section>
