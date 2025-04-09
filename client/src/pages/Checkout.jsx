@@ -63,6 +63,33 @@ const Checkout = () => {
       setClientSecret(existingClientSecret);
       setIsOrderCreated(true);
 
+      // Check if order is paid already, if so, clear checkout session
+      // delay to ensure db is updated
+      const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+      const checkOrderPaymentStatus = async () => {
+        await delay(2500);
+
+        try {
+          const orderDetails = await requestServer(
+            `${API_URL}/api/orders/details/${existingOrderID}`,
+            "GET",
+            token
+          );
+          const orderPaymentStatus = orderDetails.data.data[0].paymentStatus;
+          if (orderPaymentStatus === "paid" || orderPaymentStatus === "refunded") {
+            clearCart();
+            clearCheckoutSession();
+            navigate(`/order-confirmation/${existingOrderID}`);
+          }
+        } catch (error) {
+          console.error("Error checking order payment status:", error);
+          setPaymentError("Failed to check order payment status. Please try again.");
+        }
+      };
+
+      checkOrderPaymentStatus();
+
       if (!hasCheckedAddressRef.current) {
         hasCheckedAddressRef.current = true;
 
