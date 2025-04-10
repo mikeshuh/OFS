@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ProductGrid from "../components/ProductGrid";
 import { requestServer } from "../utils/Utility";
+import { all } from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -70,6 +71,23 @@ const Products = () => {
       }
     }
   }, [category, allProducts, categories, navigate]);
+
+  useEffect(() => {
+    if (localStorage.getItem("itemData")) {
+      const itemURL = JSON.parse(localStorage.getItem("itemData"));
+      filterForSearch(allProducts, itemURL);
+    }
+  }, [category, allProducts, categories, navigate]);
+
+  const filterForSearch = (productsData, searchFor) => {
+    setProducts(
+      productsData.filter(product => 
+        searchFor.some(searchItem =>
+          product.name.toLowerCase() === searchItem.name.toLowerCase()
+        )
+      )
+    );
+  };
 
   // Filter products based on selected category
   const filterProducts = (productsData, categoryName) => {
