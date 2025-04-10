@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ProductGrid from "../components/ProductGrid";
 import { requestServer } from "../utils/Utility";
-import { all } from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -83,7 +82,7 @@ const Products = () => {
     setProducts(
       productsData.filter(product => 
         searchFor.some(searchItem =>
-          product.name.toLowerCase() === searchItem.name.toLowerCase()
+          (product.name.toLowerCase() || product.category.toLowerCase()) === searchItem.name.toLowerCase()
         )
       )
     );

@@ -8,7 +8,7 @@ const validation = require('../utils/validationUtils');
 // unprotected routes
 router.get('/:productId', validation.validateParamInt('productId'), productController.getProduct);
 
-router.get('/name/:name', validation.validateParamString('name'), productController.getBySearch);
+router.get('/search/:searchTerm', validation.validateParamString('searchTerm'), productController.getBySearch);
 
 router.get('/category/:category', validation.validateParamString('category'), productController.getByCategory);
 
