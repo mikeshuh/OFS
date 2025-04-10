@@ -6,6 +6,7 @@ const CartContext = createContext(null);
 
 // Cart storage key for localStorage
 const CART_STORAGE_KEY = 'ofs_shopping_cart';
+const TAX_RATE = 0.09375; // 9.375% tax rate
 
 // Create the provider
 const CartProvider = ({ children }) => {
@@ -111,6 +112,27 @@ const CartProvider = ({ children }) => {
     }, 0);
   };
 
+  const calculateTotalWeight = () => {
+    return cartItems.reduce((total, item) => {
+      return total + (parseFloat(item.pounds) * item.cartQuantity);
+    }, 0);
+  };
+
+  const calculateTotalWithShipping = () => {
+    const total = calculateTotal();
+    const shippingCost = calculateTotalWeight() >= 20 ? 10 : 0;
+    return total + shippingCost;
+  }
+
+  const calculateTotalWithTax = () => {
+    const total = calculateTotalWithShipping();
+    return total * (1 + TAX_RATE);
+  }
+
+  const getTaxRate = () => {
+    return TAX_RATE;
+  }
+
   // Calculate total items in cart
   const cartItemsCount = cartItems.reduce((total, item) => {
     return total + item.cartQuantity;
@@ -124,7 +146,11 @@ const CartProvider = ({ children }) => {
     updateQuantity,
     clearCart,
     calculateTotal,
-    cartItemsCount
+    calculateTotalWeight,
+    calculateTotalWithShipping,
+    calculateTotalWithTax,
+    getTaxRate,
+    cartItemsCount,
   };
 
   return (
@@ -147,7 +173,11 @@ export const useCart = () => {
       removeFromCart: () => {},
       updateQuantity: () => {},
       clearCart: () => {},
-      calculateTotal: () => 0
+      calculateTotal: () => 0,
+      calculateTotalWeight: () => 0,
+      calculateTotalWithShipping: () => 0,
+      calculateTotalWithTax: () => 0,
+      getTaxRate: () => 0.09375,
     };
   }
   return context;

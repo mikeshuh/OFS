@@ -75,7 +75,7 @@ const createProduct = async (req, res) => {
     // create product
     const productId = await Product.create(productData);
     if (!productId || !Number.isInteger(productId)) {
-      return responseHandler.error(res, 'Error creating product)');
+      return responseHandler.error(res, 'Error creating product');
     }
     responseHandler.created(res, { productId }, 'Product created successfully');
   }catch(error){

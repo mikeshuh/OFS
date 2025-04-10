@@ -21,7 +21,8 @@ CREATE TABLE `Order` (
     totalPounds DECIMAL(10,2) NOT NULL,
     deliveryFee BOOL NOT NULL,
     orderTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    orderStatus BOOL NOT NULL,
+    orderStatus BOOL NOT NULL DEFAULT FALSE,
+    paymentStatus ENUM('pending', 'paid', 'failed', 'refunded') DEFAULT 'pending',
     streetAddress VARCHAR(64) NOT NULL,
     city VARCHAR(32) NOT NULL,
     zipCode INT NOT NULL,
@@ -47,4 +48,19 @@ CREATE TABLE OrderProduct (
     quantity INT NOT NULL,
     FOREIGN KEY (orderID) REFERENCES `Order`(orderID) ON DELETE CASCADE,
     FOREIGN KEY (productID) REFERENCES Product(productID) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- Create the Payment table
+CREATE TABLE Payment (
+    paymentID INT PRIMARY KEY AUTO_INCREMENT,
+    orderID INT NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    paymentType ENUM('payment', 'refund') DEFAULT 'payment',
+    stripePaymentIntentID VARCHAR(255) NOT NULL,
+    cardLastFour VARCHAR(4),
+    cardBrand VARCHAR(20),
+    status ENUM('pending', 'processing', 'completed', 'failed', 'refunded') DEFAULT 'pending',
+    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (orderID) REFERENCES `Order`(orderID) ON DELETE CASCADE
 ) ENGINE=InnoDB;

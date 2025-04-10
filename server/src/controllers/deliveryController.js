@@ -2,9 +2,21 @@ const Order = require('../models/orderModel');
 const responseHandler = require('../utils/responseHandler');
 const validation = require('../utils/validationUtils');
 const deliveryService = require('../services/deliveryService');
+const turf = require('@turf/turf');
 
 const WAREHOUSE_ADDRESS = "1 Washington Sq, San Jose, Californi, United States, 95192"
 const DELIVERY_RADIUS = 25; // miles
+
+// Calculate the distance between two coordinates
+// Uses turf.js which mapbox heavily depends on
+// Document: https://stackoverflow.com/questions/69520848/how-to-get-distance-between-two-coordinates-with-mapbox
+const getEuclidieanDistance = async (req, res) => {
+  const { origin, destination } = req.body;
+  const [lon1, lat1] = await deliveryService.getGeocode(`${origin.streetAddress}, ${origin.city}, ${origin.state || "California"}, ${origin.country || "United States"}, ${origin.zipCode}`);
+  const [lon2, lat2] = await deliveryService.getGeocode(`${destination.streetAddress}, ${destination.city}, ${destination.state || "California"}, ${destination.country || "United States"}, ${destination.zipCode}`);
+  const distance = turf.distance(turf.point([lon1, lat1]), turf.point([lon2, lat2]), { units: 'miles' });
+  return distance <= DELIVERY_RADIUS;
+}
 
 /*
   Get the coordinates of an address
@@ -32,7 +44,6 @@ const getGeocode = async (req, res) => {
     const coordinates = await deliveryService.getGeocode(sanitizedAddress);
     responseHandler.success(res, coordinates);
   } catch (error) {
-    console.log(error)
     responseHandler.error(res, error.message);
   }
 }
@@ -46,7 +57,7 @@ const getRoute = async (req, res, dataType = "") => {
   try {
     const validationResult = validation.validateRoute(req.body);
     if (!validationResult.isValid) {
-      responseHandler.error(res, validationResult.errors);
+      responseHandler.badRequest(res, validationResult.errors);
       return null;
     }
 
@@ -64,22 +75,22 @@ const getRoute = async (req, res, dataType = "") => {
       switch (dataType) {
         case "distance":
           const distance = Math.round(route.routes[0].distance * 10 / 1609.34) / 10;
-          responseHandler.success(res, `${distance} miles`);
+          responseHandler.success(res, { distance: distance, message: `${distance} miles` });
           break;
         case "checkDeliveryRadius":
           return Math.round(route.routes[0].distance * 10 / 1609.34) / 10 <= DELIVERY_RADIUS;
         case "duration":
           const minutes = Math.ceil(route.routes[0].duration / 60);
-          responseHandler.success(res, `${minutes} minutes`);
+          responseHandler.success(res, { duration: minutes, message: `${minutes} minutes` });
           break;
         default:
           responseHandler.success(res, route);
       }
     } else {
-      responseHandler.error(res, 'Could not find route');
+      responseHandler.badRequest(res, 'Could not find route');
     }
   } catch (error) {
-    responseHandler.error(res, error.message);
+    responseHandler.badRequest(res, error.message);
   }
 }
 
@@ -107,14 +118,22 @@ const getDuration = async (req, res) => {
   Example: localhost:5000/api/delivery/check
 */
 const checkDeliveryRadius = async (req, res) => {
-  req.origin = WAREHOUSE_ADDRESS;
-  const isWithinRadius = await getRoute(req, res, "checkDeliveryRadius");
+  try {
+    req.body.origin = {
+      streetAddress: "1 Washington Sq",
+      city: "San Jose",
+      zipCode: "95192"
+    }
+    // This is modified to use the Euclidean distance instead
+    const isWithinRadius = await getEuclidieanDistance(req, res);
 
-  //Not checking error because it should be handled in the getRoute function
-  if (isWithinRadius) {
-    responseHandler.success(res, 'deliverable');
-  }else if (isWithinRadius === false) {
-    responseHandler.error(res, 'undeliverable');
+    if (isWithinRadius) {
+      responseHandler.success(res, { message: 'Congratulations! Your address is within our delivery zone' });
+    } else if (isWithinRadius === false) {
+      responseHandler.success(res, { message: 'Sorry! Your address is outside our delivery zone' });
+    }
+  } catch (error){
+    responseHandler.error(res, error.message);
   }
 }
 /*
@@ -128,7 +147,7 @@ const getOptimalRoute = async (req, res) => {
     const navigationInstruction = [];
     const validationResult = validation.validateOptimalRoute(req.body);
     if (!validationResult.isValid) {
-      responseHandler.error(res, validationResult.errors);
+      responseHandler.badRequest(res, validationResult.errors);
       return;
     }
 
@@ -177,10 +196,9 @@ const getOptimalRoute = async (req, res) => {
       });
       responseHandler.success(res, navigationInstruction);
     } else {
-      responseHandler.error(res, 'Could not find route');
+      responseHandler.badRequest(res, 'Could not find route');
     }
   } catch (error) {
-    console.log(error)
     responseHandler.error(res, error.message);
   }
 }

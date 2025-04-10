@@ -6,6 +6,7 @@ import Banner from "../assets/banner.webp";
 import fruitImage from "../assets/fruits.jpg";
 import vegetablesImage from "../assets/vegetables.jpg";
 import dairyImage from "../assets/dairy.jpg";
+import deliveryImage from "../assets/delivery.jpg";
 
 
 const Home = () => {
@@ -230,6 +231,38 @@ const Home = () => {
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Free Delivery When Your Order is Under 20 lbs!</h2>
         </div>
       </div>
+
+      {/* Delivery Area Section */}
+      <div className="w-full px-4 md:px-12 py-4">
+        <div className="relative w-full rounded-lg overflow-hidden">
+          <div className="w-full aspect-[2.5/1] relative">
+            <img
+              src={deliveryImage} // Background image
+              alt="Delivery Area"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          </div>
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full px-6 md:px-12 text-right"> {/* Align text to the right */}
+              <div className="max-w-lg mr-10 sm:mr-10 md:mr-20 lg:mr-40 xl:mr-60 2xl:mr-50 ml-auto"> {/* Move text to the right */}
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 drop-shadow-lg">
+                  Check If We Deliver To Your Area
+                </h1>
+                <p className="text-lg md:text-xl text-white mb-6 drop-shadow-lg">
+                  Enter your location and find out if you're in our delivery zone.
+                </p>
+                <button
+                  onClick={() => navigate("/map")}
+                  className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 md:py-3 md:px-6 rounded"
+                >
+                  View Map
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
 
       {/* Featured Products */}
       <div className="w-full px-4 md:px-12 py-6 mb-10">

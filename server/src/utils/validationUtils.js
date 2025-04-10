@@ -190,7 +190,38 @@ const validateProduct = [
     }
     next();
   },
-]
+];
+
+//validate order
+const validateOrder = [
+  body('streetAddress')
+  .trim()
+  .escape()
+  .isString(),
+
+  body('city')
+  .trim()
+  .escape()
+  .isString(),
+
+  body('zipCode')
+  .trim()
+  .escape()
+  .toInt()
+  .isInt(),
+
+  body('orderProducts')
+  .isArray({ min: 1 })
+  .withMessage('At least one order product is required'),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return responseHandler.badRequest(res, null, errors);
+    }
+    next();
+  },
+];
 
 const validateParamInt = (paramName) => {
   return [
@@ -209,7 +240,8 @@ const validateParamInt = (paramName) => {
       next();
     },
   ]
-}
+};
+
 const validateParamString = (paramName) => {
   return [
     param(paramName)
@@ -226,7 +258,7 @@ const validateParamString = (paramName) => {
       next();
     },
   ]
-}
+};
 
 const validateOptimalRoute = (req) => {
   const { addresses } = req;
@@ -243,9 +275,7 @@ const validateOptimalRoute = (req) => {
     isValid: errors.length === 0,
     errors
   };
-}
-
-
+};
 
 const validateAddress = (req) => {
   const { streetAddress,zipCode,city } = req;
@@ -260,7 +290,7 @@ const validateAddress = (req) => {
     isValid: errors.length === 0,
     errors
   };
-}
+};
 
 const validateRoute = (req) => {
   const { origin, destination } = req;
@@ -277,12 +307,30 @@ const validateRoute = (req) => {
     isValid: errors.length === 0,
     errors
   };
-}
+};
 
 // Parse ID from string to integer
 const parseId = (id) => {
   return parseInt(id, 10);
 };
+
+// Payment intent req body validation
+const validatePaymentIntent = [
+  body('orderID')
+  .trim()
+  .escape()
+  .toInt()
+  .isInt({ max: 1000000000 })
+  .withMessage('Order ID must be an integer'),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return responseHandler.badRequest(res, null, errors);
+    }
+    next();
+  },
+];
 
 module.exports = {
   isValidEmail,
@@ -299,9 +347,11 @@ module.exports = {
   parseId,
   //Product Route Validation
   validateProduct,
+  validateOrder,
   validateParamInt,
   validateParamString,
   validateRoute,
   validateAddress,
   validateOptimalRoute,
+  validatePaymentIntent,
 };
