@@ -98,20 +98,22 @@ const AdminDashboard = () => {
     setProducts(allProducts.slice((page - 1) * itemsPerPage, page * itemsPerPage));
   }
 
-  const handleCategoryChange = (category) => {
-    setSelectedCategory(category);
-    setDropdownOpen(false); // Close dropdown when item is selected
+  useEffect(() => {
+    const filteredCategoryProducts = selectedCategory === 'all'
+      ? allProducts
+      : allProducts.filter(product => product.category === selectedCategory);
+    const filteredProducts = searchValue === ''
+      ? filteredCategoryProducts
+      : filteredCategoryProducts.filter(product => product.name.toLowerCase().includes(searchValue.toLowerCase()));
 
-    if (category === 'all') {
-      setProducts(allProducts.slice(0, itemsPerPage));
-      setTotalPage(Math.ceil(allProducts.length / itemsPerPage) || 1);
-      setCurrentPage(1);
-    } else {
-      const filteredProducts = allProducts.filter(product => product.category === category);
-      setProducts(filteredProducts.slice(0, itemsPerPage));
-      setTotalPage(Math.ceil(filteredProducts.length / itemsPerPage) || 1);
-      setCurrentPage(1);
-    }
+    setProducts(filteredProducts.slice(0, itemsPerPage));
+    setTotalPage(Math.ceil(filteredProducts.length / itemsPerPage) || 1);
+    setCurrentPage(1);
+  }, [selectedCategory, searchValue, allProducts]);
+
+  const handleCategoryChange = (category) => {
+    setDropdownOpen(false);
+    setSelectedCategory(category);
   };
 
   const renderDropdownItem = (cat, idx) => {
