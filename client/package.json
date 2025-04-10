@@ -12,6 +12,8 @@
   "dependencies": {
     "@mapbox/mapbox-gl-geocoder": "^5.0.3",
     "@mapbox/search-js-react": "^1.0.0",
+    "@stripe/react-stripe-js": "^3.6.0",
+    "@stripe/stripe-js": "^7.0.0",
     "@tailwindcss/vite": "^4.0.12",
     "@turf/turf": "^7.2.0",
     "axios": "^1.8.2",
@@ -21,6 +23,7 @@
     "react-bootstrap": "^2.10.9",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.3.0",
+    "swiper": "^11.2.6",
     "tailwindcss": "^4.0.12"
   },
   "devDependencies": {

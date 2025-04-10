@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useCart } from "../components/CartContext";
 
@@ -9,10 +9,24 @@ const Cart = () => {
     removeFromCart,
     updateQuantity,
     clearCart,
-    calculateTotal
+    calculateTotal,
+    calculateTotalWeight,
+    calculateTotalWithShipping,
+    calculateTotalWithTax,
+    getTaxRate
   } = useCart();
+  const navigate = useNavigate();
 
   console.log("Cart rendering with items:", cartItems);
+
+  const handleCheckout = () => {
+    if (cartItems.length === 0) {
+      return; // Don't allow checkout with empty cart
+    }
+
+    // Navigate to the checkout map page for address selection
+    navigate("/checkout-map");
+  };
 
   // If cart is empty, show message and link to products
   if (!cartItems || cartItems.length === 0) {
@@ -185,21 +199,34 @@ const Cart = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Shipping</span>
-                  <span className="font-medium">$0.00</span>
+                  <span className="font-medium">
+                    {calculateTotalWeight() >= 20
+                      ? "$10.00"
+                      : "Free"
+                    }
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Tax</span>
-                  <span className="font-medium">${(calculateTotal() * 0.08).toFixed(2)}</span>
+                  <span className="font-medium">${(calculateTotalWithShipping() * getTaxRate()).toFixed(2)}</span>
                 </div>
                 <div className="border-t pt-3 mt-3">
                   <div className="flex justify-between font-semibold text-lg">
                     <span>Total</span>
-                    <span>${(calculateTotal() * 1.08).toFixed(2)}</span>
+                    <span>${(calculateTotalWithTax()).toFixed(2)}</span>
                   </div>
                 </div>
               </div>
 
-              <button className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white py-3 rounded font-medium">
+              <button
+                onClick={handleCheckout}
+                disabled={cartItems.length === 0}
+                className={`w-full mt-6 py-3 rounded font-medium ${
+                  cartItems.length === 0
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-green-600 hover:bg-green-700 text-white"
+                }`}
+              >
                 Proceed to Checkout
               </button>
             </div>

@@ -1,33 +1,41 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import mapboxgl from "mapbox-gl";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import Navbar from "../components/Navbar";
 import { SearchBox } from "@mapbox/search-js-react";
 import { requestServer } from "../utils/Utility";
 import * as turf from "@turf/turf";
+import { useCart } from "../components/CartContext";
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 const API_URL = import.meta.env.VITE_API_URL;
 const FIXED_CENTER = [-121.879695, 37.33599];
 const RADIUS_MILES = 25;
 
-const Map = () => {
-  /*
-    information about these variables:
-    mapContainerRef: the reference to the map container
-    mapRef: the reference to the map instance
-    markerRef: the reference to the marker instance
-    value: the value of the search box, takes user input for address
-    text: the text to display in the delivery check section
-    backgroundColor: the background color of the delivery check section
-  */
+const CheckoutMap = () => {
+  const navigate = useNavigate();
+  const { cartItems } = useCart();
+
+  // Map refs
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const markerRef = useRef(null);
+
+  // State variables
   const [value, setValue] = useState("");
-  const [text, setText] = useState("Enter your location to see if your address is in our delivery area.");
+  const [text, setText] = useState("Enter your delivery address to proceed with checkout.");
   const [backgroundColor, setBackgroundColor] = useState("bg-gray-100");
   const [searchKey, setSearchKey] = useState(0);
+  const [isInDeliveryZone, setIsInDeliveryZone] = useState(false);
+  const [addressDetails, setAddressDetails] = useState(null);
+
+  // Redirect to cart if cart is empty
+  useEffect(() => {
+    if (cartItems.length === 0) {
+      navigate("/cart");
+    }
+  }, [cartItems, navigate]);
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -64,10 +72,10 @@ const Map = () => {
       });
     });
 
-    // Control panel for the map, for zooming in and out and rotation
+    // Control panel for the map
     mapRef.current.addControl(new mapboxgl.NavigationControl(), "top-left");
 
-    // Unmounting the map and marker when the component is unmounted, not necessary but good to have
+    // Cleanup function
     return () => {
       if (markerRef.current) {
         markerRef.current.remove();
@@ -82,7 +90,7 @@ const Map = () => {
 
   const handleRetrieve = async (retrieve) => {
     try {
-      // This ensures that only one marker will be shown on the screen
+      // Remove existing marker
       if (markerRef.current) {
         markerRef.current.remove();
       }
@@ -94,13 +102,25 @@ const Map = () => {
       if (!properties["address"] || !context.place || !context.region || !context.country) {
         setText("Please enter a valid address.");
         setBackgroundColor("bg-red-100");
+        setIsInDeliveryZone(false);
         return;
       }
+
+      // Store the complete address
+      const address = {
+        streetAddress: properties["address"],
+        city: context.place.name,
+        state: context.region.name,
+        country: context.country.name,
+        zipCode: context.postcode.name
+      };
+
+      setAddressDetails(address);
+
       // Set the text to the address
-      // Get the distance between the warehouse and the given address
-      // SearchKey is to force the searchbar to re-render
       setValue(`${properties["address"]}, ${context.place.name}, ${context.region.name}, ${context.country.name}`);
       setSearchKey(searchKey + 1);
+
       const addressData = {
         destination: {
           zipCode: context.postcode.name,
@@ -110,13 +130,16 @@ const Map = () => {
           state: context.region.name
         },
       };
+
       const token = localStorage.getItem("authToken");
       const response = await requestServer(`${API_URL}/api/delivery/check`, "POST", token, JSON.stringify(addressData));
 
       // Display the message for whether the address is in the delivery area
       if (response.data.success) {
+        const isWithinZone = response.data.data.message.includes("Congratulations");
         setText(response.data.data.message);
-        setBackgroundColor(response.data.data.message.includes("Congratulations") ? "bg-green-100" : "bg-yellow-100");
+        setBackgroundColor(isWithinZone ? "bg-green-100" : "bg-yellow-100");
+        setIsInDeliveryZone(isWithinZone);
 
         const [lng, lat] = retrieve.features[0].geometry.coordinates;
 
@@ -129,14 +152,24 @@ const Map = () => {
     } catch (error) {
       console.error("Error retrieving address:", error);
       setBackgroundColor("bg-red-100");
-
+      setIsInDeliveryZone(false);
       setText("An error occurred while checking the address, please try again.");
+    }
+  };
+
+  // Handle confirming the address and proceeding to checkout
+  const confirmAddress = () => {
+    if (isInDeliveryZone && addressDetails) {
+      // Save the delivery address to localStorage
+      localStorage.setItem("deliveryAddress", JSON.stringify(addressDetails));
+
+      // Navigate to checkout
+      navigate("/checkout");
     }
   };
 
   return (
     <div className="w-screen h-screen flex flex-col">
-
       {/* Navbar - Fixed at the top */}
       <div className="w-full border-b-4 border-gray-300 shadow-md">
         <Navbar />
@@ -144,19 +177,19 @@ const Map = () => {
 
       {/* Container for layout */}
       <div className="flex h-full">
-
         {/* Sidebar (Search Box & Content) */}
         <div className="w-1/3 h-full p-6 bg-white shadow-lg border-r-2 border-gray-300 flex flex-col">
-
           {/* Title */}
-          <h1 className="text-2xl font-semibold text-left mb-4">Food Delivery Coverage Checker</h1>
+          <h1 className="text-2xl font-semibold text-left mb-4">
+            Delivery Address
+          </h1>
 
           {/* Search Box */}
           <div>
             <SearchBox
               options={{
                 country: "us",
-                bbox: [-124.4096, 32.5343, -114.1312, 42.0095], // Bounding box for California (West, South, East, North)
+                bbox: [-124.4096, 32.5343, -114.1312, 42.0095], // Bounding box for California
                 proximity: FIXED_CENTER, // Prioritize searches near the warehouse
               }}
               key={searchKey}
@@ -169,9 +202,37 @@ const Map = () => {
             <h2 className="text-lg font-semibold text-gray-800">Delivery Check</h2>
             <p className="text-gray-600 mt-2 leading-relaxed">{text}</p>
           </div>
+
+          {/* Checkout flow buttons */}
+          <div className="mt-auto">
+            <button
+              onClick={confirmAddress}
+              disabled={!isInDeliveryZone}
+              className={`w-full py-3 px-4 rounded font-medium ${
+                isInDeliveryZone
+                  ? "bg-green-600 hover:bg-green-700 text-white"
+                  : "bg-gray-400 cursor-not-allowed text-white"
+              }`}
+            >
+              {isInDeliveryZone ? "Deliver to this Address" : "Select Valid Address"}
+            </button>
+
+            {!isInDeliveryZone && addressDetails && (
+              <p className="text-sm text-red-600 mt-2 text-center">
+                Please select an address within our delivery zone.
+              </p>
+            )}
+
+            <button
+              onClick={() => navigate("/cart")}
+              className="w-full mt-3 py-2 px-4 text-gray-700 hover:text-gray-900 bg-gray-200 hover:bg-gray-300 rounded font-medium"
+            >
+              Return to Cart
+            </button>
+          </div>
         </div>
 
-        {/* Map Container - Fixed in place */}
+        {/* Map Container */}
         <div className="w-2/3 h-full">
           <div ref={mapContainerRef} className="w-full h-full" />
         </div>
@@ -180,4 +241,4 @@ const Map = () => {
   );
 };
 
-export default Map;
+export default CheckoutMap;
