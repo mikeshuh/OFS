@@ -266,12 +266,12 @@ const AdminDashboard = () => {
           setCategories(['all', ...uniqueCategories]);
         } else {
           console.error("Error fetching products:", response?.data?.message);
-          setError(err.message);
+          setError(`Error fetching products: ${err.message}`);
           throw new Error(response?.data?.message || "Failed to fetch products");
         }
       } catch (err) {
         console.error("Error fetching products:", err);
-        setError(err.message);
+        setError(`Error fetching products: ${err.message}`);
       } finally {
         setLoading(false);
       }
@@ -284,19 +284,20 @@ const AdminDashboard = () => {
     <div>
       <Navbar />
 
-      {Error && (
-        <div className="bg-red-100 text-red-700 border border-red-400 px-4 py-3 rounded mb-4 text-sm">
-          {Error}
-        </div>
-      )}
-
 
       <div className="w-full mt-20 p-8 flex flex-col gap-5 items-start max-w-[1280px] ps-[50px] overflow-hidden">
+        {Error && (
+          <div className="bg-red-100 text-red-700 border border-red-400 px-4 py-3 rounded mb-4 text-sm w-full">
+            {Error}
+          </div>
+        )}
         <div className="flex flex-row items-center justify-between w-full">
           <div className="flex flex-col gap-0 items-start">
             <div className="text-[#120213] text-2xl font-semibold">Product Information</div>
           </div>
         </div>
+
+
 
         <div className="flex flex-col gap-2.5 items-start w-full">
           <div className="flex flex-row items-center justify-between w-full">
