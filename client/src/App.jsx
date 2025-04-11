@@ -18,6 +18,7 @@ import AdminDashboard from "./pages/AdminDashboard.jsx";
 import CheckoutMap from "./pages/CheckoutMap.jsx";
 import StripeCheckoutWrapper from "./pages/StripeCheckoutWrapper.jsx";
 import OrderConfirmation from "./pages/OrderConfirmation.jsx";
+import AdminRoute from "./components/AdminRoute.jsx";
 
 function App() {
   return (
@@ -29,7 +30,9 @@ function App() {
             <Route path="/products" element={<Navigate to="/products/all" replace />} />
             <Route path="/products/:category" element={<Products />} />
             <Route element={<ProtectedRoute />}>
-              <Route path="/admin" element={<AdminDashboard />} />
+              <Route element={<AdminRoute />}>
+                <Route path="/admin" element={<AdminDashboard />} />
+              </Route>
               <Route path="/cart" element={<Cart />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/map" element={<Map />} />

@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { requestServer } from "../utils/Utility";
 import { useNavigate } from "react-router-dom";
-import {useAuth} from "../components/AuthContext";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const ProductCardAdmin = ({ product }) => {
-  const navigate = useNavigate();
   const [editMode, setEditMode] = useState(false);
+  const [productUpdated, setProductUpdated] = useState(product);
   const [formData, setFormData] = useState({
     price: product.price,
     pounds: product.pounds,
@@ -44,11 +43,15 @@ const ProductCardAdmin = ({ product }) => {
         }
       );
       if (response.data?.success) {
-        location.reload();
+        product.pounds = formData.pounds;
+        product.price = formData.price;
+        product.quantity = formData.quantity;
       } else {
         console.log(response.data?.message || response.message);
+        window.alert("Update failed, please try again.");
       }
     } catch (error) {
+      window.alert("Update failed, please try again.");
       console.log("Error: ", error);
     } finally {
       setEditMode(false);
@@ -106,36 +109,54 @@ const ProductCardAdmin = ({ product }) => {
         </>
       ) : (
         <form onSubmit={handleSave} className="flex items-center w-[65%]">
-          {/* Editable Price (15%) */}
+          {/* Editable Price (max: 9999.99) */}
           <div className="w-[15%]">
             <input
-              type="text"
+              type="number"
               name="price"
               onChange={handleChange}
               value={formData.price}
               className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
+              step="0.01"
+              min="0"
+              max="9999.99"
+              onInput={(e) => {
+                if (e.target.value > 9999.99) e.target.value = 9999.99;
+              }}
             />
           </div>
 
-          {/* Editable Pounds (15%) */}
+          {/* Editable Pounds (max: 999.99) */}
           <div className="w-[15%] ml-15">
             <input
-              type="text"
+              type="number"
               name="pounds"
               onChange={handleChange}
               value={formData.pounds}
               className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
+              step="0.01"
+              min="0"
+              max="999.99"
+              onInput={(e) => {
+                if (e.target.value > 999.99) e.target.value = 999.99;
+              }}
             />
           </div>
 
-          {/* Editable Quantity (15%) */}
+          {/* Editable Quantity (max: 1000) */}
           <div className="w-[15%] ml-15">
             <input
-              type="text"
+              type="number"
               name="quantity"
               onChange={handleChange}
               value={formData.quantity}
               className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
+              step="1"
+              min="0"
+              max="1000"
+              onInput={(e) => {
+                if (e.target.value > 1000) e.target.value = 1000;
+              }}
             />
           </div>
 

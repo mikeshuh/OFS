@@ -93,32 +93,35 @@ const FilterDropdown = ({ label, selectedValue, options, onSelect, capitalize = 
 };
 
 // Extracted Navbar component
-const Navbar = () => (
-  <div className="w-full flex flex-row gap-8 items-center justify-between p-4 bg-white shadow-md fixed top-0 left-0 z-10">
-    <div className="ms-1 flex flex-row gap-5 items-center">
-      <img className="w-20 h-8" src={logo} alt="Logo" />
-      <div className="rounded-lg px-2.5 py-1">
-        <Link to="/" className="text-[#304c57] text-base font-medium opacity-80">Home</Link>
+const Navbar = () => {
+  const userProfile = JSON.parse(localStorage.getItem("userProfile")).email || "";
+  return (
+    <div className="w-full flex flex-row gap-8 items-center justify-between p-4 bg-white shadow-md fixed top-0 left-0 z-10">
+      <div className="ms-1 flex flex-row gap-5 items-center">
+        <img className="w-20 h-8" src={logo} alt="Logo" />
+        <div className="rounded-lg px-2.5 py-1">
+          <Link to="/" className="text-[#304c57] text-base font-medium opacity-80">Home</Link>
+        </div>
+        <div className="bg-[#f7fbfc] rounded-lg px-2.5 py-1">
+          <div className="text-[#304c57] text-base font-semibold">Inventory</div>
+        </div>
       </div>
-      <div className="bg-[#f7fbfc] rounded-lg px-2.5 py-1">
-        <div className="text-[#304c57] text-base font-semibold">Inventory</div>
+      <div className="flex flex-row gap-2.5 items-center">
+        <div className="bg-white rounded-lg border border-opacity-20 border-[#304c57] px-2.5 py-1 w-60 shadow-sm">
+          <div className="text-[#304c57] text-base font-normal opacity-60">Quick action...</div>
+        </div>
+        <div className="rounded-lg border border-opacity-20 border-[#304c57] px-2.5 py-1 relative">
+          <img className="w-6 h-6 opacity-80" src={notification} alt="Notifications" />
+          <div className="bg-[#329141] rounded-full w-3 h-3 absolute left-6 top-2"></div>
+        </div>
+        <div className="rounded-lg border border-opacity-20 border-[#304c57] px-2.5 py-1 flex flex-row gap-2.5 items-center">
+          <div className="text-[#304c57] text-base font-medium opacity-80">{userProfile}</div>
+          <img className="w-6 h-6 opacity-80" src={user} alt="User" />
+        </div>
       </div>
     </div>
-    <div className="flex flex-row gap-2.5 items-center">
-      <div className="bg-white rounded-lg border border-opacity-20 border-[#304c57] px-2.5 py-1 w-60 shadow-sm">
-        <div className="text-[#304c57] text-base font-normal opacity-60">Quick action...</div>
-      </div>
-      <div className="rounded-lg border border-opacity-20 border-[#304c57] px-2.5 py-1 relative">
-        <img className="w-6 h-6 opacity-80" src={notification} alt="Notifications" />
-        <div className="bg-[#329141] rounded-full w-3 h-3 absolute left-6 top-2"></div>
-      </div>
-      <div className="rounded-lg border border-opacity-20 border-[#304c57] px-2.5 py-1 flex flex-row gap-2.5 items-center">
-        <div className="text-[#304c57] text-base font-medium opacity-80">admin@example.com</div>
-        <img className="w-6 h-6 opacity-80" src={user} alt="User" />
-      </div>
-    </div>
-  </div>
-);
+  )
+};
 
 // Pagination component
 const Pagination = ({ currentPage, totalPages, pages, setPage }) => (
@@ -225,6 +228,8 @@ const AdminDashboard = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchValue, setSearchValue] = useState('');
   const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [Error, setError] = useState(null);
+
   const itemsPerPageList = [5, 10, 20, 50];
 
   // Filter products based on category and search
@@ -238,8 +243,8 @@ const AdminDashboard = () => {
     return searchValue === ''
       ? categoryFiltered
       : categoryFiltered.filter(product =>
-          product.name.toLowerCase().includes(searchValue.toLowerCase())
-        );
+        product.name.toLowerCase().includes(searchValue.toLowerCase())
+      );
   }, [allProducts, selectedCategory, searchValue]);
 
   // Get pagination data using custom hook
@@ -255,18 +260,18 @@ const AdminDashboard = () => {
         if (response?.data?.success) {
           const productsData = response.data.data;
           setAllProducts(productsData);
-
+          setError(null)
           // Extract unique categories
           const uniqueCategories = [...new Set(productsData.map(product => product.category))];
           setCategories(['all', ...uniqueCategories]);
         } else {
           console.error("Error fetching products:", response?.data?.message);
+          setError(err.message);
           throw new Error(response?.data?.message || "Failed to fetch products");
         }
       } catch (err) {
         console.error("Error fetching products:", err);
-        // Note: setError is not defined in your original code
-        // Consider adding error state if needed
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -278,6 +283,13 @@ const AdminDashboard = () => {
   return (
     <div>
       <Navbar />
+
+      {Error && (
+        <div className="bg-red-100 text-red-700 border border-red-400 px-4 py-3 rounded mb-4 text-sm">
+          {Error}
+        </div>
+      )}
+
 
       <div className="w-full mt-20 p-8 flex flex-col gap-5 items-start max-w-[1280px] ps-[50px] overflow-hidden">
         <div className="flex flex-row items-center justify-between w-full">
