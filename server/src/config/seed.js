@@ -18,8 +18,8 @@ const dbConfig = {
   queueLimit: 0
 };
 
-// Placeholder image data for products (PNG file signature)
-const placeholderImage = Buffer.from('89504E470D0A1A0A', 'hex');
+// Path prefix for product images (relative to server root)
+const imagePathPrefix = 'assets/images/products/';
 
 // Sample data
 const users = [
@@ -133,9 +133,13 @@ async function seed() {
     console.log('Seeding products...');
     const productIds = [];
     for (const product of products) {
+      // Generate a simple lowercase filename, e.g., "apples.jpg"
+      const imageFileName = `${product.name.toLowerCase().replace(/\s+/g, '_')}.jpg`;
+      const imagePath = `${imagePathPrefix}${imageFileName}`;
+
       const [result] = await connection.execute(
-        'INSERT INTO Product (category, name, price, pounds, quantity, imageBinary) VALUES (?, ?, ?, ?, ?, ?)',
-        [product.category, product.name, product.price, product.pounds, product.quantity, placeholderImage]
+        'INSERT INTO Product (category, name, price, pounds, quantity, imagePath) VALUES (?, ?, ?, ?, ?, ?)',
+        [product.category, product.name, product.price, product.pounds, product.quantity, imagePath]
       );
       productIds.push(result.insertId);
     }
