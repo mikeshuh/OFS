@@ -12,7 +12,7 @@ const ProductCardAdmin = ({ product, onUpdate }) => {
   const [formData, setFormData] = useState({
     price: product.price,
     pounds: product.pounds,
-    quantity: product.quantity,
+    quantity: product.quantity
   });
   const [message, setMessage] = useState("");
 
@@ -61,7 +61,7 @@ const ProductCardAdmin = ({ product, onUpdate }) => {
           price,
           pounds,
           quantity,
-          imagePath: product.imagePath,
+          imagePath: product.imagePath
         }
       );
 
