@@ -19,6 +19,7 @@ import CheckoutMap from "./pages/CheckoutMap.jsx";
 import StripeCheckoutWrapper from "./pages/StripeCheckoutWrapper.jsx";
 import OrderConfirmation from "./pages/OrderConfirmation.jsx";
 import AdminRoute from "./components/AdminRoute.jsx";
+import OrderList from "./pages/OrderList.jsx";
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
             <Route path="/logout" element={<Logout />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/orders" element={<OrderList />} />
             <Route path="/404" element={<NotFoundPage />} />
             <Route path="*" element={<Redirect404 />} />
           </Routes>

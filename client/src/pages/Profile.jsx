@@ -2,22 +2,25 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
+import ProductGrid from "../components/ProductGrid";
+import { requestServer } from "../utils/Utility";
+
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Profile = () => {
   const navigate = useNavigate();
   const auth = useAuth();
+
   const [formData, setFormData] = useState({
     email: "",
     password: ""
   });
   const [viewMode, setView] = useState(true);
   const [profileData, setProfileData] = useState(JSON.parse(localStorage.getItem("userProfile")));
-  console.log("Profile Data: ", profileData);
-  // ViewModes: true -> view profile, false -> edit profile
-  const EditButton = () => {
-    setView(!viewMode);
-  };
+  const [recommendedProducts, setRecommendedProducts] = useState([]);
 
-  // Action listener for form inputs
+  const EditButton = () => setView(!viewMode);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -26,98 +29,117 @@ const Profile = () => {
     }));
   };
 
-  // Logic to change profile
   const changeProfile = async (e) => {
     e.preventDefault();
-    const response = auth.changePassword(formData);
-
+    auth.changePassword(formData);
   };
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await requestServer(`${API_URL}/api/products`, "GET");
+        const allProducts = response?.data?.data || [];
 
+        if (allProducts.length > 0) {
+          const shuffled = allProducts.sort(() => 0.5 - Math.random());
+          setRecommendedProducts(shuffled.slice(0, 4));
+        }
+      } catch (err) {
+        console.error("❌ Failed to load recommended products:", err);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* Navbar */}
       <Navbar />
 
-      {/* Profile Section */}
       <div className="flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-8">Profile Page</h1>
 
         {profileData ? (
-          <div className="flex flex-col space-y-4 w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-            <p className="text-gray-700">
-              <span className="font-semibold">First Name:</span> {profileData.firstName}
-            </p>
-            <p className="text-gray-700">
-              <span className="font-semibold">Last Name:</span> {profileData.lastName}
-            </p>
-            <p className="text-gray-700">
-              <span className="font-semibold">Email:</span> {profileData.email}
-            </p>
+          <>
+            <div className="flex flex-col space-y-4 w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+              <p className="text-gray-700">
+                <span className="font-semibold">First Name:</span> {profileData.firstName}
+              </p>
+              <p className="text-gray-700">
+                <span className="font-semibold">Last Name:</span> {profileData.lastName}
+              </p>
+              <p className="text-gray-700">
+                <span className="font-semibold">Email:</span> {profileData.email}
+              </p>
 
-            {/* buttons */}
-            {viewMode ? (
-              <div className="flex flex-col items-center space-y-4">
-                <button
-                  className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition duration-300"
-                  onClick={() => alert("View History clicked")}
-                >
-                  View History
-                </button>
-
-                <button
-                  className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition duration-300"
-                  onClick={EditButton}
-                >
-                  Edit Profile
-                </button>
-              </div>
-            ) : (
-              // Edit Profile Form
-              <form
-                onSubmit={changeProfile}
-                className="flex flex-col items-center space-y-4"
-              >
-                <input
-                  type="password"
-                  id="currentPassword"
-                  name="currentPassword"
-                  placeholder="Current Password"
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-                />
-
-                <input
-                  type="password"
-                  id="newPassword"
-                  name="newPassword"
-                  placeholder="New Password"
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-                />
-
-                <div className="flex flex-col w-full space-y-2">
+              {viewMode ? (
+                <div className="flex flex-col items-center space-y-4">
                   <button
-                    type="submit"
                     className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition duration-300"
+                    onClick={() => navigate("/orders")}
                   >
-                    Save Changes
+                    View History
                   </button>
 
                   <button
-                    type="button"
+                    className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition duration-300"
                     onClick={EditButton}
-                    className="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded transition duration-300"
                   >
-                    Cancel Changes
+                    Edit Profile
                   </button>
                 </div>
-              </form>
-            )}
-          </div>
+              ) : (
+                <form
+                  onSubmit={changeProfile}
+                  className="flex flex-col items-center space-y-4"
+                >
+                  <input
+                    type="password"
+                    id="currentPassword"
+                    name="currentPassword"
+                    placeholder="Current Password"
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                  <input
+                    type="password"
+                    id="newPassword"
+                    name="newPassword"
+                    placeholder="New Password"
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                  <div className="flex flex-col w-full space-y-2">
+                    <button
+                      type="submit"
+                      className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition duration-300"
+                    >
+                      Save Changes
+                    </button>
+                    <button
+                      type="button"
+                      onClick={EditButton}
+                      className="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded transition duration-300"
+                    >
+                      Cancel Changes
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+
+            {/* Divider */}
+            <div className="w-full max-w-md border-t mt-10 mb-6"></div>
+
+            {/* Recommandation part*/}
+            <div className="w-full max-w-6xl px-4 sm:px-6 lg:px-8 mb-12">
+              <ProductGrid
+                title="Guess you like"
+                products={recommendedProducts}
+              />
+            </div>
+          </>
         ) : (
-          // Message to show when profile data is loading
           <p className="text-gray-600">Loading profile data...</p>
         )}
       </div>
