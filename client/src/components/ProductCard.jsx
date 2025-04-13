@@ -2,6 +2,8 @@ import React from 'react';
 import { useCart } from './CartContext';
 import { useAuth } from './AuthContext';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const ProductCard = ({ product }) => {
   const { addToCart, removeFromCart, updateQuantity, cartItems } = useCart();
   const { loggedIn } = useAuth();
@@ -18,7 +20,7 @@ const ProductCard = ({ product }) => {
     price,
     pounds,
     quantity,
-    imageBinary
+    imagePath
   } = product;
 
   // Check if product is already in cart
@@ -57,15 +59,8 @@ const ProductCard = ({ product }) => {
     }
   };
 
-  // Convert binary image data to URL if available
-  let imageUrl = null;
-  try {
-    if (imageBinary) {
-      imageUrl = `data:image/png;base64,${Buffer.from(imageBinary).toString('base64')}`;
-    }
-  } catch (err) {
-    console.error("Error processing image data:", err);
-  }
+  // Construct image URL from imagePath
+  const imageUrl = imagePath ? `${API_URL}/static/${imagePath}` : null;
 
   return (
     <div className="bg-white rounded border border-gray-200 p-4 hover:shadow-md transition-shadow">

@@ -125,7 +125,7 @@ const Navbar = () => {
 
 // Pagination component
 const Pagination = ({ currentPage, totalPages, pages, setPage }) => (
-  <div className="rounded-b-lg py-2.5 px-5 flex flex-row items-center justify-between border-t border-opacity-20 border-[#304c57]">
+  <div className="rounded-b-lg py-2.5 px-5 flex flex-row items-center justify-between">
     <div className="text-[#120213] text-sm font-medium opacity-80">
       Page {currentPage} of {totalPages}
     </div>
@@ -332,12 +332,14 @@ const AdminDashboard = () => {
           {/* Product List */}
           <div className="flex flex-col items-start w-full">
             <div className="rounded-lg flex flex-col w-full border border-opacity-20 border-[#304c57]">
-              <div className="bg-[#f7fbfc] rounded-t-lg py-4 flex flex-row">
-                <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60 pl-5">Name</div>
+              <div className="bg-[#f7fbfc] border-b border-black rounded-t-lg py-4 flex flex-row px-5">
+                <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Name</div>
                 <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Category</div>
                 <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Price</div>
                 <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Pound</div>
                 <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Quantity</div>
+                <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Image</div>
+                <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Action</div>
               </div>
 
               {loading ? (
@@ -351,7 +353,7 @@ const AdminDashboard = () => {
                     <ProductCardAdmin key={product.id || idx} product={product} />
                   ))
                 ) : (
-                  <div className="text-center py-12">
+                  <div className="text-center py-12 border-b border-black">
                     <p className="text-gray-600">No products found in this category.</p>
                   </div>
                 )

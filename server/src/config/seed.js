@@ -19,7 +19,7 @@ const dbConfig = {
 };
 
 // Path prefix for product images (relative to server root)
-const imagePathPrefix = 'assets/images/products/';
+const imagePathPrefix = 'images/products/';
 
 // Sample data
 const users = [

@@ -1,20 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { requestServer } from "../utils/Utility";
-import { useNavigate } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const ProductCardAdmin = ({ product }) => {
+const MAX_PRICE = 9999.99;
+const MAX_POUNDS = 999.99;
+const MAX_QUANTITY = 1000;
+
+const ProductCardAdmin = ({ product, onUpdate }) => {
   const [editMode, setEditMode] = useState(false);
-  const [productUpdated, setProductUpdated] = useState(product);
   const [formData, setFormData] = useState({
     price: product.price,
     pounds: product.pounds,
-    quantity: product.quantity
+    quantity: product.quantity,
   });
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => setMessage(""), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   const handleClick = () => {
     setEditMode(!editMode);
+    setMessage("");
   };
 
   const handleChange = (e) => {
@@ -27,6 +38,17 @@ const ProductCardAdmin = ({ product }) => {
 
   const handleSave = async (e) => {
     e.preventDefault();
+
+    const { price, pounds, quantity } = formData;
+    if (
+      price < 0 || price > MAX_PRICE ||
+      pounds < 0 || pounds > MAX_POUNDS ||
+      quantity < 0 || quantity > MAX_QUANTITY
+    ) {
+      setMessage("⚠ Invalid input values");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("authToken");
       const response = await requestServer(
@@ -36,147 +58,149 @@ const ProductCardAdmin = ({ product }) => {
         {
           name: product.name,
           category: product.category,
-          price: formData.price || product.price,
-          pounds: formData.pounds || product.pounds,
-          quantity: formData.quantity || product.quantity,
-          imageBinary: product.imageBinary
+          price,
+          pounds,
+          quantity,
+          imagePath: product.imagePath,
         }
       );
-      if (response.data?.success) {
-        product.pounds = formData.pounds;
-        product.price = formData.price;
-        product.quantity = formData.quantity;
-      } else {
-        console.log(response.data?.message || response.message);
-        window.alert("Update failed, please try again.");
+
+      if (!response?.data?.success) {
+        throw new Error(response?.data?.message || "Update failed");
       }
+
+      onUpdate?.({ ...product, price, pounds, quantity }); // Update parent if needed
+      setMessage("✔ Product updated");
     } catch (error) {
-      window.alert("Update failed, please try again.");
-      console.log("Error: ", error);
+      setMessage("⚠ Failed to update product");
+      console.error("Error:", error);
     } finally {
       setEditMode(false);
     }
   };
 
   return (
-    <div className="border-b border-[rgba(18,2,19,0.10)] flex items-center w-full">
-      {/* Name Column (15%) */}
-      <div className="w-[15%] pl-5 py-2 border-r border-[transparent]">
-        <div className="text-[#120213] text-sm font-medium truncate">
-          {product.name}
+    <div className="flex items-center w-full border-b px-5 py-2 text-sm relative">
+      {/* Status message */}
+      {message && (
+        <div
+          className={`absolute top-0 right-4 text-xs ${
+            message.startsWith("✔") ? "text-green-600" : "text-red-600"
+          }`}
+        >
+          {message}
         </div>
-      </div>
+      )}
 
-      {/* Category Column (15%) */}
-      <div className="w-[15%] py-2 border-r border-[transparent]">
-        <div className="text-[#120213] text-sm font-medium truncate">
-          {product.category}
-        </div>
-      </div>
+      {/* Name */}
+      <div className="w-[15%]">{product.name}</div>
 
-      {!editMode ? (
+      {/* Category */}
+      <div className="w-[15%]">{product.category}</div>
+
+      {editMode ? (
         <>
-          {/* Price Column (15%) */}
-          <div className="w-[15%] py-2 border-r border-[transparent]">
-            <div className="text-[#120213] text-sm font-medium truncate">
-              {product.price}
-            </div>
+          <div className="w-[15%] pr-2">
+            <input
+              aria-label="Price"
+              type="number"
+              name="price"
+              value={formData.price}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded px-2 py-1"
+              step="0.01"
+              min="0"
+              max={MAX_PRICE}
+              required
+            />
+            <p className="text-[10px] text-gray-500 mt-1">Max: ${MAX_PRICE}</p>
           </div>
-
-          {/* Pounds Column (15%) */}
-          <div className="w-[15%] py-2 border-r border-[transparent]">
-            <div className="text-[#120213] text-sm font-medium truncate">
-              {product.pounds}
-            </div>
+          <div className="w-[15%] pr-2">
+            <input
+              aria-label="Pounds"
+              type="number"
+              name="pounds"
+              value={formData.pounds}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded px-2 py-1"
+              step="0.01"
+              min="0"
+              max={MAX_POUNDS}
+              required
+            />
+            <p className="text-[10px] text-gray-500 mt-1">Max: {MAX_POUNDS} lbs</p>
           </div>
-
-          {/* Quantity Column (15%) */}
-          <div className="w-[15%] py-2 border-r border-[transparent]">
-            <div className="text-[#120213] text-sm font-medium truncate">
-              {product.quantity}
-            </div>
+          <div className="w-[15%] pr-2">
+            <input
+              aria-label="Quantity"
+              type="number"
+              name="quantity"
+              value={formData.quantity}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded px-2 py-1"
+              step="1"
+              min="0"
+              max={MAX_QUANTITY}
+              required
+            />
+            <p className="text-[10px] text-gray-500 mt-1">Max: {MAX_QUANTITY}</p>
           </div>
-
-          {/* Edit Button (remaining space) */}
-          <div className="flex-1 px-4">
+          <div className="w-[15%] pr-2">
+            {product.imagePath ? (
+              <img
+                src={`${API_URL}/static/${product.imagePath}`}
+                alt={product.name}
+                className="w-16 h-12 object-cover rounded"
+              />
+            ) : (
+              <span className="text-xs text-gray-400">No image</span>
+            )}
+          </div>
+          <div className="w-[15%] flex gap-2">
+            <button
+              type="button"
+              onClick={handleClick}
+              className="text-green-700 underline hover:text-green-900"
+              aria-label="Cancel Edit"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleSave}
+              className="text-green-700 underline hover:text-green-900"
+              aria-label="Save Changes"
+            >
+              Save
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="w-[15%]">{product.price}</div>
+          <div className="w-[15%]">{product.pounds}</div>
+          <div className="w-[15%]">{product.quantity}</div>
+          <div className="w-[15%]">
+            {product.imagePath ? (
+              <img
+                src={`${API_URL}/static/${product.imagePath}`}
+                alt={product.name}
+                className="w-16 h-12 object-cover rounded"
+              />
+            ) : (
+              <span className="text-xs text-gray-400">No image</span>
+            )}
+          </div>
+          <div className="w-[15%] text-green-700">
             <button
               onClick={handleClick}
-              className="text-[#329141] underline text-sm hover:text-[#276c30] transition-all"
+              className="underline hover:text-green-900 transition-all"
+              aria-label="Edit Product"
             >
               Edit
             </button>
           </div>
         </>
-      ) : (
-        <form onSubmit={handleSave} className="flex items-center w-[65%]">
-          {/* Editable Price (max: 9999.99) */}
-          <div className="w-[15%]">
-            <input
-              type="number"
-              name="price"
-              onChange={handleChange}
-              value={formData.price}
-              className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
-              step="0.01"
-              min="0"
-              max="9999.99"
-              onInput={(e) => {
-                if (e.target.value > 9999.99) e.target.value = 9999.99;
-              }}
-            />
-          </div>
-
-          {/* Editable Pounds (max: 999.99) */}
-          <div className="w-[15%] ml-15">
-            <input
-              type="number"
-              name="pounds"
-              onChange={handleChange}
-              value={formData.pounds}
-              className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
-              step="0.01"
-              min="0"
-              max="999.99"
-              onInput={(e) => {
-                if (e.target.value > 999.99) e.target.value = 999.99;
-              }}
-            />
-          </div>
-
-          {/* Editable Quantity (max: 1000) */}
-          <div className="w-[15%] ml-15">
-            <input
-              type="number"
-              name="quantity"
-              onChange={handleChange}
-              value={formData.quantity}
-              className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
-              step="1"
-              min="0"
-              max="1000"
-              onInput={(e) => {
-                if (e.target.value > 1000) e.target.value = 1000;
-              }}
-            />
-          </div>
-
-          {/* Action Buttons (remaining space) */}
-          <div className="flex gap-8 px-4">
-            <button
-              type="button"
-              onClick={handleClick}
-              className="ml-4 text-[#329141] underline text-sm hover:text-[#276c30] transition-all"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="text-[#329141] underline text-sm hover:text-[#276c30] transition-all"
-            >
-              Save
-            </button>
-          </div>
-        </form>
       )}
     </div>
   );
