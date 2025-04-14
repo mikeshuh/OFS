@@ -3,6 +3,9 @@ const Order = require('../models/orderModel');
 const Payment = require('../models/paymentModel');
 const responseHandler = require('../utils/responseHandler');
 
+// **** New Import for Bull Queue Integration ****
+const deliveryQueueService = require('../services/deliveryQueueService');
+
 // Create a payment intent when checkout is initiated
 const createPaymentIntent = async (req, res) => {
   try {
@@ -142,6 +145,16 @@ const handlePaymentIntentSucceeded = async (paymentIntent) => {
     // - Send confirmation email
     // - Update inventory
     // - Trigger delivery process
+
+    // **** Bull Queue Batching Integration ****
+    // Retrieve order details and add to the in-memory batch
+    const orderDetails = await Order.findById(orderID);
+    console.log("Retrieved order details:", orderDetails);
+
+    if (orderDetails) {
+      await deliveryQueueService.addOrderToQueue(orderDetails);
+    }
+    // ********************************************
 
   } catch (error) {
     console.error('Error handling successful payment:', error);

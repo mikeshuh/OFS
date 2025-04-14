@@ -1,7 +1,5 @@
-const { get } = require("../routes/userRoute");
 const { geocodingClient, directionsClient, optimizationClient } = require('../config/mapbox');
-const { cookie } = require("express-validator");
-const { success } = require("../utils/responseHandler");
+
 const deliveryService = {
   // Get geocode from address
   getGeocode: async (address) => {
