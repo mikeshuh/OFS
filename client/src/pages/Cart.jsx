@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useCart } from "../components/CartContext";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Cart = () => {
   const {
     cartItems,
@@ -63,20 +65,15 @@ const Cart = () => {
     );
   }
 
-  // Helper function to safely render binary image data
   const renderProductImage = (item) => {
-    try {
-      if (item.imageBinary) {
-        return (
-          <img
-            src={`data:image/png;base64,${Buffer.from(item.imageBinary).toString('base64')}`}
-            alt={item.name}
-            className="w-full h-full object-cover"
-          />
-        );
-      }
-    } catch (err) {
-      console.error("Error rendering image:", err);
+    if (item.imagePath) {
+      return (
+        <img
+          src={`${API_URL}/static/${item.imagePath}`}
+          alt={item.name}
+          className="w-full h-full object-cover"
+        />
+      );
     }
 
     return (
@@ -200,10 +197,7 @@ const Cart = () => {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Shipping</span>
                   <span className="font-medium">
-                    {calculateTotalWeight() >= 20
-                      ? "$10.00"
-                      : "Free"
-                    }
+                    {calculateTotalWeight() >= 20 ? "$10.00" : "Free"}
                   </span>
                 </div>
                 <div className="flex justify-between">

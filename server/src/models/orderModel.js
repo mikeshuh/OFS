@@ -129,7 +129,7 @@ const Order = {
     const [rows] = await db.execute(
       `SELECT o.*,
               op.quantity AS orderQuantity,
-              p.productID, p.category, p.name, p.price, p.pounds, p.imageBinary
+              p.productID, p.category, p.name, p.price, p.pounds, p.imagePath
        FROM \`Order\` o
        JOIN OrderProduct op ON o.orderID = op.orderID
        JOIN Product p ON op.productID = p.productID
