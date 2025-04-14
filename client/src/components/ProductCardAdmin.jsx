@@ -74,7 +74,13 @@ const ProductCardAdmin = ({ product, onUpdate }) => {
     e.preventDefault();
 
     const { price, pounds, quantity } = formData;
+    const regexPricePounds = /^\d+(\.\d{1,2})?$/;
+    const regexQuantity = /^\d+$/;
+
     if (
+      !regexPricePounds.test(price) ||
+      !regexPricePounds.test(pounds) ||
+      !regexQuantity.test(quantity) ||
       price <= 0 || price > MAX_PRICE ||
       pounds <= 0 || pounds > MAX_POUNDS ||
       quantity < 0 || quantity > MAX_QUANTITY
