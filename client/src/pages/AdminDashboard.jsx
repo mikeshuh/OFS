@@ -266,7 +266,7 @@ const AdminDashboard = () => {
           setCategories(['all', ...uniqueCategories]);
         } else {
           console.error("Error fetching products:", response?.data?.message);
-          setError(`Error fetching products: ${err.message}`);
+          setError(`Error fetching products: ${response?.data?.message}`);
           throw new Error(response?.data?.message || "Failed to fetch products");
         }
       } catch (err) {
@@ -279,6 +279,15 @@ const AdminDashboard = () => {
 
     fetchAllProducts();
   }, []);
+
+  // Handle product updates
+  const handleUpdateProduct = (updatedProduct) => {
+    setAllProducts((prevProducts) =>
+      prevProducts.map((p) =>
+        p.productID === updatedProduct.productID ? updatedProduct : p
+      )
+    );
+  };
 
   return (
     <div>
@@ -340,6 +349,7 @@ const AdminDashboard = () => {
                 <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Quantity</div>
                 <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Image</div>
                 <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Action</div>
+                <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Status</div>
               </div>
 
               {loading ? (
@@ -350,7 +360,7 @@ const AdminDashboard = () => {
               ) : (
                 products.length > 0 ? (
                   products.map((product, idx) => (
-                    <ProductCardAdmin key={product.id || idx} product={product} />
+                    <ProductCardAdmin key={product.productID} product={product} onUpdate={handleUpdateProduct} />
                   ))
                 ) : (
                   <div className="text-center py-12 border-b border-black">

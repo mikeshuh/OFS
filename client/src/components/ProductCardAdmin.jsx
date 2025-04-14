@@ -16,12 +16,22 @@ const ProductCardAdmin = ({ product, onUpdate }) => {
   });
   const [message, setMessage] = useState("");
 
+  // Clear message after 3 seconds
   useEffect(() => {
     if (message) {
       const timer = setTimeout(() => setMessage(""), 3000);
       return () => clearTimeout(timer);
     }
   }, [message]);
+
+  // Sync local formData with incoming product prop changes
+  useEffect(() => {
+    setFormData({
+      price: product.price,
+      pounds: product.pounds,
+      quantity: product.quantity
+    });
+  }, [product]);
 
   const handleClick = () => {
     setEditMode(!editMode);
@@ -30,10 +40,34 @@ const ProductCardAdmin = ({ product, onUpdate }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+
+    // For price and pounds: allow only numbers with up to 2 decimals
+    if (name === 'price' || name === 'pounds') {
+      const regex = /^\d*(\.\d{0,2})?$/;
+      if (regex.test(value)) {
+        setFormData((prevData) => ({
+          ...prevData,
+          [name]: value,
+        }));
+      }
+    }
+    // For quantity: only allow whole numbers
+    else if (name === 'quantity') {
+      const regex = /^\d*$/;
+      if (regex.test(value)) {
+        setFormData((prevData) => ({
+          ...prevData,
+          [name]: value,
+        }));
+      }
+    }
+    // Default case if needed
+    else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSave = async (e) => {
@@ -41,8 +75,8 @@ const ProductCardAdmin = ({ product, onUpdate }) => {
 
     const { price, pounds, quantity } = formData;
     if (
-      price < 0 || price > MAX_PRICE ||
-      pounds < 0 || pounds > MAX_POUNDS ||
+      price <= 0 || price > MAX_PRICE ||
+      pounds <= 0 || pounds > MAX_POUNDS ||
       quantity < 0 || quantity > MAX_QUANTITY
     ) {
       setMessage("⚠ Invalid input values");
@@ -69,7 +103,8 @@ const ProductCardAdmin = ({ product, onUpdate }) => {
         throw new Error(response?.data?.message || "Update failed");
       }
 
-      onUpdate?.({ ...product, price, pounds, quantity }); // Update parent if needed
+      // Update parent state with updated product data
+      onUpdate?.({ ...product, price, pounds, quantity });
       setMessage("✔ Product updated");
     } catch (error) {
       setMessage("⚠ Failed to update product");
@@ -81,16 +116,6 @@ const ProductCardAdmin = ({ product, onUpdate }) => {
 
   return (
     <div className="flex items-center w-full border-b px-5 py-2 text-sm relative">
-      {/* Status message */}
-      {message && (
-        <div
-          className={`absolute top-0 right-4 text-xs ${
-            message.startsWith("✔") ? "text-green-600" : "text-red-600"
-          }`}
-        >
-          {message}
-        </div>
-      )}
 
       {/* Name */}
       <div className="w-[15%]">{product.name}</div>
@@ -109,7 +134,7 @@ const ProductCardAdmin = ({ product, onUpdate }) => {
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-2 py-1"
               step="0.01"
-              min="0"
+              min="0.01"
               max={MAX_PRICE}
               required
             />
@@ -124,7 +149,7 @@ const ProductCardAdmin = ({ product, onUpdate }) => {
               onChange={handleChange}
               className="w-full border border-gray-300 rounded px-2 py-1"
               step="0.01"
-              min="0"
+              min="0.01"
               max={MAX_POUNDS}
               required
             />
@@ -202,6 +227,12 @@ const ProductCardAdmin = ({ product, onUpdate }) => {
           </div>
         </>
       )}
+
+      {/* Status */}
+      <div className={`w-[15%] text-xs ${message.startsWith("✔") ? "text-green-600" : "text-red-600"}`}>
+        {message}
+      </div>
+
     </div>
   );
 };
