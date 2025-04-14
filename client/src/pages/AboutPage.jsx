@@ -14,7 +14,8 @@ import redisIcon from '../assets/redisIcon.png';
 import mapBoxIcon from '../assets/mapBoxIcon.png';
 import expressIcon from '../assets/expressIcon.png';
 import { register } from 'swiper/element/bundle';
-
+import 'swiper/css';
+import 'swiper/element/css/free-mode';
 
 
 
@@ -22,9 +23,36 @@ register();
 
 function AboutPage() {
   const imageCarousel = useRef(null);
+  useEffect(() => {
+    const imageCarouselParams = {
+      slidesPerView: 'auto',
+      spaceBetween: 20,
+
+      loop: true,
+      autoplay: {
+        delay: 1,
+        disableOnInteraction: false,
+      },
+      speed: 3000,
+      breakpoints: {
+        640: {
+          slidesPerView: 2,
+          spaceBetween: 10,
+        },
+        768: {
+          slidesPerView: 3,
+          spaceBetween: 5,
+        },
+      },
+    };
+
+    Object.assign(imageCarousel.current, imageCarouselParams);
+
+    imageCarousel.current.initialize();
+  }, []);
+
 
   const features = [
-
 
     {
       title: "Fast",
@@ -58,34 +86,6 @@ function AboutPage() {
 
   ];
 
-  useEffect(() => {
-    const imageCarouselParams = {
-      slidesPerView: 4,
-      spaceBetween: 20,
-      freeMode: true,
-      loop: true,
-      transitionTimingFunction: 'linear',
-      autoplay: {
-        delay: 3000,
-        disableOnInteraction: false,
-      },
-      speed: 5000,
-      breakpoints: {
-        640: {
-          slidesPerView: 2,
-          spaceBetween: 10,
-        },
-        768: {
-          slidesPerView: 3,
-          spaceBetween: 5,
-        },
-      },
-    };
-
-    Object.assign(imageCarousel.current, imageCarouselParams);
-
-    imageCarousel.current.initialize();
-  }, []);
 
   return (
     <div className='flex flex-col min-h-screen bg-gray-50'>
@@ -148,67 +148,69 @@ function AboutPage() {
           <p className='text-lg mb-10'>Committed To Bringing You The Best </p>
         </div>
 
-        <div className='container mx-auto grid grid-cols-3 grid-rows-2 gap-8 px-8 items-center justify-center'>
-          <div className='flex flex-col items-center justify-center bg-white max-w-[300px] h-[300px] drop-shadow-lg'>
+        <div className='container mx-auto grid grid-cols-3 grid-rows-2 gap-8 px-8  justify-items-center border'>
+        <div className='flex flex-col items-center justify-center bg-white w-[300px] h-[300px] drop-shadow-lg'>
           <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover' />
           An Ho
           </div>
-          <div className='flex flex-col items-center justify-center bg-white max-w-[300px] h-[300px] drop-shadow-lg'>
+          <div className='flex flex-col items-center justify-center bg-white w-[300px] h-[300px] drop-shadow-lg'>
           <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover' />
           Trinity Manansala
           </div>
-          <div className='flex flex-col items-center justify-center bg-white max-w-[300px] h-[300px] drop-shadow-lg'>
+          <div className='flex flex-col items-center justify-center bg-white w-[300px] h-[300px] drop-shadow-lg'>
           <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover' />
           Timothy Nguyen
           </div>
-          <div className='flex flex-col items-center justify-center bg-white max-w-[300px] h-[300px] drop-shadow-lg'>
+          <div className='flex flex-col items-center justify-center bg-white w-[300px] h-[300px] drop-shadow-lg'>
           <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover' />
           Michael Huh
           </div>
-          <div className='flex flex-col items-center justify-center bg-white max-w-[300px] h-[300px] drop-shadow-lg'>
+          <div className='flex flex-col items-center justify-center bg-white w-[300px] h-[300px] drop-shadow-lg'>
           <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover' />
           Danny Xu
           </div>
-          <div className='flex flex-col items-center justify-center bg-white max-w-[300px] h-[300px] drop-shadow-lg'>
+          <div className='flex flex-col items-center justify-center bg-white w-[300px] h-[300px] drop-shadow-lg'>
           <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover' />
           Ray Zhang
           </div>
         </div>
       </section>
 
+
       {/* Image Carousel */}
       <section className='container mx-auto px-6 py-12'>
         <h2 className='text-2xl font-semibold mb-4 text-center'>Technologies Used For This Website</h2>
-        <swiper-container ref={imageCarousel} className='myswiper' autoplay transitionTimingFunction freeMode>
-          <swiper-slide className='flex justify-center'>
-            <img src={reactIcon} alt='react' className='max-w-[200px] h-[200px] w-full rounded-lg ' />
+        <swiper-container ref={imageCarousel} className='myswiper ' autoplay  >
+          <swiper-slide className='flex justify-center max-w-[400px]'>
+            <img src={reactIcon} alt='react' className='max-w-[150px] h-[200px] rounded-lg object-contain border' />
           </swiper-slide>
-          <swiper-slide className='flex justify-center'>
-            <img src={mysqlIcon} alt='mysql' className='max-w-[200px] h-[200px] w-full rounded-lg ' />
+          <swiper-slide className='flex justify-center max-w-[400px]'>
+            <img src={mysqlIcon} alt='mysql' className='max-w-[200px] h-[200px] rounded-lg object-contain border' />
           </swiper-slide>
-          <swiper-slide className='flex justify-center'>
-            <img src={stripeIcon} alt='stripe' className='max-w-[200px] h-[200px] w-full rounded-lg ' />
+          <swiper-slide className='flex justify-center max-w-[400px]'>
+            <img src={stripeIcon} alt='stripe' className='max-w-[200px] h-[200px] rounded-lg object-contain border' />
           </swiper-slide>
-          <swiper-slide className='flex justify-center'>
-            <img src={nodeIcon} alt='node' className='max-w-[200px] h-[200px] w-full rounded-lg ' />
+          <swiper-slide className='flex justify-center max-w-[400px]'>
+            <img src={nodeIcon} alt='node' className='max-w-[200px] h-[200px] rounded-lg object-contain border' />
           </swiper-slide>
-          <swiper-slide className='flex justify-center'>
-            <img src={tailwindIcon} alt='tailwind' className='max-w-[200px] h-[200px] w-full rounded-lg ' />
+          <swiper-slide className='flex justify-center max-w-[400px]'>
+            <img src={tailwindIcon} alt='tailwind' className='max-w-[200px] h-[200px] rounded-lg object-contain border' />
           </swiper-slide>
-          <swiper-slide className='flex justify-center'>
-            <img src={redisIcon} alt='redis' className='max-w-[400px] h-[200px] w-full rounded-lg ' />
+          <swiper-slide className='flex justify-center max-w-[400px]'>
+            <img src={redisIcon} alt='redis' className='max-w-[300px] h-[200px] rounded-lg object-contain border' />
           </swiper-slide>
-          <swiper-slide className='flex justify-center'>
-            <img src={viteIcon} alt='vite' className='max-w-[200px] h-[200px] w-full rounded-lg ' />
+          <swiper-slide className='flex justify-center max-w-[400px]'>
+            <img src={viteIcon} alt='vite' className='max-w-[150px] h-[200px] rounded-lg object-contain border' />
           </swiper-slide>
-          <swiper-slide className='flex justify-center'>
-            <img src={expressIcon} alt='express' className='max-w-[200px] h-[200px] w-full rounded-lg ' />
+          <swiper-slide className='flex justify-center max-w-[400px]'>
+            <img src={expressIcon} alt='express' className='max-w-[200px] h-[200px] rounded-lg  object-contain border' />
           </swiper-slide>
-          <swiper-slide className='flex justify-center'>
-            <img src={mapBoxIcon} alt='mapbox' className='max-w-[400px] h-[200px] w-full rounded-lg ' />
+          <swiper-slide className='flex justify-center max-w-[400px]'>
+            <img src={mapBoxIcon} alt='mapbox' className='max-w-[300px] h-[200px] rounded-lg object-contain border' />
           </swiper-slide>
         </swiper-container>
       </section>
+
 
       {/* Footer */}
       <footer className='bg-gray-100 py-4 text-center'>
