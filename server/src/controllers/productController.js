@@ -1,7 +1,5 @@
 const Product = require('../models/productModel');
 const responseHandler = require('../utils/responseHandler');
-const { generateToken, hashPassword, comparePassword } = require('../utils/authUtils');
-const validation = require('../utils/validationUtils');
 
 // get single product, route: /api/products/info/:productId
 const getProduct = async (req, res) => {
@@ -17,7 +15,6 @@ const getProduct = async (req, res) => {
 
   } catch (error) {
     console.error(`Error getting products:  ${error.message}`, error);
-
     responseHandler.error(res, `Error getting products : ${error.message}`);
   }
 }
@@ -43,15 +40,16 @@ const getByCategory = async (req, res) => {
 
 // create a new product, route: /api/products/create-product, admin only
 const createProduct = async (req, res) => {
-  try{
-    const { category, name, price, pounds, quantity, imageBinary } = req.body;
+  try {
+    const { category, name, price, pounds, quantity, imagePath } = req.body;
+
     const productData = {
       category: category,
       name: name,
       price: price,
       pounds: pounds,
       quantity: quantity,
-      imageBinary: imageBinary
+      imagePath: imagePath
     };
 
     // create product
@@ -60,7 +58,7 @@ const createProduct = async (req, res) => {
       return responseHandler.error(res, 'Error creating product');
     }
     responseHandler.created(res, { productId }, 'Product created successfully');
-  }catch(error){
+  } catch (error) {
     console.error(`Error creating product:  ${error.message}`, error);
     responseHandler.error(res, `Error creating product : ${error.message}`);
   }
@@ -85,7 +83,7 @@ const updateProduct = async (req, res) => {
   try {
     //update product
     const { productId } = req.params;
-    const { category, name, price, pounds, quantity, imageBinary} = req.body;
+    const { category, name, price, pounds, quantity, imagePath } = req.body;
 
     const productData = {
       category: category,
@@ -93,7 +91,7 @@ const updateProduct = async (req, res) => {
       price: price,
       pounds: pounds,
       quantity: quantity,
-      imageBinary: imageBinary
+      imagePath: imagePath
     };
 
     const updated = await Product.update(productId, productData);
@@ -123,6 +121,7 @@ const deleteProduct = async (req, res) => {
     responseHandler.error(res, `Error deleting product : ${error.message}`);
   }
 }
+
 module.exports = {
   getProduct,
   getByCategory,

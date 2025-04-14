@@ -164,9 +164,7 @@ const Map = () => {
               accessToken={MAPBOX_ACCESS_TOKEN}
               onRetrieve={handleRetrieve} />
           </div>
-          <div>
-            <p value={value}>  </p>
-          </div>
+
           <div className={`mt-4 p-4 rounded-lg shadow-sm ${backgroundColor}`}>
             <h2 className="text-lg font-semibold text-gray-800">Delivery Check</h2>
             <p className="text-gray-600 mt-2 leading-relaxed">{text}</p>

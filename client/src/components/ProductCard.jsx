@@ -2,6 +2,8 @@ import React from 'react';
 import { useCart } from './CartContext';
 import { useAuth } from './AuthContext';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const ProductCard = ({ product }) => {
   const { addToCart, removeFromCart, updateQuantity, cartItems } = useCart();
   const { loggedIn } = useAuth();
@@ -18,7 +20,7 @@ const ProductCard = ({ product }) => {
     price,
     pounds,
     quantity,
-    imageBinary
+    imagePath
   } = product;
 
   // Check if product is already in cart
@@ -57,15 +59,8 @@ const ProductCard = ({ product }) => {
     }
   };
 
-  // Convert binary image data to URL if available
-  let imageUrl = null;
-  try {
-    if (imageBinary) {
-      imageUrl = `data:image/png;base64,${Buffer.from(imageBinary).toString('base64')}`;
-    }
-  } catch (err) {
-    console.error("Error processing image data:", err);
-  }
+  // Construct image URL from imagePath
+  const imageUrl = imagePath ? `${API_URL}/static/${imagePath}` : null;
 
   return (
     <div className="bg-white rounded border border-gray-200 p-4 hover:shadow-md transition-shadow">
@@ -91,7 +86,7 @@ const ProductCard = ({ product }) => {
 
       <div className="flex justify-between items-center">
         <span className="text-lg font-bold text-gray-800">${parseFloat(price).toFixed(2)}</span>
-        <span className="text-sm text-gray-500">{quantity > 0 ? 'In Stock' : 'Out of Stock'}</span>
+        <span className="text-sm text-gray-500">{quantity > 10 ? 'In Stock' : (quantity > 0 ? 'Low Stock' : 'Out of Stock')}</span>
       </div>
 
       {cartQuantity > 0 ? (
@@ -100,7 +95,7 @@ const ProductCard = ({ product }) => {
           <div className="flex items-center justify-between border rounded">
             <button
               onClick={handleDecrease}
-              className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 border-r"
+              className="w-10 h-9 flex items-center justify-center text-gray-600 hover:bg-gray-100 border-r"
             >
               -
             </button>
@@ -110,11 +105,11 @@ const ProductCard = ({ product }) => {
               max={quantity}
               value={cartQuantity}
               onChange={handleInputChange}
-              className="w-full h-10 text-center border-0 focus:outline-none focus:ring-0"
+              className="w-full h-9 text-center border-0 focus:outline-none focus:ring-0"
             />
             <button
               onClick={handleIncrease}
-              className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 border-l"
+              className="w-10 h-9 flex items-center justify-center text-gray-600 hover:bg-gray-100 border-l"
               disabled={cartQuantity >= quantity}
             >
               +

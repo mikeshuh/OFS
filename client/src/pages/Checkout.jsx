@@ -1,155 +1,359 @@
-import React, { useState } from "react";
-import Navbar from "../components/Navbar.jsx";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import Navbar from "../components/Navbar";
+import { useCart } from "../components/CartContext";
+import { useAuth } from "../components/AuthContext";
+import { requestServer } from "../utils/Utility";
 
-function Checkout() {
-  const [searchQuery, setSearchQuery] = useState("");
+const API_URL = import.meta.env.VITE_API_URL;
+const LS_ORDER_ID = "orderID";
+const LS_CLIENT_SECRET = "clientSecret";
+const LS_DELIVERY_ADDRESS = "deliveryAddress";
 
-  const handleSearch = () => {
-    alert(`Searching for: ${searchQuery}`);
+const Checkout = () => {
+  const navigate = useNavigate();
+  const { cartItems, calculateTotal, calculateTotalWithShipping, getTaxRate, clearCart } = useCart();
+  const { token } = useAuth();
+  const stripe = useStripe();
+  const elements = useElements();
+
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentError, setPaymentError] = useState(null);
+  const [clientSecret, setClientSecret] = useState("");
+  const [orderID, setOrderID] = useState(null);
+  const [isOrderCreated, setIsOrderCreated] = useState(false);
+  const hasInitialized = useRef(false);
+  const justPaidRef = useRef(false);
+  const hasCheckedAddressRef = useRef(false);
+
+  const deliveryAddress = useMemo(() => {
+    return JSON.parse(localStorage.getItem(LS_DELIVERY_ADDRESS) || "{}");
+  }, []);
+
+  const subtotal = useMemo(() => calculateTotal(), [cartItems]);
+  const shipping = useMemo(() => calculateTotalWithShipping() - subtotal, [cartItems]);
+  const tax = useMemo(() => calculateTotalWithShipping() * getTaxRate(), [cartItems]);
+  const total = useMemo(() => calculateTotalWithShipping() + tax, [cartItems]);
+
+  const formattedTotals = useMemo(() => ({
+    subtotal: subtotal.toFixed(2),
+    shipping: shipping.toFixed(2),
+    tax: tax.toFixed(2),
+    total: total.toFixed(2)
+  }), [subtotal, shipping, tax, total]);
+
+  const clearCheckoutSession = () => {
+    localStorage.removeItem(LS_ORDER_ID);
+    localStorage.removeItem(LS_CLIENT_SECRET);
   };
 
-  const [method1, setView1] = useState(true);
-  const [method2, setView2] = useState(false);
+  useEffect(() => {
+    if (cartItems.length === 0 && !justPaidRef.current) {
+      navigate("/cart");
+    }
+  }, [cartItems, navigate]);
 
-    const changeMethod1 = () => {
-      if (!method1) {
-        setView1(!method1);
+  useEffect(() => {
+    const existingOrderID = localStorage.getItem(LS_ORDER_ID);
+    const existingClientSecret = localStorage.getItem(LS_CLIENT_SECRET);
+
+    if (existingOrderID && existingClientSecret) {
+      setOrderID(existingOrderID);
+      setClientSecret(existingClientSecret);
+      setIsOrderCreated(true);
+
+      // Check if order is paid already, if so, clear checkout session
+      // delay to ensure db is updated
+      const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+      const checkOrderPaymentStatus = async () => {
+        await delay(3000);
+
+        try {
+          const orderDetails = await requestServer(
+            `${API_URL}/api/orders/details/${existingOrderID}`,
+            "GET",
+            token
+          );
+          const orderPaymentStatus = orderDetails.data.data[0].paymentStatus;
+          if (orderPaymentStatus === "paid" || orderPaymentStatus === "refunded") {
+            clearCart();
+            clearCheckoutSession();
+            navigate(`/order-confirmation/${existingOrderID}`);
+          }
+        } catch (error) {
+          console.error("Error checking order payment status:", error);
+          setPaymentError("Failed to check order payment status. Please try again.");
+        }
+      };
+
+      checkOrderPaymentStatus();
+
+      if (!hasCheckedAddressRef.current) {
+        hasCheckedAddressRef.current = true;
+
+        const updateAddress = async () => {
+          try {
+            const orderDetails = await requestServer(
+              `${API_URL}/api/orders/details/${existingOrderID}`,
+              "GET",
+              token
+            );
+            const oldAddress = {
+              streetAddress: orderDetails.data.data[0].streetAddress,
+              city: orderDetails.data.data[0].city,
+              zipCode: orderDetails.data.data[0].zipCode,
+            };
+            const newAddress = JSON.parse(localStorage.getItem(LS_DELIVERY_ADDRESS) || "{}");
+            if (newAddress.streetAddress !== oldAddress.streetAddress) {
+              await requestServer(
+                `${API_URL}/api/orders/update-address/${existingOrderID}`,
+                "PUT",
+                token,
+                newAddress
+              );
+            }
+          } catch (error) {
+            console.error("Error fetching order details:", error);
+            setPaymentError("Failed to retrieve order details. Please try again.");
+          }
+        };
+
+        updateAddress();
       }
-      if (method2) {
-        setView2(!method2);
+
+      return;
+    }
+
+    if (
+      hasInitialized.current ||
+      isOrderCreated ||
+      cartItems.length === 0 ||
+      !token ||
+      !deliveryAddress?.streetAddress
+    ) {
+      return;
+    }
+
+    hasInitialized.current = true;
+
+    const createOrder = async () => {
+      try {
+        if (
+          !deliveryAddress.streetAddress ||
+          !deliveryAddress.city ||
+          !deliveryAddress.zipCode ||
+          cartItems.length === 0 ||
+          !token
+        ) {
+          setPaymentError("Missing address information or cart is empty");
+          return;
+        }
+
+        const orderData = {
+          streetAddress: deliveryAddress.streetAddress,
+          city: deliveryAddress.city,
+          zipCode: deliveryAddress.zipCode,
+          orderProducts: cartItems.map(item => ({
+            productID: item.productID,
+            cartQuantity: item.cartQuantity
+          }))
+        };
+
+        const orderResponse = await requestServer(
+          `${API_URL}/api/orders/create-order`,
+          "POST",
+          token,
+          orderData
+        );
+
+        if (!orderResponse.data?.success) {
+          setPaymentError(orderResponse.data?.message || "Failed to create order");
+          return;
+        }
+
+        const createdOrderID = orderResponse.data.data.orderID;
+        setOrderID(createdOrderID);
+        setIsOrderCreated(true);
+        localStorage.setItem(LS_ORDER_ID, createdOrderID);
+
+        const paymentResponse = await requestServer(
+          `${API_URL}/api/payments/create-payment-intent`,
+          "POST",
+          token,
+          { orderID: createdOrderID }
+        );
+
+        if (!paymentResponse.data?.success) {
+          setPaymentError(paymentResponse.data?.message || "Failed to create payment intent");
+          return;
+        }
+
+        const createdClientSecret = paymentResponse.data.data.clientSecret;
+        setClientSecret(createdClientSecret);
+        localStorage.setItem(LS_CLIENT_SECRET, createdClientSecret);
+      } catch (error) {
+        console.error("Error creating order and payment:", error);
+        setPaymentError("An error occurred while setting up your payment. Please try again.");
       }
     };
 
-    const changeMethod2 = () => {
-      if (!method2) {
-      setView2(!method2);
-    }
-    if (method1) {
-      setView1(!method1);
+    createOrder();
+  }, [cartItems, token, deliveryAddress, isOrderCreated]);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!stripe || !elements || !clientSecret) return;
+
+    setIsProcessing(true);
+    setPaymentError(null);
+
+    const cardElement = elements.getElement(CardElement);
+
+    try {
+      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: { card: cardElement }
+      });
+
+      if (error) {
+        setPaymentError(error.message);
+        setIsProcessing(false);
+      } else if (paymentIntent.status === "succeeded") {
+        justPaidRef.current = true;
+        clearCart();
+        clearCheckoutSession();
+        navigate(`/order-confirmation/${orderID}`);
+      } else {
+        setPaymentError("Payment processing failed. Please try again.");
+        setIsProcessing(false);
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+      setPaymentError("An unexpected error occurred. Please try again.");
+      setIsProcessing(false);
     }
   };
 
-  const toTransaction = () => {
-    window.location.href="./orders";
-  };
-
-  const toCart = () => {
-    window.location.href="./cart";
-  };
+  if (!clientSecret && !paymentError) {
+    return <div className="text-center mt-10 text-gray-600">Preparing your checkout...</div>;
+  }
 
   return (
-    <div classname="min-h-screen flex flex-col">
-      {/* Navi Bar */}
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
+      <div className="container mx-auto py-8 px-4">
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">Checkout</h1>
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Order Summary */}
+          <div className="lg:w-1/2">
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">Order Summary</h2>
+              <div className="mb-6">
+                {cartItems.map((item) => (
+                  <div key={item.productID} className="flex justify-between py-2 border-b">
+                    <div>
+                      <p className="font-medium">{item.name}</p>
+                      <p className="text-sm text-gray-500">
+                        {item.cartQuantity} x ${parseFloat(item.price).toFixed(2)}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium">
+                        ${(item.cartQuantity * parseFloat(item.price)).toFixed(2)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-gray-700">Delivery Address</h3>
+                  <button
+                    onClick={() => navigate("/checkout-map")}
+                    className="text-blue-600 text-sm underline hover:text-blue-800"
+                  >
+                    Edit
+                  </button>
+                </div>
+                <p>{deliveryAddress.streetAddress}</p>
+                <p>{deliveryAddress.city}, {deliveryAddress.state} {deliveryAddress.zipCode}</p>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Subtotal</span>
+                  <span className="font-medium">${formattedTotals.subtotal}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Shipping</span>
+                  <span className="font-medium">${formattedTotals.shipping}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Tax ({(getTaxRate() * 100).toFixed(3)}%)</span>
+                  <span className="font-medium">${formattedTotals.tax}</span>
+                </div>
+                <div className="flex justify-between pt-2 border-t mt-2">
+                  <span className="font-semibold">Total</span>
+                  <span className="font-semibold">${formattedTotals.total}</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-      {/* Main page information */}
-      <div className="flex-col flex-1 justify-center items-center text-center px-4">
+          {/* Payment Form */}
+          <div className="lg:w-1/2">
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">Payment Details</h2>
 
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Checkout</h1>
-      <p>Choose a payment method</p>
-      
-      <button className="m-[10px] bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded transition-colors duration-300" onClick={changeMethod1}>
-          Method1
-        </button>
-        <button className="m-[10px] bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded transition-colors duration-300" onClick={changeMethod2}>
-          Method2
-        </button>
+              {paymentError && (
+                <div className="bg-red-100 text-red-700 p-4 rounded mb-4">
+                  {paymentError}
+                </div>
+              )}
 
-      <div className="flex flex-1 justify-center items-center px-4">
-      
-      
-      <div className="w-full max-w-md content-center ml-[10px] mr-[10px] bg-white items-center shadow-md rounded-xl p-8">
-        
-      <div className="flex flex-col text-left">
-        {method1 && <label htmlFor="CardNum"
-        className="mb-2 text-sm font-medium text-gray-700">Method1 Card Number</label>}
-          {method1 && <input
-            type="text"
-            id="CardNum"
-            name="CardNum"
-            placeholder="Enter your credit card"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="mb-[15px] w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-          />}
-      </div>
+              <form onSubmit={handleSubmit}>
+                <div className="mb-6">
+                  <label className="block text-gray-700 text-sm font-medium mb-2">
+                    Card Information
+                  </label>
+                  <div className="border rounded-md p-4">
+                    <CardElement
+                      options={{
+                        style: {
+                          base: {
+                            fontSize: "16px",
+                            color: "#424770",
+                            "::placeholder": { color: "#aab7c4" },
+                          },
+                          invalid: { color: "#9e2146" },
+                        },
+                      }}
+                    />
+                  </div>
+                  <p className="text-gray-500 text-xs mt-1">
+                    Test card: 4242 4242 4242 4242, any future date, any 3 digits for CVC, any 5 digits for postal code
+                  </p>
+                </div>
 
-      <div className="flex flex-col text-left">
-        {method1 && <label htmlFor="SecurityCardNum"
-        className="mb-2 text-sm font-medium text-gray-700">Method1 Card Security Number</label>}
-          {method1 && <input
-            type="text"
-            id="SecurityCardNum"
-            name="SecurityCardNum"
-            maxlength="3"
-            minlength="3"
-            placeholder="Enter your security card number"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="mb-[15px] w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-          />}
-      </div>
-
-      <div className="flex flex-col text-left">
-        {method1 && <label htmlFor="ValidDate"
-        className="mb-2 text-sm font-medium text-gray-700">Method1 Card Valid Date</label>}
-          {method1 && <input
-            type="text"
-            id="ValidDate"
-            name="ValidDate"
-            placeholder="Enter credit card Date"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="mb-[15px] w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-          />}
-      </div>
-
-      <div className="flex flex-col text-left">
-        {method1 && <label htmlFor="Address"
-        className="mb-2 text-sm font-medium text-gray-700">Method1 Address</label>}
-          {method1 && <input
-            type="text"
-            id="Address"
-            name="Address"
-            placeholder="Field"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="mb-[15px] w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-          />}
-      </div>
-
-      <div className="flex flex-col text-left">
-        {method2 && <label htmlFor="M2Field"
-        className="mb-2 text-sm font-medium text-gray-700">Method2 Field</label>}
-          {method2 && <input
-            type="text"
-            id="M2Field"
-            name="M2Field"
-            placeholder="Field"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="mb-[15px] w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
-          />}
-      </div>     
+                <button
+                  type="submit"
+                  disabled={isProcessing || !stripe || !clientSecret}
+                  className={`w-full py-3 rounded font-medium ${
+                    isProcessing || !stripe || !clientSecret
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-green-600 hover:bg-green-700"
+                  } text-white`}
+                >
+                  {isProcessing ? "Processing..." : `Pay $${formattedTotals.total}`}
+                </button>
+              </form>
+            </div>
+          </div>
         </div>
-
-        </div>
-
-        <button className="m-[10px] bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded transition-colors duration-300" onClick={toTransaction}>
-          Confirm
-        </button>
-
-        <button className="m-[10px] bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded transition-colors duration-300" onClick={toCart}>
-          Cancel
-        </button>
-
       </div>
     </div>
   );
 };
-
-/*
-w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded transition-colors duration-300
-*/
 
 export default Checkout;

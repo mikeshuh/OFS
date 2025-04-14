@@ -28,10 +28,13 @@ const Order = {
 
       const orderID = result.insertId;
 
+      // Always lock in a consistent order
+      orderProducts.sort((a, b) => a.productID - b.productID);
+
       // Check if all products have sufficient inventory
       for (const orderProduct of orderProducts) {
         const [inventoryResult] = await connection.execute(
-          'SELECT quantity FROM Product WHERE productID = ?',
+          'SELECT quantity FROM Product WHERE productID = ? FOR UPDATE',
           [orderProduct.productID]
         );
 
@@ -126,7 +129,7 @@ const Order = {
     const [rows] = await db.execute(
       `SELECT o.*,
               op.quantity AS orderQuantity,
-              p.productID, p.category, p.name, p.price, p.pounds, p.imageBinary
+              p.productID, p.category, p.name, p.price, p.pounds, p.imagePath
        FROM \`Order\` o
        JOIN OrderProduct op ON o.orderID = op.orderID
        JOIN Product p ON op.productID = p.productID
@@ -158,6 +161,17 @@ const Order = {
       [orderID]
     );
     return rows[0]; // Return the order with payment info
+  },
+
+  updateOrderAddress: async (orderID, deliveryAddress) => {
+    const { streetAddress, city, zipCode } = deliveryAddress;
+
+    const [result] = await db.execute(
+      'UPDATE `Order` SET streetAddress = ?, city = ?, zipCode = ? WHERE orderID = ?',
+      [streetAddress, city, zipCode, orderID]
+    );
+
+    return result.affectedRows > 0; // Return true if update was successful
   }
 };
 
