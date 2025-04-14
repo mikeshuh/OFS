@@ -96,7 +96,7 @@ const FilterDropdown = ({ label, selectedValue, options, onSelect, capitalize = 
 const Navbar = () => {
   const userProfile = JSON.parse(localStorage.getItem("userProfile")).email || "";
   return (
-    <div className="w-full flex flex-row gap-8 items-center justify-between p-4 bg-white shadow-md fixed top-0 left-0 z-10">
+    <div className="w-full flex flex-row gap-8 items-center justify-between p-4 bg-white shadow-md fixed top-0 left-0 z-[1050]">
       <div className="ms-1 flex flex-row gap-5 items-center">
         <img className="w-20 h-8" src={logo} alt="Logo" />
         <div className="rounded-lg px-2.5 py-1">
