@@ -7,6 +7,9 @@ const MAX_PRICE = 9999.99;
 const MAX_POUNDS = 999.99;
 const MAX_QUANTITY = 1000;
 
+const REGEX_PRICE_POUNDS = /^\d+(\.\d{1,2})?$/;
+const REGEX_QUANTITY = /^\d+$/;
+
 const ProductCardAdmin = ({ product, onUpdate }) => {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
@@ -43,8 +46,7 @@ const ProductCardAdmin = ({ product, onUpdate }) => {
 
     // For price and pounds: allow only numbers with up to 2 decimals
     if (name === 'price' || name === 'pounds') {
-      const regex = /^\d*(\.\d{0,2})?$/;
-      if (regex.test(value)) {
+      if (REGEX_PRICE_POUNDS.test(value)) {
         setFormData((prevData) => ({
           ...prevData,
           [name]: value,
@@ -53,8 +55,7 @@ const ProductCardAdmin = ({ product, onUpdate }) => {
     }
     // For quantity: only allow whole numbers
     else if (name === 'quantity') {
-      const regex = /^\d*$/;
-      if (regex.test(value)) {
+      if (REGEX_QUANTITY.test(value)) {
         setFormData((prevData) => ({
           ...prevData,
           [name]: value,
@@ -74,13 +75,7 @@ const ProductCardAdmin = ({ product, onUpdate }) => {
     e.preventDefault();
 
     const { price, pounds, quantity } = formData;
-    const regexPricePounds = /^\d+(\.\d{1,2})?$/;
-    const regexQuantity = /^\d+$/;
-
     if (
-      !regexPricePounds.test(price) ||
-      !regexPricePounds.test(pounds) ||
-      !regexQuantity.test(quantity) ||
       price <= 0 || price > MAX_PRICE ||
       pounds <= 0 || pounds > MAX_POUNDS ||
       quantity < 0 || quantity > MAX_QUANTITY
@@ -110,7 +105,12 @@ const ProductCardAdmin = ({ product, onUpdate }) => {
       }
 
       // Update parent state with updated product data
-      onUpdate?.({ ...product, price, pounds, quantity });
+      onUpdate?.({
+        ...product,
+        price: parseFloat(price).toFixed(2),
+        pounds: parseFloat(pounds).toFixed(2),
+        quantity: parseInt(quantity)
+      });
       setMessage("✔ Product updated");
     } catch (error) {
       setMessage("⚠ Failed to update product");
