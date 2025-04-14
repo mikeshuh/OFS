@@ -10,7 +10,7 @@ const MAX_QUANTITY = 1000;
 const REGEX_PRICE_POUNDS = /^\d+(\.\d{1,2})?$/;
 const REGEX_QUANTITY = /^\d+$/;
 
-const ProductCardAdmin = ({ product, onUpdate }) => {
+const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
     price: product.price,
@@ -241,6 +241,6 @@ const ProductCardAdmin = ({ product, onUpdate }) => {
 
     </div>
   );
-};
+});
 
 export default ProductCardAdmin;
