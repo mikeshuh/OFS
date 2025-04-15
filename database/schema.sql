@@ -26,6 +26,7 @@ CREATE TABLE `Order` (
     streetAddress VARCHAR(64) NOT NULL,
     city VARCHAR(32) NOT NULL,
     zipCode INT NOT NULL,
+    queuedForDelivery BOOL DEFAULT FALSE,
     FOREIGN KEY (userID) REFERENCES User(userID) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 

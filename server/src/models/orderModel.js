@@ -172,6 +172,25 @@ const Order = {
     );
 
     return result.affectedRows > 0; // Return true if update was successful
+  },
+
+  updateQueuedForDelivery: async (orderID, queuedForDelivery) => {
+    const [result] = await db.execute(
+      'UPDATE `Order` SET queuedForDelivery = ? WHERE orderID = ?',
+      [queuedForDelivery, orderID]
+    );
+    return result.affectedRows > 0; // Return true if update was successful
+  },
+
+  findUnqueuedPaidOrders: async () => {
+    const [rows] = await db.execute(
+      `SELECT * FROM \`Order\`
+      WHERE paymentStatus = 'paid'
+        AND (queuedForDelivery IS NULL OR queuedForDelivery = FALSE)
+        AND orderStatus = FALSE
+      ORDER BY orderTime ASC`
+    );
+    return rows; // Return all unqueued paid orders
   }
 };
 
