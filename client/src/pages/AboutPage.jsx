@@ -1,20 +1,29 @@
 import React, { useRef, useEffect } from 'react';
 
 import Navbar from '../components/Navbar';
-//delete after replacing photos in meet the team section
-import deliveryVanTrunk from '../assets/deliveryVanTrunk.jpg';
-import fruitImage from '../assets/fruits.jpg';
-import reactIcon from '../assets/reactIcon.png';
-import nodeIcon from '../assets/nodeIcon.png';
-import mysqlIcon from '../assets/mysqlIcon.png';
-import stripeIcon from '../assets/stripeIcon.svg';
-import tailwindIcon from '../assets/tailwindIcon.svg';
-import viteIcon from '../assets/viteIcon.png';
-import redisIcon from '../assets/redisIcon.png';
-import mapBoxIcon from '../assets/mapBoxIcon.png';
-import expressIcon from '../assets/expressIcon.png';
+//Why choose OFS image
+import wheatField from '../assets/wheatField.jpg';
+
+
+
+//icons
+import reactIcon from '../assets/AboutPageIcons/reactIcon.png';
+import nodeIcon from '../assets/AboutPageIcons/nodeIcon.png';
+import mysqlIcon from '../assets/AboutPageIcons/mysqlIcon.png';
+import stripeIcon from '../assets/AboutPageIcons/stripeIcon.svg';
+import tailwindIcon from '../assets/AboutPageIcons/tailwindIcon.svg';
+import viteIcon from '../assets/AboutPageIcons/viteIcon.png';
+import redisIcon from '../assets/AboutPageIcons/redisIcon.png';
+import mapBoxIcon from '../assets/AboutPageIcons/mapBoxIcon.png';
+import expressIcon from '../assets/AboutPageIcons/expressIcon.png';
+import bullIcon from '../assets/AboutPageIcons/bullIcon.png';
+//team pictures
 import rayProfile from '../assets/TeamPictures/rayProfile.jpg';
-import michaelProfile from '../assets/TeamPictures/ike.jpg';
+import michaelProfile from '../assets/TeamPictures/michaelProfile.jpg';
+import dannyProfile from '../assets/TeamPictures/dannyProfile.jpg';
+import anProfile from '../assets/TeamPictures/anProfile.jpg';
+import trinityProfile from '../assets/TeamPictures/trinityProfile.jpg';
+import timothyProfile from '../assets/TeamPictures/timothyProfile.jpg';
 import teamPicture from '../assets/TeamPictures/teamPicture.jpg';
 
 //Image carousel
@@ -72,7 +81,7 @@ function AboutPage() {
 
       {/* Attention Grabber */}
       <section className='container mx-auto text-center py-1 px-0 '>
-        <div className="w-full px-4 md:px-12 py-10">
+        <div className="px-4 md:px-12 py-10">
           <div className="text-center ">
             <div className="flex items-center justify-center">
               <div className="border-t border-green-500 w-32"></div>
@@ -99,7 +108,7 @@ function AboutPage() {
       <section className='container mx-auto px-6 py-12'>
         <div className='flex flex-col md:flex-row items-start'>
           <div className='md:w-1/2 mb-6 md:mb-0 md:mr-8'>
-            <img src={fruitImage} alt='Fruits Image' className='w-full drop-shadow-lg pointer-events-none user-select-none' />
+            <img src={wheatField} alt='Wheat Field' className='w-full drop-shadow-lg pointer-events-none user-select-none' />
           </div>
           <div className='md:w-1/2'>
             <h2 className='text-2xl font-semibold mb-4'>Why choose OFS?</h2>
@@ -120,21 +129,21 @@ function AboutPage() {
       <section className='container mx-auto text-center py-6 px-6'>
         <h1 className='text-4xl font-bold mb-8'>Meet the team behind OFS</h1>
         <div className='container mx-auto flex flex-col items-center justify-center gap-8 px-6'>
-          <img src={teamPicture} alt='OFS Team' className='width=100% rounded-sm object-cover pointer-events-none user-select-none' />
+          <img src={teamPicture} alt='OFS Team' className='w-full rounded-sm object-cover pointer-events-none user-select-none' />
           <p className='text-lg mb-10'>Committed To Bringing You The Best </p>
         </div>
 
         <div className='container mx-auto grid grid-cols-3 grid-rows-2 gap-8 px-8  justify-items-center'>
         <div className='flex flex-col items-center justify-center bg-white w-[300px] h-[300px] drop-shadow-lg'>
-          <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover pointer-events-none user-select-none' />
+          <img src={anProfile} alt='An' className='max-w-[200px] h-[200px] rounded-full object-cover pointer-events-none user-select-none' />
           An Ho
           </div>
           <div className='flex flex-col items-center justify-center bg-white w-[300px] h-[300px] drop-shadow-lg'>
-          <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover pointer-events-none user-select-none' />
+          <img src={trinityProfile} alt='Trinity' className='min-w-[200px] h-[200px] rounded-full object-cover pointer-events-none user-select-none' />
           Trinity Manansala
           </div>
           <div className='flex flex-col items-center justify-center bg-white w-[300px] h-[300px] drop-shadow-lg'>
-          <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover pointer-events-none user-select-none' />
+          <img src={timothyProfile} alt='Timothy' className='min-w-[200px] h-[200px] rounded-full object-cover pointer-events-none user-select-none' />
           Timothy Nguyen
           </div>
           <div className='flex flex-col items-center justify-center bg-white w-[300px] h-[300px] drop-shadow-lg'>
@@ -142,7 +151,7 @@ function AboutPage() {
           Michael Huh
           </div>
           <div className='flex flex-col items-center justify-center bg-white w-[300px] h-[300px] drop-shadow-lg'>
-          <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover pointer-events-none user-select-none' />
+          <img src={dannyProfile} alt='Danny' className='max-w-[200px] h-[200px] rounded-full object-cover pointer-events-none user-select-none' />
           Danny Xu
           </div>
           <div className='flex flex-col items-center justify-center bg-white w-[300px] h-[300px] drop-shadow-lg'>
@@ -190,13 +199,14 @@ function AboutPage() {
         }}
         allowTouchMove={false}
         simulateTouch={false}
-
-
         speed={5000}
         className="mySwiper"
       >
         <SwiperSlide className='flex justify-center max-w-[300px]'>
           <img src={reactIcon} alt='react' className='max-w-[150px] h-[200px] rounded-lg object-contain pointer-events-none user-select-none' />
+        </SwiperSlide>
+        <SwiperSlide className='flex justify-center  max-w-[300px]'>
+          <img src={bullIcon} alt='bull' className='max-w-[300px] h-[200px] rounded-lg object-contain pointer-events-none user-select-none' />
         </SwiperSlide>
         <SwiperSlide className='flex justify-center  max-w-[300px]'>
           <img src={mysqlIcon} alt='mysql' className='max-w-[200px] h-[200px] rounded-lg object-contain pointer-events-none user-select-none' />
@@ -222,6 +232,7 @@ function AboutPage() {
         <SwiperSlide className='flex justify-center  max-w-[300px]'>
           <img src={mapBoxIcon} alt='mapbox' className='max-w-[300px] h-[200px] rounded-lg object-contain pointer-events-none user-select-none' />
         </SwiperSlide>
+
       </Swiper>
 
 
