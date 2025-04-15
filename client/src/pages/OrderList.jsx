@@ -9,6 +9,7 @@ const OrderList = () => {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [searchDate, setSearchDate] = useState("");
+  const [deliveryStatus, setDeliveryStatus] = useState("all");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,13 +35,23 @@ const OrderList = () => {
     setSearchDate(dateValue);
 
     if (!dateValue) {
-      setFilteredOrders(orders);
+      setFilteredOrders(
+        orders.filter(order =>
+          deliveryStatus === "all" ||
+          (deliveryStatus === "completed" && order.orderStatus) ||
+          (deliveryStatus === "pending" && !order.orderStatus)
+        )
+      );
     } else {
       const filtered = orders.filter(order => {
         const orderDate = new Date(order.createdAt || order.orderTime);
-        const localDate = new Date(orderDate.getTime() - orderDate.getTimezoneOffset() * 60000)
-          .toISOString().split("T")[0];
-        return localDate === dateValue;
+        const localDate = new Date(orderDate.getTime() - orderDate.getTimezoneOffset() * 60000).toISOString().split("T")[0];
+        const matchDate = localDate === dateValue;
+        const matchStatus =
+          deliveryStatus === "all" ||
+          (deliveryStatus === "completed" && order.orderStatus) ||
+          (deliveryStatus === "pending" && !order.orderStatus);
+        return matchDate && matchStatus;
       });
       setFilteredOrders(filtered);
     }
@@ -52,14 +63,52 @@ const OrderList = () => {
       <div className="flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 w-full">
         <h1 className="text-3xl font-bold text-gray-800 mb-4 text-center">Order History</h1>
 
-        <div className="mb-6 w-full max-w-md text-center">
-          <label className="block text-gray-700 mb-2 font-medium">Filter by Order Date:</label>
-          <input
-            type="date"
-            value={searchDate}
-            onChange={handleDateChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-center"
-          />
+        <div className="mb-6 w-full max-w-2xl flex flex-col sm:flex-row items-center justify-center gap-6">
+          <div className="w-full sm:w-1/2">
+            <label className="block text-gray-700 mb-2 font-medium">Order Status:</label>
+            <select
+              value={deliveryStatus}
+              onChange={(e) => {
+                const value = e.target.value;
+                setDeliveryStatus(value);
+                if (!searchDate) {
+                  setFilteredOrders(
+                    orders.filter(order =>
+                      value === "all" ||
+                      (value === "completed" && order.orderStatus) ||
+                      (value === "pending" && !order.orderStatus)
+                    )
+                  );
+                } else {
+                  const filtered = orders.filter(order => {
+                    const orderDate = new Date(order.createdAt || order.orderTime);
+                    const localDate = new Date(orderDate.getTime() - orderDate.getTimezoneOffset() * 60000).toISOString().split("T")[0];
+                    const matchDate = localDate === searchDate;
+                    const matchStatus =
+                      value === "all" ||
+                      (value === "Completed" && order.orderStatus) ||
+                      (value === "pending" && !order.orderStatus);
+                    return matchDate && matchStatus;
+                  });
+                  setFilteredOrders(filtered);
+                }
+              }}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            >
+              <option value="all">All</option>
+              <option value="completed">Completed</option>
+              <option value="pending">Pending</option>
+            </select>
+          </div>
+          <div className="w-full sm:w-1/2">
+            <label className="block text-gray-700 mb-2 font-medium">Filter by Order Date:</label>
+            <input
+              type="date"
+              value={searchDate}
+              onChange={handleDateChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-center"
+            />
+          </div>
         </div>
 
         {filteredOrders.length === 0 ? (
@@ -91,7 +140,7 @@ const OrderList = () => {
                     <td className="px-4 py-2">{new Date(order.createdAt || order.orderTime).toLocaleString()}</td>
                     <td className="px-4 py-2">
                       <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${order.orderStatus ? "bg-blue-100 text-blue-800" : "bg-yellow-100 text-yellow-800"}`}>
-                        {order.orderStatus ? "Complete" : "Pending"}
+                        {order.orderStatus ? "Completed" : "Pending"}
                       </span>
                     </td>
                     <td className="px-4 py-2 capitalize">
