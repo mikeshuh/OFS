@@ -10,25 +10,29 @@ function Navbar() {
   const auth = useAuth();
   const getProd = useGetProducts();
   const navigate = useNavigate();
-  console.log(useGetProducts())
-  console.log(useAuth())
   const { cartItemsCount, calculateTotal } = useCart();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(() => {
+    return localStorage.getItem("searchTerm") || "";
+  });
 
   const handleSearch = async (e) => {
     alert(`Searching for: ${searchQuery}`);
-    console.log(getProd)
     const response = await getProd.getProductMatch(searchQuery);
     if (response.success == false) {
       alert(`We do not sell anything that matches ${searchQuery}.`);
     } else {
+      localStorage.setItem("searchTerm", searchQuery);
       navigate("/products");
-      window.location.reload(false);
     }
   };
 
   const clearSearch = async (e) => {
     setSearchQuery("");
+    localStorage.removeItem("searchTerm")
+    localStorage.removeItem("itemData")
+    if ( document.URL.includes("/products") ) {
+      navigate("/products");
+    }
   };
 
   return (

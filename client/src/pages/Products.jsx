@@ -16,6 +16,7 @@ const Products = () => {
   const [error, setError] = useState(null);
   const [categories, setCategories] = useState(['all']);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchProducts, setSearchProducts] = useState([])
 
   // Initial data load
   useEffect(() => {
@@ -58,28 +59,37 @@ const Products = () => {
     fetchAllProducts();
   }, []);
 
-  // Update when URL category changes
-  useEffect(() => {
-    if (allProducts.length > 0 && category) {
-      const urlCategory = category.toLowerCase();
-      if (categories.includes(urlCategory)) {
-        setSelectedCategory(urlCategory);
-        filterProducts(allProducts, urlCategory);
-      } else {
-        navigate('/products/all');
-      }
-    }
-  }, [category, allProducts, categories, navigate]);
-
   useEffect(() => {
     if (localStorage.getItem("itemData")) {
       const itemURL = JSON.parse(localStorage.getItem("itemData"));
       filterForSearch(allProducts, itemURL);
+    } 
+  }, [category, allProducts, categories, navigate]);
+
+  // Update when URL category changes
+  useEffect(() => {
+    if (category) {
+      const urlCategory = category.toLowerCase();
+      if (categories.includes(urlCategory)) {
+        setSelectedCategory(urlCategory);
+        const source = searchProducts.length > 0 ? searchProducts : allProducts;
+        filterProducts(source, urlCategory) 
+      }
+    } else {
+      navigate('/products/all');
     }
   }, [category, allProducts, categories, navigate]);
 
+
   const filterForSearch = (productsData, searchFor) => {
     setProducts(
+      productsData.filter(product => 
+        searchFor.some(searchItem =>
+          (product.name.toLowerCase() || product.category.toLowerCase()) === searchItem.name.toLowerCase()
+        )
+      )
+    );
+    setSearchProducts(
       productsData.filter(product => 
         searchFor.some(searchItem =>
           (product.name.toLowerCase() || product.category.toLowerCase()) === searchItem.name.toLowerCase()
@@ -102,6 +112,8 @@ const Products = () => {
   // Handle category change
   const handleCategoryChange = (categoryName) => {
     setSelectedCategory(categoryName);
+    const source = searchProducts.length > 0 ? searchProducts : allProducts;
+    filterProducts(source, categoryName)
     navigate(`/products/${categoryName}`);
   };
 
