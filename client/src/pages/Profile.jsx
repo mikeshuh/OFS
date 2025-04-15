@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
-import ProductGrid from "../components/ProductGrid";
 import { requestServer } from "../utils/Utility";
+import profileBackground from "../assets/profile_background.jpg";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -11,22 +11,15 @@ const Profile = () => {
   const navigate = useNavigate();
   const auth = useAuth();
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: ""
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [viewMode, setView] = useState(true);
   const [profileData, setProfileData] = useState(JSON.parse(localStorage.getItem("userProfile")));
-  const [recommendedProducts, setRecommendedProducts] = useState([]);
 
   const EditButton = () => setView(!viewMode);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value
-    }));
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const changeProfile = async (e) => {
@@ -34,68 +27,56 @@ const Profile = () => {
     auth.changePassword(formData);
   };
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await requestServer(`${API_URL}/api/products`, "GET");
-        const allProducts = response?.data?.data || [];
-
-        if (allProducts.length > 0) {
-          const shuffled = allProducts.sort(() => 0.5 - Math.random());
-          setRecommendedProducts(shuffled.slice(0, 4));
-        }
-      } catch (err) {
-        console.error("❌ Failed to load recommended products:", err);
-      }
-    };
-
-    fetchProducts();
-  }, []);
-
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
+    <div className="min-h-screen relative">
+      {/* 背景图：z-0 */}
+      <img
+        src={profileBackground}
+        alt="Profile Background"
+        className="absolute inset-0 w-full h-full object-cover z-0"
+      />
 
-      <div className="flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">Profile Page</h1>
+      {/* Navbar：固定在顶部，确保在背景图上层 */}
+      <div className="relative z-20">
+        <Navbar />
+      </div>
+
+      {/* 内容区域：半透明 + 美化，z-10 */}
+      <div className="flex flex-col items-center justify-center py-16 px-4 sm:px-6 lg:px-8 relative z-10">
+        <h1 className="text-4xl font-semibold text-white mb-10 drop-shadow-md tracking-wide">Profile Page</h1>
 
         {profileData ? (
           <>
-            <div className="flex flex-col space-y-4 w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-              <p className="text-gray-700">
-                <span className="font-semibold">First Name:</span> {profileData.firstName}
+            <div className="flex flex-col space-y-4 w-full max-w-md p-6 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg">
+              <p className="text-gray-800 text-lg">
+                <span className="font-semibold text-green-700">First Name:</span> {profileData.firstName}
               </p>
-              <p className="text-gray-700">
-                <span className="font-semibold">Last Name:</span> {profileData.lastName}
+              <p className="text-gray-800 text-lg">
+                <span className="font-semibold text-green-700">Last Name:</span> {profileData.lastName}
               </p>
-              <p className="text-gray-700">
-                <span className="font-semibold">Email:</span> {profileData.email}
+              <p className="text-gray-800 text-lg">
+                <span className="font-semibold text-green-700">Email:</span> {profileData.email}
               </p>
 
               {viewMode ? (
-                <div className="flex flex-col items-center space-y-4">
+                <div className="flex flex-col items-center space-y-4 pt-4">
                   <button
-                    className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition duration-300"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white text-lg py-2 rounded transition"
                     onClick={() => navigate("/orders")}
                   >
                     View History
                   </button>
-
                   <button
-                    className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition duration-300"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white text-lg py-2 rounded transition"
                     onClick={EditButton}
                   >
                     Edit Profile
                   </button>
                 </div>
               ) : (
-                <form
-                  onSubmit={changeProfile}
-                  className="flex flex-col items-center space-y-4"
-                >
+                <form onSubmit={changeProfile} className="flex flex-col items-center space-y-4 pt-4">
                   <input
                     type="password"
-                    id="currentPassword"
                     name="currentPassword"
                     placeholder="Current Password"
                     onChange={handleChange}
@@ -103,7 +84,6 @@ const Profile = () => {
                   />
                   <input
                     type="password"
-                    id="newPassword"
                     name="newPassword"
                     placeholder="New Password"
                     onChange={handleChange}
@@ -112,14 +92,14 @@ const Profile = () => {
                   <div className="flex flex-col w-full space-y-2">
                     <button
                       type="submit"
-                      className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition duration-300"
+                      className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded"
                     >
                       Save Changes
                     </button>
                     <button
                       type="button"
                       onClick={EditButton}
-                      className="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded transition duration-300"
+                      className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded"
                     >
                       Cancel Changes
                     </button>
@@ -127,20 +107,9 @@ const Profile = () => {
                 </form>
               )}
             </div>
-
-            {/* Divider */}
-            <div className="w-full max-w-md border-t mt-10 mb-6"></div>
-
-            {/* Recommandation part*/}
-            <div className="w-full max-w-6xl px-4 sm:px-6 lg:px-8 mb-12">
-              <ProductGrid
-                title="Guess you like"
-                products={recommendedProducts}
-              />
-            </div>
           </>
         ) : (
-          <p className="text-gray-600">Loading profile data...</p>
+          <p className="text-white drop-shadow">Loading profile data...</p>
         )}
       </div>
     </div>

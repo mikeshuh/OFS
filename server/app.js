@@ -2,6 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const env = require('./src/config/env');
+const path = require('path');
 
 // Validate environment variables
 env.validateEnv();
@@ -37,6 +38,9 @@ if (env.nodeEnv === 'development') {
     next();
   });
 }
+
+// Serve static product images
+app.use('/static', express.static(path.join(__dirname, 'src/assets')));
 
 // API Routes
 app.use('/api/users', userRoutes);
