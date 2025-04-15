@@ -39,11 +39,11 @@ const Product = {
 
   // Create a new product
   create: async (productData) => {
-    const { category, name, price, pounds, quantity,imageBinary } = productData;
+    const { category, name, price, pounds, quantity, imagePath } = productData;
 
     const [result] = await db.execute(
-      'INSERT INTO Product (category, name, price, pounds, quantity,imageBinary) VALUES (?, ?, ?, ?, ?, ?)',
-      [category, name, price, pounds, quantity, imageBinary]
+      'INSERT INTO Product (category, name, price, pounds, quantity, imagePath) VALUES (?, ?, ?, ?, ?, ?)',
+      [category, name, price, pounds, quantity, imagePath]
     );
 
     return result.insertId; // Return the ID of the newly created product
@@ -51,11 +51,11 @@ const Product = {
 
   // Update a product
   update: async (productID, productData) => {
-    const { category, name, price, pounds, quantity, imageBinary } = productData;
+    const { category, name, price, pounds, quantity, imagePath } = productData;
 
     const [result] = await db.execute(
-      'UPDATE Product SET category = ?, name = ?, price = ?, pounds = ?, quantity = ?, imageBinary = ? WHERE productID = ?',
-      [category, name, price, pounds, quantity, imageBinary, productID]
+      'UPDATE Product SET category = ?, name = ?, price = ?, pounds = ?, quantity = ?, imagePath = ? WHERE productID = ?',
+      [category, name, price, pounds, quantity, imagePath, productID]
     );
 
     return result.affectedRows > 0; // Return true if update was successful
