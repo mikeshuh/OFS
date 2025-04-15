@@ -2,8 +2,6 @@ const stripe = require('../config/stripe');
 const Order = require('../models/orderModel');
 const Payment = require('../models/paymentModel');
 const responseHandler = require('../utils/responseHandler');
-
-// **** New Import for Bull Queue Integration ****
 const deliveryQueueService = require('../services/deliveryQueueService');
 
 // Create a payment intent when checkout is initiated

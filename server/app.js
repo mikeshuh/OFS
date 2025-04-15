@@ -54,7 +54,7 @@ app.use('/api/delivery', deliveryRoutes);
 const { createBullBoard } = require('@bull-board/api');
 const { BullAdapter } = require('@bull-board/api/bullAdapter');
 const { ExpressAdapter } = require('@bull-board/express');
-const deliveryQueue = require('./src/queues/deliveryQueue'); // Ensure your deliveryQueue file is here
+const deliveryQueue = require('./src/queues/deliveryQueue');
 
 const bullBoardAdapter = new ExpressAdapter();
 bullBoardAdapter.setBasePath('/admin/queues');

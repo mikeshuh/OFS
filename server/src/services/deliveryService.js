@@ -16,8 +16,8 @@ const deliveryService = {
   // Get route from origin to destination
   getRoute: async (origin, destination) => {
     // Get the coordinates for the origin and destination
-    coordinateOrigin = await deliveryService.getGeocode(origin);
-    coordinateDestination = await deliveryService.getGeocode(destination);
+    const coordinateOrigin = await deliveryService.getGeocode(origin);
+    const coordinateDestination = await deliveryService.getGeocode(destination);
 
     // Get the route between the two coordinates
     try {

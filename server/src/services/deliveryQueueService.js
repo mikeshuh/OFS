@@ -91,7 +91,8 @@ const triggerDeliveryProcess = async () => {
     // Each leg represents the route segment between two delivery points.
     // Since leg[0] is from the warehouse to the first order, leg[i] corresponds to batch[i].
     // We use this to schedule each order's delivery with a delay based on cumulative travel time.
-    legs.forEach((leg, index) => {
+    const deliveryLegs = legs.slice(0, batch.length);
+    deliveryLegs.forEach((leg, index) => {
       cumulativeDelay += leg.duration * SIMULATION_FACTOR * 1000; // convert to ms
 
       const orderIndex = index;
