@@ -7,10 +7,9 @@ import Login from "./pages/Login.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
 import AboutPage from "./pages/AboutPage.jsx";
 import Redirect404 from "./pages/Redirect404.jsx";
-import Cart from "./pages/Cart.jsx"
-import Checkout from "./pages/Checkout.jsx"
 import Signup from "./pages/Signup.jsx";
 import Logout from "./pages/Logout.jsx";
+import Cart from "./pages/Cart.jsx"
 import AuthProvider from "./components/AuthContext.jsx";
 import CartProvider from "./components/CartContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
@@ -41,10 +40,6 @@ function App() {
               <Route path="/checkout" element={<StripeCheckoutWrapper />} />
               <Route path="/order-confirmation/:orderID" element={<OrderConfirmation />} />
             </Route>
-              
-            {/*</Route>*/}
-            
-
             <Route path="/login" element={<Login />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/signup" element={<Signup />} />
@@ -59,14 +54,3 @@ function App() {
 }
 
 export default App;
-
-/*
-<Route element={<ProtectedRoute />}>
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/profile" element={<Profile />} />
-        
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/orderDetails" element={<OrderDetails />} />
-        </Route>
-*/
