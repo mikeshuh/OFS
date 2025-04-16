@@ -186,7 +186,7 @@ const Order = {
     const [rows] = await db.execute(
       `SELECT * FROM \`Order\`
       WHERE paymentStatus = 'paid'
-        AND (queuedForDelivery IS NULL OR queuedForDelivery = FALSE)
+        AND queuedForDelivery = FALSE
         AND orderStatus = FALSE
       ORDER BY orderTime ASC`
     );
