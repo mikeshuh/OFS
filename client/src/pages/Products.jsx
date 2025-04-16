@@ -29,9 +29,12 @@ const Products = () => {
           setAllProducts(productsData);
 
           // Extract unique categories
+          /*
           const uniqueCategories = ['all', ...new Set(productsData.map(product =>
             product.category.toLowerCase()
           ))];
+          */
+          const uniqueCategories = ['all', 'fruit', 'vegetable', 'dairy', 'meat', 'bakery', 'pantry'];
           setCategories(uniqueCategories);
 
           // Initialize with the URL category if valid, or 'all' otherwise

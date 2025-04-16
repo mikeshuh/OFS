@@ -4,58 +4,88 @@ import Navbar from "../components/Navbar.jsx";
 import OrderDetailsTableDiv from "../components/OrderDetailsTableDiv.jsx";
 import { requestServer } from "../utils/Utility";
 
-function OrderDetails() {
+function OrderDetails(orderIDParameter = number) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = () => {
     alert(`Searching for: ${searchQuery}`);
 };
 
-const [viewMode, setView] = useState(true);
+  const [viewMode, setView] = useState(true);
     const EditButton = () => {
             setView(!viewMode);
     };
 
-const toOrder = () => {
-  window.location.href="./orders";
-}
+  const navigate = useNavigate();
 
-const ordersD = [
-  {
-    orderID: 1,
-    userID: 11,
-    totalPrice: "10.68",
-    totalPounds: 3.96,
-    deliveryFee: "No",
-    orderTime: "2025-03-01 12:54:39",
-    orderStatus: "True",
-    paymentStatus: "paid",
-    streetAddress: "2 East William Street",
-    city: "San Jose",
-    zipCode: "95112",
-  },
-];
+  const toOrder = () => {
+    navigate("/orders");
+  }
 
-const orderProducts = [
-  {
-    orderProductID: 1,
-    orderID: 1,
-    productID: 1,
-    quantity: 12,
-  },
-  {
-    orderProductID: 1,
-    orderID: 1,
-    productID: 1,
-    quantity: 12,
-  },
-  {
-    orderProductID: 1,
-    orderID: 1,
-    productID: 1,
-    quantity: 12,
-  },
-];
+
+  /*ordersD should only have the specified orderID
+    select * from `Order`
+    WHERE orderID = 1;
+
+    SELECT 
+      JSON_ARRAYAGG(
+      JSON_OBJECT(
+      'orderID', orderID,
+	    'userID', userID,
+	    'totalPrice', totalPrice,
+	    'totalPounds', totalPounds,
+	    'deliveryFee', deliveryFee,
+	    'orderTime', orderTime,
+	    'orderStatus', orderStatus,
+	    'paymentStatus', paymentStatus,
+	    'streetAddress', streetAddress,
+	    'city', city,
+	    'zipCode', zipCode
+      )
+    )
+    FROM `Order`;
+  */
+  const ordersD = [
+    {
+      orderID: 1,
+      userID: 11,
+      totalPrice: "10.68",
+      totalPounds: 3.96,
+      deliveryFee: "No",
+      orderTime: "2025-03-01 12:54:39",
+      orderStatus: "True",
+      paymentStatus: "paid",
+      streetAddress: "2 East William Street",
+      city: "San Jose",
+      zipCode: "95112",
+    },
+  ];
+
+  /*orderProducts should only have the orderProducts with the specified orderID
+    select * from OrderProduct
+    WHERE orderID = 1;
+  */
+
+  const orderProducts = [
+    {
+      orderProductID: 1,
+      orderID: 1,
+      productID: 1,
+      quantity: 12,
+    },
+    {
+      orderProductID: 1,
+      orderID: 1,
+      productID: 1,
+      quantity: 12,
+    },
+    {
+      orderProductID: 1,
+      orderID: 1,
+      productID: 1,
+      quantity: 12,
+    },
+  ];
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -65,6 +95,7 @@ const orderProducts = [
       <div>
       <OrderDetailsTableDiv
         ordersD={ordersD}
+        orderIDValue={ordersD[0].orderID}
         orderProducts={orderProducts}
       />
       </div>

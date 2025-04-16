@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAuth } from './AuthContext';
+import { useParams, useNavigate } from "react-router-dom";
 
 const OrderTable = ({ order }) => {
   const { loggedIn } = useAuth();
@@ -23,13 +24,17 @@ const OrderTable = ({ order }) => {
     zipCode,
   } = order;
 
+  const navigate = useNavigate();
+
+  const handleButton = () => {
+   /*window.location.href="./profile";*/
+   navigate("/orderDetails", orderID);
+  }
+
   /*
-  Button should take orderID as a parameter?
+  Button should redirect user to the orderDetails while passing the orderID info.
   OrderDetails should display a list of purchased products from that orderID
   */
-  const handleButton = () => {
-    window.location.href="./orderDetails";
-  };
 
   return (
     <div>

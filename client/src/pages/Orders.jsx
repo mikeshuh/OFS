@@ -4,6 +4,10 @@ import Navbar from "../components/Navbar.jsx";
 import OrderTableDiv from "../components/OrderTableDiv.jsx";
 import { requestServer } from "../utils/Utility";
 
+/*
+import UserModel from "...../server/src/models/userModel.js"
+*/
+
 function Orders() {
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -16,15 +20,48 @@ function Orders() {
             setView(!viewMode);
     };
 
-  const toOrderDetails = () => {
-    window.location.href="./orderDetails";
-  }
+  const navigate = useNavigate();
 
   const toProfile = () => {
-   window.location.href="./profile";
+   /*window.location.href="./profile";*/
+   navigate("/profile");
   }
+  
+  const uID = 2;
+
+  /*
+  Show orders with the specified userID
+  select * from `Order`
+  WHERE userID = UserIDValue;
+  */
+
+  const [ordersData, setProfileData] = useState(JSON.parse(localStorage.getItem("userProfile")));
+  console.log("Orders Data: ", ordersData);
 
   const orders = [
+    /*
+    Replace current data with results from mysql select
+      select * from `Order`
+      WHERE userID = UserIDValue;
+
+    SELECT 
+      JSON_ARRAYAGG(
+      JSON_OBJECT(
+      'orderID', orderID,
+	    'userID', userID,
+	    'totalPrice', totalPrice,
+	    'totalPounds', totalPounds,
+	    'deliveryFee', deliveryFee,
+	    'orderTime', orderTime,
+	    'orderStatus', orderStatus,
+	    'paymentStatus', paymentStatus,
+	    'streetAddress', streetAddress,
+	    'city', city,
+	    'zipCode', zipCode
+      )
+    )
+    FROM `Order`;
+    */
     {
       orderID: 1,
       userID: 11,

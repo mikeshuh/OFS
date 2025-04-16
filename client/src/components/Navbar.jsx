@@ -9,6 +9,25 @@ function Navbar() {
   const { cartItemsCount, calculateTotal } = useCart();
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [open1, openDropDown1] = useState(false);
+  const [open2, openDropDown2] = useState(false);
+
+  {/*Dropdown: login, signup, delivery, profile*/}
+  const handleDropDown1 = () => {
+    openDropDown1(!open1);
+    if (open2) {
+      openDropDown2(!open2);
+    }
+  };
+
+  {/*Dropdown: product categories*/}
+  const handleDropDown2 = () => {
+    openDropDown2(!open2);
+    if (open1) {
+      openDropDown1(!open1);
+    }
+  };
+
   const handleSearch = () => {
     alert(`Searching for: ${searchQuery}`);
   };
@@ -99,25 +118,83 @@ function Navbar() {
 
       {/* Navigation Menu */}
       <div className="flex justify-center bg-white shadow-sm">
-        <div className="flex space-x-10 py-4">
-          <Link to="/" className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center">
+        <div className="flex space-x-10 py-4 text-center">
+
+        <div>
+          {/*Dropdown: login, signup, delivery, profile*/}
+          <Link className="text-gray-800 text-base font-medium hover:text-green-600 flex"
+          onClick={handleDropDown1}>
             Home
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </Link>
-          <Link to="/products" className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center">
+          <div className="absolute bg-white ">
+            {open1 ?
+              <ul className="w-full list-none ml-2 mr-2 text-left">
+              <li className="mt-5 mb-5"><Link to="/login" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
+                Login</Link>
+              </li>
+              <li className="mt-5 mb-5"><Link to="/signup" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
+                Signup</Link>
+              </li> {/* Todo: Change Link from /about to another page*/}
+              <li className="mt-5 mb-5"><Link to="/about" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
+                Delivery</Link>
+              </li>
+              <li className="mt-5 mb-5"><Link to="/profile" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
+                Profile</Link>
+              </li>
+              </ul> : null
+            }
+          </div>
+        </div>
+        
+        <div>
+          {/*Dropdown: product categories*/}
+          <Link className="text-gray-800 text-base font-medium hover:text-green-600 flex"
+          onClick={handleDropDown2}>
             Products
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </Link>
-          <Link to="/about" className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center">
+          <div className="absolute bg-white">
+            {open2 ?
+              <ul className="w-full list-none ml-2 mr-2 text-left">
+                {/* Todo: Change Link from /product to the proper category*/}
+              <li className="mt-5 mb-5"><Link to="/products/fruit" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
+                Fruit</Link>
+              </li>
+              <li className="mt-5 mb-5"><Link to="/products/vegetable" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
+                Vegetable</Link>
+              </li>
+              <li className="mt-5 mb-5"><Link to="/products/dairy" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
+                Dairy</Link>
+              </li>
+              <li className="mt-5 mb-5"><Link to="/products/meat" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
+                Meat</Link>
+              </li>
+              <li className="mt-5 mb-5"><Link to="/products/bakery" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
+                Bakery</Link>
+              </li>
+              <li className="mt-5 mb-5"><Link to="/products/pantry" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
+                Pantry</Link>
+              </li>
+              </ul> : null
+            }
+          </div>
+        </div>
+
+
+          <Link to="/about" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
             About Us
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              {/*
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              */}
             </svg>
           </Link>
+
         </div>
       </div>
     </div>

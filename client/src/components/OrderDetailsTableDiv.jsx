@@ -2,7 +2,7 @@ import React from 'react';
 import OrderProductTable from './OrderProductTable.jsx';
 import OrderDetailsTable from './OrderDetailsTable.jsx';
 
-const OrderDetailsDiv = ({ordersD, orderProducts = []}) => {
+const OrderDetailsDiv = ({ordersD, orderIDValue = number, orderProducts = []}) => {
 
     if (!orderProducts || orderProducts.length === 0) {
         return (
@@ -18,7 +18,7 @@ const OrderDetailsDiv = ({ordersD, orderProducts = []}) => {
 
   return (
     <div className="flex-1 flex-col items-center justify-center p-12 text-center">
-    <h1 className="text-3xl font-bold text-gray-800 mb-6">Order Details</h1>
+    <h1 className="text-3xl font-bold text-gray-800 mb-6">Order Details #{orderIDValue}</h1>
         
         
     {ordersD.map(order => (
