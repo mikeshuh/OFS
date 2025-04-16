@@ -9,16 +9,6 @@ const Product = {
     return rows;
   },
 
-  findBySearch: async (searchTerm) => {
-    const search = `%${searchTerm}%`; // Add the wildcard for partial matching
-    const [rows] = await db.execute(
-      'SELECT * FROM Product WHERE name LIKE ? OR category LIKE ?',
-      [search, search]
-    );
-    return rows;
-  },
-  
-
   // find products by category
   findByCategory: async (category) => {
     const [rows] = await db.execute(

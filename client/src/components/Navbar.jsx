@@ -4,11 +4,9 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "./AuthContext";
 import { useCart } from "./CartContext";
 import { useNavigate } from "react-router-dom";
-import { useGetProducts } from "./GetProducts"
 
 function Navbar() {
   const auth = useAuth();
-  const getProd = useGetProducts();
   const navigate = useNavigate();
   const { cartItemsCount, calculateTotal } = useCart();
   const [searchQuery, setSearchQuery] = useState(() => {
@@ -29,7 +27,6 @@ function Navbar() {
   const clearSearch = async (e) => {
     setSearchQuery("");
     localStorage.removeItem("searchTerm")
-    localStorage.removeItem("itemData")
     if ( document.URL.includes("/products") ) {
       navigate("/products");
     }

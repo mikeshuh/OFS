@@ -68,14 +68,14 @@ const Products = () => {
 
   // Update when URL category changes
   useEffect(() => {
-    if (category != 'all') {
+    if (category) {
         const urlCategory = category.toLowerCase();
         if (categories.includes(urlCategory)) {
           setSelectedCategory(urlCategory);
           const source = localStorage.getItem("searchTerm") ? searchProducts : allProducts;
           filterProducts(source, urlCategory) 
         }
-    } 
+    }
   }, [category, allProducts, categories, navigate]);
 
 
@@ -107,7 +107,6 @@ const Products = () => {
   const handleCategoryChange = (categoryName) => {
     setSelectedCategory(categoryName);
     const source = searchProducts.length > 0 ? searchProducts : allProducts;
-    filterProducts(source, categoryName)
     navigate(`/products/${categoryName}`);
   };
 

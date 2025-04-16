@@ -19,24 +19,6 @@ const getProduct = async (req, res) => {
   }
 }
 
-const getBySearch = async (req, res) => {
-  try {
-    //find product by category
-    const { searchTerm } = req.params;
-    const products = await Product.findBySearch(searchTerm);
-
-    // check for either an empty array or undefined
-    if (!products || products.length === 0) {
-      return responseHandler.notFound(res, 'Products not found.');
-    }
-    responseHandler.success(res, products);
-
-  } catch (error) {
-    console.error(`Error getting products:  ${error.message}`, error);
-    responseHandler.error(res, `Error getting products : ${error.message}`);
-  }
-}
-
 // select all products from a category, route: /api/products/category/:category
 const getByCategory = async (req, res) => {
   try {

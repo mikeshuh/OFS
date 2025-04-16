@@ -7,8 +7,6 @@ const { validateParamInt, validateParamString, validateProduct } = require('../u
 // unprotected routes
 router.get('/:productId', validateParamInt('productId'), productController.getProduct);
 
-router.get('/search/:searchTerm', validateParamString('searchTerm'), productController.getBySearch);
-
 router.get('/category/:category', validateParamString('category'), productController.getByCategory);
 
 router.get('/', productController.getAllProduct);
