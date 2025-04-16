@@ -16,7 +16,6 @@ const Products = () => {
   const [error, setError] = useState(null);
   const [categories, setCategories] = useState(['all']);
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [searchProducts, setSearchProducts] = useState([])
 
   // Initial data load
   useEffect(() => {
@@ -59,33 +58,18 @@ const Products = () => {
     fetchAllProducts();
   }, []);
 
-  useEffect(() => {
-    if (localStorage.getItem("searchTerm")) {
-      filterForSearch(allProducts);
-    }
-  }, [category, allProducts, categories, navigate]);
-
   // Update when URL category changes
   useEffect(() => {
-    if (category) {
-        const urlCategory = category.toLowerCase();
-        if (categories.includes(urlCategory)) {
-          setSelectedCategory(urlCategory);
-          const source = localStorage.getItem("searchTerm") ? searchProducts : allProducts;
-          filterProducts(source, urlCategory) 
-        }
+    if (allProducts.length > 0 && category) {
+      const urlCategory = category.toLowerCase();
+      if (categories.includes(urlCategory)) {
+        setSelectedCategory(urlCategory);
+        filterProducts(allProducts, urlCategory);
+      } else {
+        navigate('/products/all');
+      }
     }
   }, [category, allProducts, categories, navigate]);
-
-
-  const filterForSearch = (productsData) => {
-    setSearchProducts(
-      productsData.filter(product => 
-        (product.name.toLowerCase().includes(localStorage.getItem("searchTerm").toLowerCase()) || product.category.toLowerCase().includes(localStorage.getItem("searchTerm").toLowerCase()))
-      )
-    )
-    setProducts(searchProducts);
-  };
 
   // Filter products based on selected category
   const filterProducts = (productsData, categoryName) => {
