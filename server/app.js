@@ -11,15 +11,14 @@ env.validateEnv();
 const { redisClient } = require('./src/config/redis');
 const responseHandler = require('./src/utils/responseHandler');
 
+// Import the delivery job processor to register the job handler
+require('./src/queues/deliveryJobProcessor');
+
 // Import routes
 const userRoutes = require('./src/routes/userRoute');
-// product
 const productRoutes = require('./src/routes/productRoute');
-// order:
 const orderRoutes = require('./src/routes/orderRoute');
-// payment
 const paymentRoutes = require('./src/routes/paymentRoute');
-// delivery
 const deliveryRoutes = require('./src/routes/deliveryRoute');
 
 // Initialize Express app
@@ -44,30 +43,48 @@ app.use('/static', express.static(path.join(__dirname, 'src/assets')));
 
 // API Routes
 app.use('/api/users', userRoutes);
-// product
 app.use('/api/products', productRoutes);
-// order
 app.use('/api/orders', orderRoutes);
-// payment
 app.use('/api/payments', paymentRoutes);
-// delivery
 app.use('/api/delivery', deliveryRoutes);
+
+// --------------------------------------------------------------
+// Bull Board Integration for Monitoring Bull Queues
+// --------------------------------------------------------------
+const { createBullBoard } = require('@bull-board/api');
+const { BullAdapter } = require('@bull-board/api/bullAdapter');
+const { ExpressAdapter } = require('@bull-board/express');
+const deliveryQueue = require('./src/queues/deliveryQueue');
+
+const bullBoardAdapter = new ExpressAdapter();
+bullBoardAdapter.setBasePath('/admin/queues');
+
+createBullBoard({
+  queues: [new BullAdapter(deliveryQueue)],
+  serverAdapter: bullBoardAdapter,
+});
+
+// Mount the Bull Board dashboard router at /admin/queues
+app.use('/admin/queues', bullBoardAdapter.getRouter());
+// --------------------------------------------------------------
 
 // Health check route
 app.get('/health', (req, res) => {
   const redisStatus = redisClient.isOpen ? 'connected' : 'disconnected';
-  responseHandler.success(res, {
-    status: 'OK',
-    redis: redisStatus
-  }, 'Server is running');
+  responseHandler.success(
+    res,
+    { status: 'OK', redis: redisStatus },
+    'Server is running'
+  );
 });
 
 // Root route
 app.get('/', (req, res) => {
-  responseHandler.success(res, {
-    documentation: '/api-docs',
-    version: '1.0.0'
-  }, 'Welcome to the OFS API');
+  responseHandler.success(
+    res,
+    { documentation: '/api-docs', version: '1.0.0' },
+    'Welcome to the OFS API'
+  );
 });
 
 // 404 - Route not found
