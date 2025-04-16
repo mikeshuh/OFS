@@ -16,15 +16,15 @@ function Navbar() {
   });
 
   const handleSearch = async (e) => {
-    alert(`Searching for: ${searchQuery}`);
-    const response = await getProd.getProductMatch(searchQuery);
-    if (response.success == false) {
-      alert(`We do not sell anything that matches ${searchQuery}.`);
-    } else {
-      localStorage.setItem("searchTerm", searchQuery);
-      navigate("/products");
-    }
+    localStorage.setItem("searchTerm", searchQuery);
+    navigate("/products");
   };
+
+  const handleKeyPress = async (e) => {
+    if (e.keyCode === 13) {
+      handleSearch();
+    }
+  }
 
   const clearSearch = async (e) => {
     setSearchQuery("");
@@ -53,6 +53,7 @@ function Navbar() {
             placeholder="Search for..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleKeyPress}
             className="w-full py-2 pl-4 pr-12 text-base border rounded-md"
           />
           <button

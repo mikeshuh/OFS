@@ -60,42 +60,36 @@ const Products = () => {
   }, []);
 
   useEffect(() => {
-    if (localStorage.getItem("itemData")) {
+    if (localStorage.getItem("searchTerm")) {
       const itemURL = JSON.parse(localStorage.getItem("itemData"));
-      filterForSearch(allProducts, itemURL);
-    } 
+      filterForSearch(allProducts);
+    }
   }, [category, allProducts, categories, navigate]);
 
   // Update when URL category changes
   useEffect(() => {
-    if (category) {
-      const urlCategory = category.toLowerCase();
-      if (categories.includes(urlCategory)) {
-        setSelectedCategory(urlCategory);
-        const source = searchProducts.length > 0 ? searchProducts : allProducts;
-        filterProducts(source, urlCategory) 
-      }
-    } else {
-      navigate('/products/all');
-    }
+    if (category != 'all') {
+        const urlCategory = category.toLowerCase();
+        if (categories.includes(urlCategory)) {
+          setSelectedCategory(urlCategory);
+          const source = localStorage.getItem("searchTerm") ? searchProducts : allProducts;
+          filterProducts(source, urlCategory) 
+        }
+    } 
   }, [category, allProducts, categories, navigate]);
 
 
-  const filterForSearch = (productsData, searchFor) => {
+  const filterForSearch = (productsData) => {
     setProducts(
       productsData.filter(product => 
-        searchFor.some(searchItem =>
-          (product.name.toLowerCase() || product.category.toLowerCase()) === searchItem.name.toLowerCase()
-        )
+        (product.name.toLowerCase().includes(localStorage.getItem("searchTerm").toLowerCase()) || product.category.toLowerCase().includes(localStorage.getItem("searchTerm").toLowerCase()))
       )
     );
     setSearchProducts(
       productsData.filter(product => 
-        searchFor.some(searchItem =>
-          (product.name.toLowerCase() || product.category.toLowerCase()) === searchItem.name.toLowerCase()
-        )
+        (product.name.toLowerCase().includes(localStorage.getItem("searchTerm").toLowerCase()) || product.category.toLowerCase().includes(localStorage.getItem("searchTerm").toLowerCase()))
       )
-    );
+    )
   };
 
   // Filter products based on selected category
