@@ -34,10 +34,6 @@ const Profile = () => {
 
   };
 
-  const toOrder = () => {
-    window.location.href="./orders";
-  }
-
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Navbar */}
@@ -64,7 +60,7 @@ const Profile = () => {
               <div className="flex flex-col items-center space-y-4">
                 <button
                   className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition duration-300"
-                  onClick={toOrder}
+                  onClick={() => alert("View History clicked")}
                 >
                   View History
                 </button>
