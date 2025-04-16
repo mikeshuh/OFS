@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import Home from "./pages/Home.jsx";
 import Products from "./pages/Products.jsx";
-import ProductDetails from "./pages/ProductDetails.jsx";
 import Profile from "./pages/Profile.jsx";
 import Login from "./pages/Login.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
@@ -10,8 +9,6 @@ import AboutPage from "./pages/AboutPage.jsx";
 import Redirect404 from "./pages/Redirect404.jsx";
 import Cart from "./pages/Cart.jsx"
 import Checkout from "./pages/Checkout.jsx"
-import Orders from "./pages/Orders.jsx"
-import OrderDetails from "./pages/OrderDetails.jsx"
 import Signup from "./pages/Signup.jsx";
 import Logout from "./pages/Logout.jsx";
 import AuthProvider from "./components/AuthContext.jsx";
@@ -42,8 +39,6 @@ function App() {
               <Route path="/map" element={<Map />} />
               <Route path="/checkout-map" element={<CheckoutMap />} />
               <Route path="/checkout" element={<StripeCheckoutWrapper />} />
-              <Route path="/orders" element={<Orders />} />
-              <Route path="/orderDetails" element={<OrderDetails />} />
               <Route path="/order-confirmation/:orderID" element={<OrderConfirmation />} />
             </Route>
               
