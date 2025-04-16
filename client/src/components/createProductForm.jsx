@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Form } from 'react-bootstrap';
-import { requestServer } from "../utils/Utility";
+import { requestServer } from '../utils/Utility';
+
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const CreateProductForm = ({ categories = [], onProductAdded }) => {
+const CreateProductForm = ({ onProductAdded }) => {
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);
   const [pounds, setPounds] = useState(0);
@@ -24,13 +25,18 @@ const CreateProductForm = ({ categories = [], onProductAdded }) => {
       setUploadError("Please fill in all fields and select an image.");
       return;
     }
-
     setUploading(true);
     setUploadError(null);
 
 
-
     try {
+
+      reader.readAsArrayBuffer(imageFile)
+
+      reader.onload =() => {
+        //call backend to download image
+      }
+      
       const token = localStorage.getItem("authToken");
 
 
@@ -46,7 +52,7 @@ const CreateProductForm = ({ categories = [], onProductAdded }) => {
           imagePath: imagePath
         }
       );
-      
+
       if (response?.data?.success) {
         console.log("Product added successfully:", response.data.data);
         // Reset the form
@@ -72,16 +78,16 @@ const CreateProductForm = ({ categories = [], onProductAdded }) => {
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
-    setImage(file); // Still store the File object for upload
+    setImage(file);
 
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreviewUrl(reader.result); // Set the data URL in the new state
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        setImagePreviewUrl(reader.result);
       };
-      reader.readAsDataURL(file); // Read the file as a data URL
     } else {
-      setImagePreviewUrl(null); // Clear the preview if no file is selected
+      setImagePreviewUrl(null);
     }
   };
 
