@@ -7,24 +7,24 @@ import wheatField from '../assets/wheatField.jpg';
 
 
 //icons
-import reactIcon from '../assets/AboutPageIcons/reactIcon.png';
-import nodeIcon from '../assets/AboutPageIcons/nodeIcon.png';
-import mysqlIcon from '../assets/AboutPageIcons/mysqlIcon.png';
-import stripeIcon from '../assets/AboutPageIcons/stripeIcon.svg';
-import tailwindIcon from '../assets/AboutPageIcons/tailwindIcon.svg';
-import viteIcon from '../assets/AboutPageIcons/viteIcon.png';
-import redisIcon from '../assets/AboutPageIcons/redisIcon.png';
-import mapBoxIcon from '../assets/AboutPageIcons/mapBoxIcon.png';
-import expressIcon from '../assets/AboutPageIcons/expressIcon.png';
-import bullIcon from '../assets/AboutPageIcons/bullIcon.png';
+import reactIcon from '../assets/aboutpage/reactIcon.png';
+import nodeIcon from '../assets/aboutpage/nodeIcon.png';
+import mysqlIcon from '../assets/aboutpage/mysqlIcon.png';
+import stripeIcon from '../assets/aboutpage/stripeIcon.svg';
+import tailwindIcon from '../assets/aboutpage/tailwindIcon.svg';
+import viteIcon from '../assets/aboutpage/viteIcon.png';
+import redisIcon from '../assets/aboutpage/redisIcon.png';
+import mapBoxIcon from '../assets/aboutpage/mapBoxIcon.png';
+import expressIcon from '../assets/aboutpage/expressIcon.png';
+import bullIcon from '../assets/aboutpage/bullIcon.png';
 //team pictures
-import rayProfile from '../assets/TeamPictures/rayProfile.jpg';
-import michaelProfile from '../assets/TeamPictures/michaelProfile.jpg';
-import dannyProfile from '../assets/TeamPictures/dannyProfile.jpg';
-import anProfile from '../assets/TeamPictures/anProfile.jpg';
-import trinityProfile from '../assets/TeamPictures/trinityProfile.jpg';
-import timothyProfile from '../assets/TeamPictures/timothyProfile.jpg';
-import teamPicture from '../assets/TeamPictures/teamPicture.jpg';
+import rayProfile from '../assets/team/rayProfile.jpg';
+import michaelProfile from '../assets/team/michaelProfile.jpg';
+import dannyProfile from '../assets/team/dannyProfile.jpg';
+import anProfile from '../assets/team/anProfile.jpg';
+import trinityProfile from '../assets/team/trinityProfile.jpg';
+import timothyProfile from '../assets/team/timothyProfile.jpg';
+import teamPicture from '../assets/team/teamPicture.jpg';
 
 //Image carousel
 import 'swiper/css';
