@@ -9,7 +9,7 @@ import dairyImage from "../assets/dairy.jpg";
 import deliveryImage from "../assets/delivery.jpg";
 
 
-function Home() {
+const Home = () => {
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
 

@@ -1,6 +1,6 @@
 import Navbar from "../components/Navbar";
 
-function NotFoundPage() {
+const NotFoundPage = () => {
   return (
     <div>
       <Navbar />

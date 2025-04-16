@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function Redirect404()  {
+const Redirect404 = () =>  {
   const navigate = useNavigate();
 
   useEffect(() => {

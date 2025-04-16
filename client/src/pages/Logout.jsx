@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../components/AuthContext";
 
-function Logout() {
+const Logout = () => {
   const auth = useAuth();
   useEffect(() => {
      (async () => {

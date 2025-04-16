@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
 
-function Profile() {
+const Profile = () => {
   const navigate = useNavigate();
   const auth = useAuth();
   const [formData, setFormData] = useState({
