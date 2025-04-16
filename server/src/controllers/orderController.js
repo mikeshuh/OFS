@@ -9,6 +9,10 @@ const createOrder = async (req, res) => {
 
     const { totalPrice, totalPounds, deliveryFee } = await orderService.calculateTotalPrice(orderProducts);
 
+    if (totalPounds > 50) {
+      return responseHandler.badRequest(res, 'Total pounds exceed the maximum limit of 50 lbs.');
+    }
+
     //create the order
     const orderData = {
       userID,
