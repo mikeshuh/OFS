@@ -1,6 +1,6 @@
 import logo from "../assets/OFS_logo.png";
 import { Link } from "react-router-dom";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useAuth } from "./AuthContext";
 import { useCart } from "./CartContext";
 import { useNavigate } from "react-router-dom";

@@ -21,11 +21,11 @@ import OrderConfirmation from "./pages/OrderConfirmation.jsx";
 import AdminRoute from "./components/AdminRoute.jsx";
 
 function App() {
-  return (
+  return (  
     <Router>
       <AuthProvider>
         <CartProvider>
-        <Routes>
+          <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<Navigate to="/products/all" replace />} />
             <Route path="/products/:category" element={<Products />} />

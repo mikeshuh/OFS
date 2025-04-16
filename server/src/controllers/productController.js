@@ -124,7 +124,6 @@ const deleteProduct = async (req, res) => {
 
 module.exports = {
   getProduct,
-  getBySearch,
   getByCategory,
   createProduct,
   getAllProduct,

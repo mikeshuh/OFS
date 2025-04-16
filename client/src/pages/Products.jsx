@@ -61,7 +61,6 @@ const Products = () => {
 
   useEffect(() => {
     if (localStorage.getItem("searchTerm")) {
-      const itemURL = JSON.parse(localStorage.getItem("itemData"));
       filterForSearch(allProducts);
     }
   }, [category, allProducts, categories, navigate]);
@@ -80,16 +79,12 @@ const Products = () => {
 
 
   const filterForSearch = (productsData) => {
-    setProducts(
-      productsData.filter(product => 
-        (product.name.toLowerCase().includes(localStorage.getItem("searchTerm").toLowerCase()) || product.category.toLowerCase().includes(localStorage.getItem("searchTerm").toLowerCase()))
-      )
-    );
     setSearchProducts(
       productsData.filter(product => 
         (product.name.toLowerCase().includes(localStorage.getItem("searchTerm").toLowerCase()) || product.category.toLowerCase().includes(localStorage.getItem("searchTerm").toLowerCase()))
       )
     )
+    setProducts(searchProducts);
   };
 
   // Filter products based on selected category
@@ -106,7 +101,6 @@ const Products = () => {
   // Handle category change
   const handleCategoryChange = (categoryName) => {
     setSelectedCategory(categoryName);
-    const source = searchProducts.length > 0 ? searchProducts : allProducts;
     navigate(`/products/${categoryName}`);
   };
 
