@@ -3,14 +3,33 @@ import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import { useAuth } from "./AuthContext";
 import { useCart } from "./CartContext";
+import { useNavigate } from "react-router-dom";
 
 function Navbar() {
   const auth = useAuth();
+  const navigate = useNavigate();
   const { cartItemsCount, calculateTotal } = useCart();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(() => {
+    return localStorage.getItem("searchTerm") || "";
+  });
 
-  const handleSearch = () => {
-    alert(`Searching for: ${searchQuery}`);
+  const handleSearch = async (e) => {
+    localStorage.setItem("searchTerm", searchQuery);
+    navigate("/products");
+  };
+
+  const handleKeyPress = async (e) => {
+    if (e.keyCode === 13) {
+      handleSearch();
+    }
+  }
+
+  const clearSearch = async (e) => {
+    setSearchQuery("");
+    localStorage.removeItem("searchTerm")
+    if ( document.URL.includes("/products") ) {
+      navigate("/products");
+    }
   };
 
   return (
@@ -31,11 +50,22 @@ function Navbar() {
             placeholder="Search for..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleKeyPress}
             className="w-full py-2 pl-4 pr-12 text-base border rounded-md"
           />
           <button
+            onClick={clearSearch}
+            className="absolute right-10 top-1/2 -translate-y-1/2 p-1 text-gray-500"
+            title="Cancel Search"
+            type="button"
+          >
+            <svg style={{color: "rgb(107, 114, 130)"}} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" className="w-4 h-4"><path d="M376.6 84.5c11.3-13.6 9.5-33.8-4.1-45.1s-33.8-9.5-45.1 4.1L192 206 56.6 43.5C45.3 29.9 25.1 28.1 11.5 39.4S-3.9 70.9 7.4 84.5L150.3 256 7.4 427.5c-11.3 13.6-9.5 33.8 4.1 45.1s33.8 9.5 45.1-4.1L192 306 327.4 468.5c11.3 13.6 31.5 15.4 45.1 4.1s15.4-31.5 4.1-45.1L233.7 256 376.6 84.5z" fill="#6b7282"></path></svg>
+          </button>
+          <button
             onClick={handleSearch}
             className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-500"
+            title="Search"
+            type="button"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
