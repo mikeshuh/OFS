@@ -78,6 +78,44 @@ const getOrderByUserID = async (req, res) =>{
   }
 }
 
+const updateOrderDetails = async (req, res) => {
+  try{
+    const orderID = req.params.orderID;
+    const userID = req.user.userID;
+    const orderProducts = req.body;
+
+    const order = await Order.findById(orderID);
+    if (!order) {
+      return responseHandler.notFound(res, 'Order not found.');
+    }
+    if (order.userID !== userID) {
+      return responseHandler.forbidden(res, 'You do not have permission to update this order.');
+    }
+    const { totalPrice, totalPounds, deliveryFee } = await orderService.calculateTotalPrice(orderProducts);
+
+    if (totalPounds > 50) {
+      return responseHandler.badRequest(res, 'Total pounds exceed the maximum limit of 50 lbs.');
+    }
+
+    const {streetAddress, city, zipCode} = await Order.findById(orderID);
+
+    const orderData = {
+      userID,
+      totalPrice,
+      totalPounds,
+      deliveryFee,
+      streetAddress,
+      city,
+      zipCode
+    }
+
+    const response = await Order.update(orderID, orderProducts);
+  }catch(error) {
+    console.error(`Update order error: ${error.message}`, error);
+    return responseHandler.error(res, 'Failed to update order.');
+  }
+}
+
 const updateOrderAddress = async (req, res) => {
   try {
     const deliveryAddress = req.body;
