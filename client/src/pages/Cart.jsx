@@ -21,9 +21,16 @@ const Cart = () => {
 
   console.log("Cart rendering with items:", cartItems);
 
+  const isOverWeightLimit = calculateTotalWeight() > 50;
+
   const handleCheckout = () => {
     if (cartItems.length === 0) {
       return; // Don't allow checkout with empty cart
+    }
+    // Prevent checkout if the cart's weight exceeds 50 lbs.
+    if (isOverWeightLimit) {
+      alert("Your cart weight exceeds the maximum allowed limit of 50 lbs.");
+      return;
     }
 
     // Navigate to the checkout map page for address selection
@@ -210,13 +217,19 @@ const Cart = () => {
                     <span>${(calculateTotalWithTax()).toFixed(2)}</span>
                   </div>
                 </div>
+                {/* Message if cart weight exceeds 50 lbs */}
+                {isOverWeightLimit && (
+                  <p className="mt-2 text-red-500 text-sm">
+                    Your cart weight exceeds the maximum allowed weight of 50 lbs.
+                  </p>
+                )}
               </div>
 
               <button
                 onClick={handleCheckout}
-                disabled={cartItems.length === 0}
+                disabled={cartItems.length === 0 || isOverWeightLimit}
                 className={`w-full mt-6 py-3 rounded font-medium ${
-                  cartItems.length === 0
+                  cartItems.length === 0 || isOverWeightLimit
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-green-600 hover:bg-green-700 text-white"
                 }`}

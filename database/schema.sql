@@ -22,11 +22,11 @@ CREATE TABLE `Order` (
     deliveryFee BOOL NOT NULL,
     orderTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     orderStatus BOOL NOT NULL DEFAULT FALSE,
-    paymentStatus ENUM('pending', 'paid', 'failed', 'refunded') DEFAULT 'pending',
+    paymentStatus ENUM('pending', 'paid', 'failed', 'refunded') NOT NULL DEFAULT 'pending',
     streetAddress VARCHAR(64) NOT NULL,
     city VARCHAR(32) NOT NULL,
     zipCode INT NOT NULL,
-    queuedForDelivery BOOL DEFAULT FALSE,
+    queuedForDelivery BOOL NOT NULL DEFAULT FALSE,
     FOREIGN KEY (userID) REFERENCES User(userID) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
@@ -56,11 +56,11 @@ CREATE TABLE Payment (
     paymentID INT PRIMARY KEY AUTO_INCREMENT,
     orderID INT NOT NULL,
     amount DECIMAL(10,2) NOT NULL,
-    paymentType ENUM('payment', 'refund') DEFAULT 'payment',
+    paymentType ENUM('payment', 'refund') NOT NULL DEFAULT 'payment',
     stripePaymentIntentID VARCHAR(255) NOT NULL,
     cardLastFour VARCHAR(4),
     cardBrand VARCHAR(20),
-    status ENUM('pending', 'processing', 'completed', 'failed', 'refunded') DEFAULT 'pending',
+    status ENUM('pending', 'processing', 'completed', 'failed', 'refunded') NOT NULL DEFAULT 'pending',
     createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (orderID) REFERENCES `Order`(orderID) ON DELETE CASCADE

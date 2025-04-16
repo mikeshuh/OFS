@@ -43,6 +43,25 @@ const addOrderToQueue = (order) => {
 };
 
 /**
+ * Schedules a delivery job in the Bull queue for the given order.
+ */
+const scheduleDelivery = async (order, delay) => {
+  try {
+    await deliveryQueue.add({ orderID: order.orderID }, {
+      delay: delay,
+      attempts: 3,
+      backoff: { type: 'exponential', delay: 5000 },
+      removeOnComplete: true,
+      removeOnFail: { count: 5 }
+    });
+    await Order.updateQueuedForDelivery(order.orderID, true);
+    console.log(`Scheduled delivery for order ${order.orderID} in ${Math.round(delay)} ms.`);
+  } catch (error) {
+    console.error(`Failed to schedule delivery for order ${order.orderID}:`, error);
+  }
+};
+
+/**
  * Trigger the delivery process: calculate optimal route and schedule jobs in the Bull queue.
  */
 const triggerDeliveryProcess = async () => {
@@ -71,7 +90,7 @@ const triggerDeliveryProcess = async () => {
 
     const orderAddresses = batch.map(order => {
       const rawAddress = `${order.streetAddress}, ${order.city}, California, United States, ${order.zipCode}`;
-      return validation.sanitizeString(rawAddress);
+      return rawAddress;
     });
 
     const warehouseAddress = "1 Washington Sq, San Jose, California, United States, 95192";
@@ -95,19 +114,9 @@ const triggerDeliveryProcess = async () => {
     deliveryLegs.forEach((leg, index) => {
       cumulativeDelay += leg.duration * SIMULATION_FACTOR * 1000; // convert to ms
 
-      const orderIndex = index;
-      if (orderIndex < batch.length) {
-        const order = batch[orderIndex];
-        deliveryQueue.add({ orderID: order.orderID }, {
-          delay: cumulativeDelay,
-          attempts: 3,
-          backoff: { type: 'exponential', delay: 5000 },
-          removeOnComplete: true,
-          removeOnFail: { count: 5 }
-        });
-        Order.updateQueuedForDelivery(order.orderID, true);
-
-        console.log(`Scheduled delivery for order ${order.orderID} in ${Math.round(cumulativeDelay)} ms.`);
+      if (index < batch.length) {
+        const order = batch[index];
+        scheduleDelivery(order, cumulativeDelay);
       }
     });
 
@@ -117,6 +126,10 @@ const triggerDeliveryProcess = async () => {
     console.error("Error triggering delivery process:", error);
   } finally {
     isProcessing = false;
+    const totalWeight = inMemoryOrderQueue.reduce((sum, o) => sum + parseFloat(o.totalPounds), 0);
+    if (totalWeight >= MAX_WEIGHT_IN_ROBOT || inMemoryOrderQueue.length >= MAX_ORDERS_IN_ROBOT) {
+      triggerDeliveryProcess();
+    }
   }
 };
 

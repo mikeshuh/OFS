@@ -145,7 +145,9 @@ const handlePaymentIntentSucceeded = async (paymentIntent) => {
     console.log("Retrieved order details:", orderDetails);
 
     if (orderDetails) {
-      await deliveryQueueService.addOrderToQueue(orderDetails);
+      deliveryQueueService.addOrderToQueue(orderDetails);
+    } else {
+      console.error(`Order with ID ${orderID} not found for delivery queue.`);
     }
     // ********************************************
 
