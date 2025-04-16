@@ -42,6 +42,12 @@ const getByCategory = async (req, res) => {
 const createProduct = async (req, res) => {
   try {
     const { category, name, price, pounds, quantity, imagePath } = req.body;
+    console.log(name);
+    console.log(category);
+    console.log(price);
+    console.log(pounds);
+    console.log(quantity);
+    console.log(imagePath);
 
     const productData = {
       category: category,

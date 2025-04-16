@@ -4,6 +4,8 @@ import notification from "../assets/notification.svg";
 import user from "../assets/user.svg";
 import { requestServer } from "../utils/Utility";
 import ProductCardAdmin from "../components/ProductCardAdmin.jsx";
+import CreateProductForm from "../components/createProductForm";
+
 import Dropdown from 'react-bootstrap/Dropdown';
 import { Link } from 'react-router-dom';
 
@@ -231,6 +233,7 @@ const AdminDashboard = () => {
   const [Error, setError] = useState(null);
 
   const itemsPerPageList = [5, 10, 20, 50];
+  const dropCategories = ['Fruit, Vegetable, Dairy, Meat, Bakery'];
 
   // Filter products based on category and search
   const filteredProducts = useMemo(() => {
@@ -377,6 +380,12 @@ const AdminDashboard = () => {
               />
             </div>
           </div>
+
+
+          <div className="flex flex-col items-start w-full">
+          <CreateProductForm />
+          </div>
+
         </div>
       </div>
     </div>
