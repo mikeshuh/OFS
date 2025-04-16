@@ -1,30 +1,45 @@
 import React, { useRef, useEffect } from 'react';
 
 import Navbar from '../components/Navbar';
-//delete after replacing photos in meet the team section
-import deliveryVanTrunk from '../assets/deliveryVanTrunk.jpg';
-import fruitImage from '../assets/fruits.jpg';
-import reactIcon from '../assets/reactIcon.png';
-import nodeIcon from '../assets/nodeIcon.png';
-import mysqlIcon from '../assets/mysqlIcon.png';
-import stripeIcon from '../assets/stripeIcon.svg';
-import tailwindIcon from '../assets/tailwindIcon.svg';
-import viteIcon from '../assets/viteIcon.png';
-import redisIcon from '../assets/redisIcon.png';
-import mapBoxIcon from '../assets/mapBoxIcon.png';
-import expressIcon from '../assets/expressIcon.png';
-import { register } from 'swiper/element/bundle';
+//Why choose OFS image
+import wheatField from '../assets/wheatField.jpg';
 
 
 
+//icons
+import reactIcon from '../assets/AboutPageIcons/reactIcon.png';
+import nodeIcon from '../assets/AboutPageIcons/nodeIcon.png';
+import mysqlIcon from '../assets/AboutPageIcons/mysqlIcon.png';
+import stripeIcon from '../assets/AboutPageIcons/stripeIcon.svg';
+import tailwindIcon from '../assets/AboutPageIcons/tailwindIcon.svg';
+import viteIcon from '../assets/AboutPageIcons/viteIcon.png';
+import redisIcon from '../assets/AboutPageIcons/redisIcon.png';
+import mapBoxIcon from '../assets/AboutPageIcons/mapBoxIcon.png';
+import expressIcon from '../assets/AboutPageIcons/expressIcon.png';
+import bullIcon from '../assets/AboutPageIcons/bullIcon.png';
+//team pictures
+import rayProfile from '../assets/TeamPictures/rayProfile.jpg';
+import michaelProfile from '../assets/TeamPictures/michaelProfile.jpg';
+import dannyProfile from '../assets/TeamPictures/dannyProfile.jpg';
+import anProfile from '../assets/TeamPictures/anProfile.jpg';
+import trinityProfile from '../assets/TeamPictures/trinityProfile.jpg';
+import timothyProfile from '../assets/TeamPictures/timothyProfile.jpg';
+import teamPicture from '../assets/TeamPictures/teamPicture.jpg';
 
-register();
+//Image carousel
+import 'swiper/css';
+import 'swiper/element/css/free-mode';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/free-mode'; // If you want free mode styles
+import { FreeMode, Autoplay } from 'swiper/modules';
+
+
 
 function AboutPage() {
-  const imageCarousel = useRef(null);
 
+  //SVG for attention grabber
   const features = [
-
 
     {
       title: "Fast",
@@ -58,34 +73,6 @@ function AboutPage() {
 
   ];
 
-  useEffect(() => {
-    const imageCarouselParams = {
-      slidesPerView: 4,
-      spaceBetween: 20,
-      freeMode: true,
-      loop: true,
-      transitionTimingFunction: 'linear',
-      autoplay: {
-        delay: 3000,
-        disableOnInteraction: false,
-      },
-      speed: 5000,
-      breakpoints: {
-        640: {
-          slidesPerView: 2,
-          spaceBetween: 10,
-        },
-        768: {
-          slidesPerView: 3,
-          spaceBetween: 5,
-        },
-      },
-    };
-
-    Object.assign(imageCarousel.current, imageCarouselParams);
-
-    imageCarousel.current.initialize();
-  }, []);
 
   return (
     <div className='flex flex-col min-h-screen bg-gray-50'>
@@ -94,17 +81,17 @@ function AboutPage() {
 
       {/* Attention Grabber */}
       <section className='container mx-auto text-center py-1 px-0 '>
-      <div className="w-full px-4 md:px-12 py-10">
-        <div className="text-center ">
-          <div className="flex items-center justify-center">
-            <div className="border-t border-green-500 w-32"></div>
-            <h2 className="mx-4 text-2xl text-green-600 italic font-medium">OFS Delivery Is</h2>
-            <div className="border-t border-green-500 w-32"></div>
+        <div className="px-4 md:px-12 py-10">
+          <div className="text-center ">
+            <div className="flex items-center justify-center">
+              <div className="border-t border-green-500 w-32"></div>
+              <h2 className="mx-4 text-2xl text-green-600 italic font-medium">OFS Delivery Is</h2>
+              <div className="border-t border-green-500 w-32"></div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {features.map((feature, index) => (
             <div key={index} className="text-center">
               <div className="text-green-600 flex items-center justify-center mx-auto mb-4 max-w-[75px] h-[75px]">
@@ -121,9 +108,8 @@ function AboutPage() {
       <section className='container mx-auto px-6 py-12'>
         <div className='flex flex-col md:flex-row items-start'>
           <div className='md:w-1/2 mb-6 md:mb-0 md:mr-8'>
-            <img src={fruitImage} alt='Fruits Image' className='w-full drop-shadow-lg' />
+            <img src={wheatField} alt='Wheat Field' className='w-full drop-shadow-lg pointer-events-none user-select-none' />
           </div>
-
           <div className='md:w-1/2'>
             <h2 className='text-2xl font-semibold mb-4'>Why choose OFS?</h2>
             <p className='mb-4'>
@@ -135,7 +121,6 @@ function AboutPage() {
             <p className='mt-4'>
               Clear communication is central to our service. All your past orders are safely stored and easily accessible, and you'll always receive real-time updates on your deliveries, giving you peace of mind from checkout to your doorstep.
             </p>
-
           </div>
         </div>
       </section>
@@ -144,71 +129,113 @@ function AboutPage() {
       <section className='container mx-auto text-center py-6 px-6'>
         <h1 className='text-4xl font-bold mb-8'>Meet the team behind OFS</h1>
         <div className='container mx-auto flex flex-col items-center justify-center gap-8 px-6'>
-          <img src={deliveryVanTrunk} alt='Delivery Van' className='width=100% rounded-sm object-cover' />
+          <img src={teamPicture} alt='OFS Team' className='w-full rounded-sm object-cover pointer-events-none user-select-none' />
           <p className='text-lg mb-10'>Committed To Bringing You The Best </p>
         </div>
 
-        <div className='container mx-auto grid grid-cols-3 grid-rows-2 gap-8 px-8 items-center justify-center'>
-          <div className='flex flex-col items-center justify-center bg-white max-w-[300px] h-[300px] drop-shadow-lg'>
-          <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover' />
+        <div className='container mx-auto grid grid-cols-3 grid-rows-2 gap-8 px-8  justify-items-center'>
+        <div className='flex flex-col items-center justify-center bg-white w-[300px] h-[300px] drop-shadow-lg'>
+          <img src={anProfile} alt='An' className='max-w-[200px] h-[200px] rounded-full object-cover pointer-events-none user-select-none' />
           An Ho
           </div>
-          <div className='flex flex-col items-center justify-center bg-white max-w-[300px] h-[300px] drop-shadow-lg'>
-          <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover' />
+          <div className='flex flex-col items-center justify-center bg-white w-[300px] h-[300px] drop-shadow-lg'>
+          <img src={trinityProfile} alt='Trinity' className='min-w-[200px] h-[200px] rounded-full object-cover pointer-events-none user-select-none' />
           Trinity Manansala
           </div>
-          <div className='flex flex-col items-center justify-center bg-white max-w-[300px] h-[300px] drop-shadow-lg'>
-          <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover' />
+          <div className='flex flex-col items-center justify-center bg-white w-[300px] h-[300px] drop-shadow-lg'>
+          <img src={timothyProfile} alt='Timothy' className='min-w-[200px] h-[200px] rounded-full object-cover pointer-events-none user-select-none' />
           Timothy Nguyen
           </div>
-          <div className='flex flex-col items-center justify-center bg-white max-w-[300px] h-[300px] drop-shadow-lg'>
-          <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover' />
+          <div className='flex flex-col items-center justify-center bg-white w-[300px] h-[300px] drop-shadow-lg'>
+          <img src={michaelProfile} alt='Michael' className='max-w-[200px] h-[200px] rounded-full object-cover pointer-events-none user-select-none' />
           Michael Huh
           </div>
-          <div className='flex flex-col items-center justify-center bg-white max-w-[300px] h-[300px] drop-shadow-lg'>
-          <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover' />
+          <div className='flex flex-col items-center justify-center bg-white w-[300px] h-[300px] drop-shadow-lg'>
+          <img src={dannyProfile} alt='Danny' className='max-w-[200px] h-[200px] rounded-full object-cover pointer-events-none user-select-none' />
           Danny Xu
           </div>
-          <div className='flex flex-col items-center justify-center bg-white max-w-[300px] h-[300px] drop-shadow-lg'>
-          <img src={deliveryVanTrunk} alt='Delivery Van' className='max-w-[200px] h-[200px] rounded-full object-cover' />
+          <div className='flex flex-col items-center justify-center bg-white w-[300px] h-[300px] drop-shadow-lg'>
+          <img src={rayProfile} alt='Ray' className='max-w-[200px] h-[200px] rounded-full object-cover pointer-events-none user-select-none' />
           Ray Zhang
           </div>
         </div>
       </section>
 
+
       {/* Image Carousel */}
-      <section className='container mx-auto px-6 py-12'>
-        <h2 className='text-2xl font-semibold mb-4 text-center'>Technologies Used For This Website</h2>
-        <swiper-container ref={imageCarousel} className='myswiper' autoplay transitionTimingFunction freeMode>
-          <swiper-slide className='flex justify-center'>
-            <img src={reactIcon} alt='react' className='max-w-[200px] h-[200px] w-full rounded-lg ' />
-          </swiper-slide>
-          <swiper-slide className='flex justify-center'>
-            <img src={mysqlIcon} alt='mysql' className='max-w-[200px] h-[200px] w-full rounded-lg ' />
-          </swiper-slide>
-          <swiper-slide className='flex justify-center'>
-            <img src={stripeIcon} alt='stripe' className='max-w-[200px] h-[200px] w-full rounded-lg ' />
-          </swiper-slide>
-          <swiper-slide className='flex justify-center'>
-            <img src={nodeIcon} alt='node' className='max-w-[200px] h-[200px] w-full rounded-lg ' />
-          </swiper-slide>
-          <swiper-slide className='flex justify-center'>
-            <img src={tailwindIcon} alt='tailwind' className='max-w-[200px] h-[200px] w-full rounded-lg ' />
-          </swiper-slide>
-          <swiper-slide className='flex justify-center'>
-            <img src={redisIcon} alt='redis' className='max-w-[400px] h-[200px] w-full rounded-lg ' />
-          </swiper-slide>
-          <swiper-slide className='flex justify-center'>
-            <img src={viteIcon} alt='vite' className='max-w-[200px] h-[200px] w-full rounded-lg ' />
-          </swiper-slide>
-          <swiper-slide className='flex justify-center'>
-            <img src={expressIcon} alt='express' className='max-w-[200px] h-[200px] w-full rounded-lg ' />
-          </swiper-slide>
-          <swiper-slide className='flex justify-center'>
-            <img src={mapBoxIcon} alt='mapbox' className='max-w-[400px] h-[200px] w-full rounded-lg ' />
-          </swiper-slide>
-        </swiper-container>
-      </section>
+      <h2 className='text-2xl font-semibold mb-4 text-center'>Technologies Used For This Website</h2>
+      <style>
+        {`
+      .mySwiper {
+        align-items: center;
+        width: 100%;
+        overflow:
+      }
+
+      .mySwiper .swiper-wrapper {
+        display: flex;
+        transition-timing-function: linear !important;
+        align-items: center;
+        width: fit-content;
+        margin: 0 auto;
+      }
+
+      .mySwiper .swiper-slide {
+        display: flex;
+        justify-content: center;
+      }
+        `}
+      </style>
+      <Swiper
+        modules={[FreeMode, Autoplay]} // Install the modules you want to use
+        freeMode={true}
+        slidesPerView={'auto'}
+        spaceBetween={10}
+        loop={true}
+        noSwiping={true}
+        autoplay={{
+          delay: 1,
+          disableOnInteraction: false,
+        }}
+        allowTouchMove={false}
+        simulateTouch={false}
+        speed={5000}
+        className="mySwiper"
+      >
+        <SwiperSlide className='flex justify-center max-w-[300px]'>
+          <img src={reactIcon} alt='react' className='max-w-[150px] h-[200px] rounded-lg object-contain pointer-events-none user-select-none' />
+        </SwiperSlide>
+        <SwiperSlide className='flex justify-center  max-w-[300px]'>
+          <img src={bullIcon} alt='bull' className='max-w-[300px] h-[200px] rounded-lg object-contain pointer-events-none user-select-none' />
+        </SwiperSlide>
+        <SwiperSlide className='flex justify-center  max-w-[300px]'>
+          <img src={mysqlIcon} alt='mysql' className='max-w-[200px] h-[200px] rounded-lg object-contain pointer-events-none user-select-none' />
+        </SwiperSlide>
+        <SwiperSlide className='flex justify-center  max-w-[300px]'>
+          <img src={stripeIcon} alt='stripe' className='max-w-[200px] h-[200px] rounded-lg object-contain pointer-events-none user-select-none' />
+        </SwiperSlide>
+        <SwiperSlide className='flex justify-center  max-w-[300px]'>
+          <img src={nodeIcon} alt='node' className='max-w-[200px] h-[200px] rounded-lg object-contain pointer-events-none user-select-none' />
+        </SwiperSlide>
+        <SwiperSlide className='flex justify-center  max-w-[300px]'>
+          <img src={tailwindIcon} alt='tailwind' className='max-w-[200px] h-[200px] rounded-lg object-contain pointer-events-none user-select-none' />
+        </SwiperSlide>
+        <SwiperSlide className='flex justify-center  max-w-[300px]'>
+          <img src={redisIcon} alt='redis' className='max-w-[300px] h-[200px] rounded-lg object-contain pointer-events-none user-select-none' />
+        </SwiperSlide>
+        <SwiperSlide className='flex justify-center  max-w-[300px]'>
+          <img src={viteIcon} alt='vite' className='max-w-[150px] h-[200px] rounded-lg object-contain pointer-events-none user-select-none' />
+        </SwiperSlide>
+        <SwiperSlide className='flex justify-center  max-w-[300px]'>
+          <img src={expressIcon} alt='express' className='max-w-[200px] h-[200px] rounded-lg object-contain pointer-events-none user-select-none' />
+        </SwiperSlide>
+        <SwiperSlide className='flex justify-center  max-w-[300px]'>
+          <img src={mapBoxIcon} alt='mapbox' className='max-w-[300px] h-[200px] rounded-lg object-contain pointer-events-none user-select-none' />
+        </SwiperSlide>
+
+      </Swiper>
+
+
 
       {/* Footer */}
       <footer className='bg-gray-100 py-4 text-center'>

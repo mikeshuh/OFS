@@ -25,7 +25,7 @@ import OrderConfirmation from "./pages/OrderConfirmation.jsx";
 import AdminRoute from "./components/AdminRoute.jsx";
 
 function App() {
-  return (
+  return (  
     <Router>
       <AuthProvider>
         <CartProvider>
