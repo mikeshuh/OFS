@@ -38,21 +38,20 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen relative">
-      <img
-        src={profileBackground}
-        alt="Profile Background"
-        className="absolute inset-0 w-full h-full object-cover z-0"
-      />
-
-      <div className="relative z-20">
+    <div
+      className="min-h-[110vh] overflow-hidden bg-cover bg-fixed px-4 sm:px-6 lg:px-8 pt-36 pb-40 relative"
+      style={{ backgroundImage: `url(${profileBackground})` }}
+    >
+      {/* 固定顶部 Navbar */}
+      <div className="fixed top-0 left-0 right-0 z-20">
         <Navbar />
       </div>
 
-      <div className="flex flex-col items-center justify-center py-16 px-4 sm:px-6 lg:px-8 relative z-10">
+      {/* 主体内容 */}
+      <div className="flex justify-center relative z-10">
         {profileData ? (
           <div className="w-full max-w-md bg-white/95 backdrop-blur-sm shadow-lg rounded-xl p-8 transition-all duration-300 hover:shadow-xl">
-          <h1 className="text-2xl font-semibold text-center text-black mb-4">Profile Page</h1>
+            <h1 className="text-2xl font-semibold text-center text-black mb-4">Profile Page</h1>
 
             <p className="text-gray-800 text-lg">
               <span className="font-semibold text-green-700">First Name:</span> {profileData.firstName}
