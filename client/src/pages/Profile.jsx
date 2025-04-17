@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
+
 const Profile = () => {
   const navigate = useNavigate();
   const auth = useAuth();
@@ -32,8 +33,6 @@ const Profile = () => {
     const response = auth.changePassword(formData);
 
   };
-
-
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">

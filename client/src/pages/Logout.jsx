@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../components/AuthContext";
+
 const Logout = () => {
   const auth = useAuth();
   useEffect(() => {
