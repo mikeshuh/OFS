@@ -162,6 +162,64 @@ const Order = {
     );
     return rows[0]; // Return the order with payment info
   },
+  updateOrderDetails: async (orderID, orderProducts) => {
+
+    // Begin a transaction
+    const connection = await db.getConnection();
+    try {
+      await connection.beginTransaction();
+      const {
+        userID,
+        totalPrice,
+        totalPounds,
+        deliveryFee,
+        orderID
+      } = orderData;
+
+      const [result] = await connection.execute(
+        `UPDATE \`Order\`
+          SET (userID, totalPrice, totalPounds, deliveryFee)
+          VALUES (?, ?, ?, ?)
+          WHERE orderID = ?`,
+        [userID, totalPrice, totalPounds, deliveryFee, orderID]
+      );
+
+      orderProducts.sort((a, b) => a.productID - b.productID);
+
+      // Check if all products have sufficient inventory
+      for (const orderProduct of orderProducts) {
+        const [inventoryResult] = await connection.execute(
+          'SELECT quantity FROM Product WHERE productID = ? FOR UPDATE',
+          [orderProduct.productID]
+        );
+        if (!inventoryResult[0] || inventoryResult[0].quantity < orderProduct.quantity) {
+          throw new Error(`Insufficient inventory for product ID ${orderProduct.productID}. Requested: ${orderProduct.quantity}, Available: ${inventoryResult[0]?.quantity || 0}`);
+        }
+      }
+
+      // All checks passed, now update products in orderProduct
+      for (const orderProduct of orderProducts) {
+        const [orderProductResult] = await connection.execute(
+          `UPDATE OrderProduct SET quantity = ?
+            WHERE productID = ?
+              AND orderID = ?
+              AND orderProductID= ? `,
+          [orderProduct.quantity, orderProduct.productID, orderID, orderProduct.orderProductID]
+        );
+        const [productResult] = await connection.execute(
+          'UPDATE Product SET quantity = quantity - ? WHERE productID = ?',
+          [orderProduct.quantity, orderProduct.productID]
+        );
+      }
+      await connection.commit();
+    } catch (error) {
+      await connection.rollback(); // Rollback transaction on error
+      throw error;
+    } finally {
+      connection.release(); // Release the connection back to the pool
+    }
+
+  },
 
   updateOrderAddress: async (orderID, deliveryAddress) => {
     const { streetAddress, city, zipCode } = deliveryAddress;
