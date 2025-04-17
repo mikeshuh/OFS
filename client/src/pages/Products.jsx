@@ -142,14 +142,3 @@ const Products = () => {
 };
 
 export default Products;
-
-/*
-// Extract unique categories
-          
-          const uniqueCategories = ['all', ...new Set(productsData.map(product =>
-            product.category.toLowerCase()
-          ))];
-          
-          const uniqueCategories = ['all', 'fruit', 'vegetable', 'dairy', 'meat', 'bakery', 'pantry'];
-          setCategories(uniqueCategories);
-*/
