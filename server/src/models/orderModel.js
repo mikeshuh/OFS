@@ -162,7 +162,7 @@ const Order = {
     );
     return rows[0]; // Return the order with payment info
   },
-  updateOrderDetails: async (orderID, orderProducts) => {
+  updateOrderDetails: async (orderData, orderProducts) => {
 
     // Begin a transaction
     const connection = await db.getConnection();
@@ -176,10 +176,9 @@ const Order = {
         orderID
       } = orderData;
 
-      const [result] = await connection.execute(
+      await connection.execute(
         `UPDATE \`Order\`
-          SET (userID, totalPrice, totalPounds, deliveryFee)
-          VALUES (?, ?, ?, ?)
+          SET userID = ?, totalPrice = ?, totalPounds = ?, deliveryFee = ?
           WHERE orderID = ?`,
         [userID, totalPrice, totalPounds, deliveryFee, orderID]
       );
@@ -202,13 +201,12 @@ const Order = {
         const [orderProductResult] = await connection.execute(
           `UPDATE OrderProduct SET quantity = ?
             WHERE productID = ?
-              AND orderID = ?
-              AND orderProductID= ? `,
-          [orderProduct.quantity, orderProduct.productID, orderID, orderProduct.orderProductID]
+            AND orderID = ?`,
+          [orderProduct.cartQuantity, orderProduct.productID, orderID]
         );
         const [productResult] = await connection.execute(
           'UPDATE Product SET quantity = quantity - ? WHERE productID = ?',
-          [orderProduct.quantity, orderProduct.productID]
+          [orderProduct.cartQuantity, orderProduct.productID]
         );
       }
       await connection.commit();
