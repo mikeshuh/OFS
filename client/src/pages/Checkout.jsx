@@ -121,29 +121,6 @@ const Checkout = () => {
         };
 
         updateAddress();
-        const updateOrderDetails = async () => {
-          try {
-            const response = await requestServer(
-              `${API_URL}/api/orders/update-order/${existingOrderID}`,
-              "PUT",
-              token,
-              {
-                orderProducts: cartItems.map(item => ({
-                  productID: item.productID,
-                  cartQuantity: item.cartQuantity
-                }))
-              }
-            );
-            if (!response.data?.success) {
-              setPaymentError(response.data?.message || "Failed to update order");
-              return;
-            }
-          } catch (error) {
-            console.error("Error fetching order details:", error);
-            setPaymentError("An error occurred while updating your order. Please try again.");
-          }
-        }
-        updateOrderDetails();
       }
 
       return;
@@ -232,6 +209,31 @@ const Checkout = () => {
 
     setIsProcessing(true);
     setPaymentError(null);
+    const updateOrderDetails = async () => {
+      const existingOrderID = localStorage.getItem(LS_ORDER_ID);
+      try {
+        const response = await requestServer(
+          `${API_URL}/api/orders/update-order/${existingOrderID}`,
+          "PUT",
+          token,
+          {
+            orderProducts: cartItems.map(item => ({
+              productID: item.productID,
+              cartQuantity: item.cartQuantity
+            }))
+          }
+        );
+        if (!response.data?.success) {
+          setPaymentError(response.data?.message || "Failed to update order");
+          return;
+        }
+      } catch (error) {
+        console.error("Error fetching order details:", error);
+        setPaymentError("An error occurred while updating your order. Please try again.");
+      }
+    }
+    updateOrderDetails();
+
 
     const cardElement = elements.getElement(CardElement);
 
@@ -363,8 +365,8 @@ const Checkout = () => {
                   type="submit"
                   disabled={isProcessing || !stripe || !clientSecret}
                   className={`w-full py-3 rounded font-medium ${isProcessing || !stripe || !clientSecret
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-green-600 hover:bg-green-700"
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-green-600 hover:bg-green-700"
                     } text-white`}
                 >
                   {isProcessing ? "Processing..." : `Pay $${formattedTotals.total}`}

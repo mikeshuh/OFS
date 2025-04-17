@@ -67,7 +67,7 @@ const getOrderDetailsByOrderID = async (req, res) => {
 
     //if the user is associated with the order return the associated order products
     const orderDetails = await Order.findOrderDetails(orderID);
-
+    console.log('orderDetails', orderDetails);
     if (!orderDetails) {
       return responseHandler.notFound(res, 'order details not found.');
     }

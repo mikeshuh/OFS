@@ -32,6 +32,7 @@ const OrderConfirmation = () => {
           return;
         }
 
+        console.log("Order details response:", response.data);
         setOrderDetails(response.data.data);
         setLoading(false);
       } catch (error) {

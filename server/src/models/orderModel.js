@@ -43,21 +43,6 @@ const Order = {
         }
       }
 
-      // All inventory checks passed, now add products to order
-      for (const orderProduct of orderProducts) {
-        // Insert the product into the OrderProduct table
-        await connection.execute(
-          'INSERT INTO OrderProduct (orderID, productID, quantity) VALUES (?, ?, ?)',
-          [orderID, orderProduct.productID, orderProduct.cartQuantity]
-        );
-
-        // Update product inventory (decrease available quantity)
-        await connection.execute(
-          'UPDATE Product SET quantity = quantity - ? WHERE productID = ?',
-          [orderProduct.cartQuantity, orderProduct.productID]
-        );
-      }
-
       await connection.commit();
       return orderID; // Return the ID of the newly created order
     } catch (error) {
@@ -198,11 +183,9 @@ const Order = {
 
       // All checks passed, now update products in orderProduct
       for (const orderProduct of orderProducts) {
-        const [orderProductResult] = await connection.execute(
-          `UPDATE OrderProduct SET quantity = ?
-            WHERE productID = ?
-            AND orderID = ?`,
-          [orderProduct.cartQuantity, orderProduct.productID, orderID]
+        await connection.execute(
+          'INSERT INTO OrderProduct (orderID, productID, quantity) VALUES (?, ?, ?)',
+          [orderID, orderProduct.productID, orderProduct.cartQuantity]
         );
         const [productResult] = await connection.execute(
           'UPDATE Product SET quantity = quantity - ? WHERE productID = ?',
