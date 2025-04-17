@@ -76,6 +76,7 @@ const Checkout = () => {
             "GET",
             token
           );
+          console.log("Order details response:", orderDetails);
           const orderPaymentStatus = orderDetails.data.data[0].paymentStatus;
           if (orderPaymentStatus === "paid" || orderPaymentStatus === "refunded") {
             clearCart();
@@ -224,20 +225,17 @@ const Checkout = () => {
           }
         );
         if (!response.data?.success) {
-          setPaymentError(response.data?.message || "Failed to update order");
-          return;
+          throw new Error("Failed to update order");
         }
       } catch (error) {
         console.error("Error fetching order details:", error);
-        setPaymentError("An error occurred while updating your order. Please try again.");
+        throw new Error("Failed to update order");
       }
     }
-    updateOrderDetails();
-
-
-    const cardElement = elements.getElement(CardElement);
 
     try {
+      await updateOrderDetails();
+      const cardElement = elements.getElement(CardElement);
       const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: { card: cardElement }
       });

@@ -42,7 +42,13 @@ const Order = {
           throw new Error(`Insufficient inventory for product ID ${orderProduct.productID}. Requested: ${orderProduct.cartQuantity}, Available: ${inventoryResult[0]?.quantity || 0}`);
         }
       }
-
+      for (const orderProduct of orderProducts) {
+        // Insert each product into the OrderProduct table
+        await connection.execute(
+          'INSERT INTO OrderProduct (orderID, productID, quantity) VALUES (?, ?, ?)',
+          [orderID, orderProduct.productID, orderProduct.cartQuantity]
+        );
+      }
       await connection.commit();
       return orderID; // Return the ID of the newly created order
     } catch (error) {
@@ -176,16 +182,18 @@ const Order = {
           'SELECT quantity FROM Product WHERE productID = ? FOR UPDATE',
           [orderProduct.productID]
         );
-        if (!inventoryResult[0] || inventoryResult[0].quantity < orderProduct.quantity) {
-          throw new Error(`Insufficient inventory for product ID ${orderProduct.productID}. Requested: ${orderProduct.quantity}, Available: ${inventoryResult[0]?.quantity || 0}`);
+        if (!inventoryResult[0] || inventoryResult[0].quantity < orderProduct.cartQuantity) {
+          throw new Error(`Insufficient inventory for product ID ${orderProduct.productID}. Requested: ${orderProduct.cartQuantity}, Available: ${inventoryResult[0]?.quantity || 0}`);
         }
       }
 
       // All checks passed, now update products in orderProduct
       for (const orderProduct of orderProducts) {
         await connection.execute(
-          'INSERT INTO OrderProduct (orderID, productID, quantity) VALUES (?, ?, ?)',
-          [orderID, orderProduct.productID, orderProduct.cartQuantity]
+          `UPDATE OrderProduct
+          SET quantity = ?
+          WHERE orderID = ? AND productID = ?`,
+          [orderProduct.cartQuantity, orderID, orderProduct.productID]
         );
         const [productResult] = await connection.execute(
           'UPDATE Product SET quantity = quantity - ? WHERE productID = ?',
