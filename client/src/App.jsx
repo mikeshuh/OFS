@@ -9,7 +9,7 @@ import AboutPage from "./pages/AboutPage.jsx";
 import Redirect404 from "./pages/Redirect404.jsx";
 import Signup from "./pages/Signup.jsx";
 import Logout from "./pages/Logout.jsx";
-import Cart from "./pages/Cart.jsx"
+import Cart from "./pages/Cart.jsx";
 import AuthProvider from "./components/AuthContext.jsx";
 import CartProvider from "./components/CartContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
