@@ -1,32 +1,32 @@
-const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
+const fs = require('fs').promises;
 
 //config
 const targetSize = 512;
-const outputDir = path.join(__dirname, 'test');
+const outputDir = path.join(__dirname, '../assets/images/products');
 
-export const downloadImage = (buffer, name) => {
+const downloadImage = (name, filepath) => {
 
-  const fileName = name.toLowerCase().replace(/\s+/g, '_') + '.jpg';
+  const fileName = name + '.jpg';
   const outputPath = path.join(outputDir, fileName);
 
-
   try {
-    sharp(buffer)
+    sharp(filepath)
     .resize(targetSize, targetSize, {
-      fit: 'cover,'
+      fit: 'cover'
     })
     .jpeg({quality: 80})
-    .toFile(outputDir)
-    console.log(`✔ Saved ${newFilename}`);
+    .toFile(outputPath)
+    console.log(`✔ Saved ${fileName}`);
+    return '/images/products/' + fileName;
   }
   catch(err){
-    console.error(`✖ Failed ${filename}:`, err.message);
+    console.error(`✖ Failed ${fileName}:`, err.message);
   }
-  reader.onerror = (error) => {
-    console.error("FileReader Error:", error);
-  }
+
 }
 
-
+module.exports = {
+  downloadImage
+};

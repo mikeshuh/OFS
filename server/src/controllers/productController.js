@@ -1,5 +1,6 @@
 const Product = require('../models/productModel');
 const responseHandler = require('../utils/responseHandler');
+const { downloadImage } = require('../tools/downloadImage.js');
 
 // get single product, route: /api/products/info/:productId
 const getProduct = async (req, res) => {
@@ -41,13 +42,17 @@ const getByCategory = async (req, res) => {
 // create a new product, route: /api/products/create-product, admin only
 const createProduct = async (req, res) => {
   try {
-    const { category, name, price, pounds, quantity, imagePath } = req.body;
-    console.log(name);
-    console.log(category);
-    console.log(price);
-    console.log(pounds);
-    console.log(quantity);
+    console.log('test');
+    const { name, category, price, pounds, quantity } = req.body;
+
+
+    //console.log(filePath);
+    const filePath = req.file.path;
+    const imagePath = downloadImage(name, filePath);
     console.log(imagePath);
+
+
+
 
     const productData = {
       category: category,

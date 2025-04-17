@@ -12,7 +12,6 @@ const CreateProductForm = ({ onProductAdded }) => {
   const [quantity, setQuantity] = useState(0);
   const [category, setCategory] = useState('');
   const [image, setImage] = useState(null);
-  const [imagePath, setImagePath] = '';
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
@@ -20,6 +19,7 @@ const CreateProductForm = ({ onProductAdded }) => {
 
 
   const handleSubmit = async (event) => {
+
     event.preventDefault();
     if (!name || !price || !quantity || !category || !image) {
       setUploadError("Please fill in all fields and select an image.");
@@ -31,26 +31,23 @@ const CreateProductForm = ({ onProductAdded }) => {
 
     try {
 
-      reader.readAsArrayBuffer(imageFile)
+      const productForm = new FormData();
 
-      reader.onload =() => {
-        //call backend to download image
-      }
-      
+      productForm.append('name', name);
+      productForm.append('category', category);
+      productForm.append('price', price);
+      productForm.append('pounds', pounds);
+      productForm.append('quantity', quantity);
+      productForm.append('image', image, image.name);
+
+
       const token = localStorage.getItem("authToken");
 
-
       const response = await requestServer(`${API_URL}/api/products/create-product`,
-        "POST",
+        'POST',
         token,
-        {
-          name: name,
-          category: category,
-          price: price,
-          pounds: pounds,
-          quantity: quantity,
-          imagePath: imagePath
-        }
+        productForm,
+        'multipart/form-data'
       );
 
       if (response?.data?.success) {
@@ -160,6 +157,8 @@ const CreateProductForm = ({ onProductAdded }) => {
           <input
             type="file"
             id="image"
+
+
             className="w-full text-sm focus:outline-none"
             onChange={handleImageChange}
           />
