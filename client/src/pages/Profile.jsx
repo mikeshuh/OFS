@@ -39,79 +39,81 @@ const Profile = () => {
 
   return (
     <div
-      className="min-h-[110vh] overflow-hidden bg-cover bg-fixed px-4 sm:px-6 lg:px-8 pt-36 pb-40 relative"
+      className="h-screen overflow-hidden bg-cover bg-center bg-no-repeat relative"
       style={{ backgroundImage: `url(${profileBackground})` }}
     >
-      {/* 固定顶部 Navbar */}
+      {/* Fixed Navbar */}
       <div className="fixed top-0 left-0 right-0 z-20">
         <Navbar />
       </div>
 
-      {/* 主体内容 */}
-      <div className="flex justify-center relative z-10">
+      {/* Centered Content */}
+      <div className="h-full flex items-center justify-center px-4 relative z-10">
         {profileData ? (
-          <div className="w-full max-w-md bg-white/95 backdrop-blur-sm shadow-lg rounded-xl p-8 transition-all duration-300 hover:shadow-xl">
-            <h1 className="text-2xl font-semibold text-center text-black mb-4">Profile Page</h1>
+          <div className="w-full max-w-md max-h-[90vh] overflow-y-auto bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8">
+            <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Profile Page</h1>
 
-            <p className="text-gray-800 text-lg">
-              <span className="font-semibold text-green-700">First Name:</span> {profileData.firstName}
-            </p>
-            <p className="text-gray-800 text-lg">
-              <span className="font-semibold text-green-700">Last Name:</span> {profileData.lastName}
-            </p>
-            <p className="text-gray-800 text-lg">
-              <span className="font-semibold text-green-700">Email:</span> {profileData.email}
-            </p>
+            <div className="space-y-3 text-gray-700">
+              <p>
+                <span className="font-semibold text-green-700">First Name:</span> {profileData.firstName}
+              </p>
+              <p>
+                <span className="font-semibold text-green-700">Last Name:</span> {profileData.lastName}
+              </p>
+              <p>
+                <span className="font-semibold text-green-700">Email:</span> {profileData.email}
+              </p>
+            </div>
 
             {viewMode ? (
-              <div className="flex flex-col items-center space-y-4 pt-4">
+              <div className="flex flex-col items-center space-y-4 pt-6">
                 <button
-                  className="w-full bg-green-600 hover:bg-green-700 text-white text-lg py-2 rounded transition"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white text-lg py-2 rounded-lg transition"
                   onClick={() => navigate("/orders")}
                 >
                   View History
                 </button>
                 <button
-                  className="w-full bg-green-600 hover:bg-green-700 text-white text-lg py-2 rounded transition"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white text-lg py-2 rounded-lg transition"
                   onClick={EditButton}
                 >
                   Edit Profile
                 </button>
               </div>
             ) : (
-              <form onSubmit={changeProfile} className="flex flex-col items-center space-y-4 pt-4">
+              <form onSubmit={changeProfile} className="flex flex-col items-center space-y-4 pt-6">
                 <input
                   type="password"
                   name="currentPassword"
                   placeholder="Current Password"
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
                 <input
                   type="password"
                   name="newPassword"
                   placeholder="New Password"
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
                 <input
                   type="password"
                   name="confirmPassword"
                   placeholder="Confirm New Password"
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
                 <div className="flex flex-col w-full space-y-2">
                   <button
                     type="submit"
-                    className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg"
                   >
                     Save Changes
                   </button>
                   <button
                     type="button"
                     onClick={EditButton}
-                    className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded"
+                    className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg"
                   >
                     Cancel Changes
                   </button>
@@ -120,7 +122,7 @@ const Profile = () => {
             )}
           </div>
         ) : (
-          <p className="text-white drop-shadow">Loading profile data...</p>
+          <p className="text-white text-xl">Loading profile data...</p>
         )}
       </div>
     </div>
