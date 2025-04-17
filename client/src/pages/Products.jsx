@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ProductGrid from "../components/ProductGrid";
 import { requestServer } from "../utils/Utility";
@@ -9,16 +9,21 @@ const API_URL = import.meta.env.VITE_API_URL;
 const Products = () => {
   const { category } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [products, setProducts] = useState([]);
+  // Grab current search term from URL
+  const searchTerm = new URLSearchParams(location.search)
+    .get("search")
+    ?.toLowerCase() || "";
+
   const [allProducts, setAllProducts] = useState([]);
+  const [products, setProducts] = useState([]);      // after category filter
+  const [categories, setCategories] = useState(["all"]);
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [categories, setCategories] = useState(['all']);
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [searchProducts, setSearchProducts] = useState([])
 
-  // Initial data load
+  // 1) Fetch all products once on mount
   useEffect(() => {
     const fetchAllProducts = async () => {
       try {
@@ -51,6 +56,15 @@ const Products = () => {
         } else {
           throw new Error(response?.data?.message || "Failed to fetch products");
         }
+        const data = res.data.data;
+        setAllProducts(data);
+
+        // build category list
+        const cats = [
+          "all",
+          ...new Set(data.map((p) => p.category.toLowerCase()))
+        ];
+        setCategories(cats);
       } catch (err) {
         console.error("Error fetching products:", err);
         setError(err.message);
@@ -62,116 +76,90 @@ const Products = () => {
     fetchAllProducts();
   }, []);
 
+  // 2) Re-filter on allProducts or category update
   useEffect(() => {
-    if (localStorage.getItem("searchTerm")) {
-      filterForSearch(allProducts);
+    if (!allProducts.length) return;
+
+    const urlCat = (category || "all").toLowerCase();
+    if (!categories.includes(urlCat)) {
+      navigate("/products/all");
+      return;
     }
-  }, [category, allProducts, categories, navigate]);
 
-  // Update when URL category changes
-  useEffect(() => {
-    if (category) {
-        const urlCategory = category.toLowerCase();
-        if (categories.includes(urlCategory)) {
-          setSelectedCategory(urlCategory);
-          const source = localStorage.getItem("searchTerm") ? searchProducts : allProducts;
-          filterProducts(source, urlCategory) 
-        }
-    }
-  }, [category, allProducts, categories, navigate]);
-
-
-  const filterForSearch = (productsData) => {
-    setSearchProducts(
-      productsData.filter(product => 
-        (product.name.toLowerCase().includes(localStorage.getItem("searchTerm").toLowerCase()) || product.category.toLowerCase().includes(localStorage.getItem("searchTerm").toLowerCase()))
-      )
-    )
-    setProducts(searchProducts);
-  };
-
-  // Filter products based on selected category
-  const filterProducts = (productsData, categoryName) => {
-    if (categoryName === 'all') {
-      setProducts(productsData);
-    } else {
-      setProducts(productsData.filter(
-        product => product.category.toLowerCase() === categoryName
-      ));
-    }
-  };
-
-  // Handle category change
-  const handleCategoryChange = (categoryName) => {
-    setSelectedCategory(categoryName);
-    navigate(`/products/${categoryName}`);
-  };
-
-  // Get properly formatted category name for display
-  const getCategoryDisplayName = (categoryName) => {
-    if (categoryName === 'all') return 'All';
-
-    const product = allProducts.find(p =>
-      p.category.toLowerCase() === categoryName
+    setSelectedCategory(urlCat);
+    setProducts(
+      urlCat === "all"
+        ? allProducts
+        : allProducts.filter((p) => p.category.toLowerCase() === urlCat)
     );
+  }, [allProducts, category, categories, navigate]);
 
-    return product ? product.category :
-      categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
-  };
+  // Final filtering by searchTerm
+  const finalProducts = products.filter((p) =>
+    p.name.toLowerCase().includes(searchTerm)
+  );
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
-
       <div className="container mx-auto py-8 px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-6">
-            {selectedCategory === 'all'
-              ? 'Our Products'
-              : `${getCategoryDisplayName(selectedCategory)} Products`
-            }
-          </h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">
+          {selectedCategory === "all"
+            ? "Our Products"
+            : `${selectedCategory.charAt(0).toUpperCase() +
+                selectedCategory.slice(1)} Products`}
+        </h1>
 
-          {/* Error Message */}
-          {error && (
-            <div className="bg-red-100 text-red-700 p-4 rounded mb-6">
-              Error: {error}
-            </div>
-          )}
-
-          {/* Category Filter */}
-          <div className="flex flex-wrap gap-2 mb-8">
-            {categories.map(cat => (
-              <button
-                key={cat}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  selectedCategory === cat
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-                }`}
-                onClick={() => handleCategoryChange(cat)}
-              >
-                {getCategoryDisplayName(cat)}
-              </button>
-            ))}
+        {error && (
+          <div className="bg-red-100 text-red-700 p-4 rounded mb-6">
+            Error: {error}
           </div>
+        )}
 
-          {/* Product Grid */}
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-green-500 border-t-transparent"></div>
-              <p className="mt-2 text-gray-600">Loading products...</p>
-            </div>
-          ) : (
-            products.length > 0 ? (
-              <ProductGrid products={products} />
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-gray-600">No products found in this category.</p>
-              </div>
-            )
-          )}
+        {/* Category Buttons (preserve searchTerm) */}
+        <div className="flex flex-wrap gap-2 mb-8">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() =>
+                navigate(
+                  `/products/${cat}${
+                    searchTerm
+                      ? `?search=${encodeURIComponent(searchTerm)}`
+                      : ""
+                  }`
+                )
+              }
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                selectedCategory === cat
+                  ? "bg-green-600 text-white"
+                  : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+              }`}
+            >
+              {cat === "all"
+                ? "All"
+                : cat.charAt(0).toUpperCase() + cat.slice(1)}
+            </button>
+          ))}
         </div>
+
+        {/* Product Grid or Messages */}
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-green-500 border-t-transparent"></div>
+            <p className="mt-2 text-gray-600">Loading products...</p>
+          </div>
+        ) : finalProducts.length > 0 ? (
+          <ProductGrid products={finalProducts} />
+        ) : searchTerm ? (
+          <div className="text-center py-12 text-gray-600">
+            No products match “<strong>{searchTerm}</strong>”.
+          </div>
+        ) : (
+          <div className="text-center py-12 text-gray-600">
+            No products found in this category.
+          </div>
+        )}
       </div>
     </div>
   );
