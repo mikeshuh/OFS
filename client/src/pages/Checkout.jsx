@@ -76,6 +76,7 @@ const Checkout = () => {
             "GET",
             token
           );
+          console.log("Order details response:", orderDetails);
           const orderPaymentStatus = orderDetails.data.data[0].paymentStatus;
           if (orderPaymentStatus === "paid" || orderPaymentStatus === "refunded") {
             clearCart();
@@ -209,10 +210,32 @@ const Checkout = () => {
 
     setIsProcessing(true);
     setPaymentError(null);
-
-    const cardElement = elements.getElement(CardElement);
+    const updateOrderDetails = async () => {
+      const existingOrderID = localStorage.getItem(LS_ORDER_ID);
+      try {
+        const response = await requestServer(
+          `${API_URL}/api/orders/update-order/${existingOrderID}`,
+          "PUT",
+          token,
+          {
+            orderProducts: cartItems.map(item => ({
+              productID: item.productID,
+              cartQuantity: item.cartQuantity
+            }))
+          }
+        );
+        if (!response.data?.success) {
+          throw new Error("Failed to update order");
+        }
+      } catch (error) {
+        console.error("Error fetching order details:", error);
+        throw new Error("Failed to update order");
+      }
+    }
 
     try {
+      await updateOrderDetails();
+      const cardElement = elements.getElement(CardElement);
       const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: { card: cardElement }
       });
@@ -339,11 +362,10 @@ const Checkout = () => {
                 <button
                   type="submit"
                   disabled={isProcessing || !stripe || !clientSecret}
-                  className={`w-full py-3 rounded font-medium ${
-                    isProcessing || !stripe || !clientSecret
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-green-600 hover:bg-green-700"
-                  } text-white`}
+                  className={`w-full py-3 rounded font-medium ${isProcessing || !stripe || !clientSecret
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-green-600 hover:bg-green-700"
+                    } text-white`}
                 >
                   {isProcessing ? "Processing..." : `Pay $${formattedTotals.total}`}
                 </button>
