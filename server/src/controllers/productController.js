@@ -1,6 +1,6 @@
 const Product = require('../models/productModel');
 const responseHandler = require('../utils/responseHandler');
-const { downloadImage } = require('../tools/downloadImage.js');
+const { downloadMulterImage, deleteImage } = require('../tools/imageTools.js');
 
 // get single product, route: /api/products/info/:productId
 const getProduct = async (req, res) => {
@@ -42,17 +42,16 @@ const getByCategory = async (req, res) => {
 // create a new product, route: /api/products/create-product, admin only
 const createProduct = async (req, res) => {
   try {
-    console.log('test');
     const { name, category, price, pounds, quantity } = req.body;
 
-
-    //console.log(filePath);
     const filePath = req.file.path;
-    const imagePath = downloadImage(name, filePath);
-    console.log(imagePath);
+    const fullImagePath = downloadMulterImage(name, filePath);
 
+    if(!fullImagePath){
+      return responseHandler.error(res, 'error downloading image');
+    }
 
-
+    const imagePath = '/images/products/' + name + ".jpg"
 
     const productData = {
       category: category,
@@ -66,13 +65,12 @@ const createProduct = async (req, res) => {
     // create product
     const productId = await Product.create(productData);
     if (!productId || !Number.isInteger(productId)) {
-      //delete temp file and image file
+      if(!deleteImage(fullImagePath))
+        return responseHandler.error(res, 'Error creating product and deleting product image');
       return responseHandler.error(res, 'Error creating product');
-
     }
 
     responseHandler.created(res, { productId }, 'Product created successfully');
-    //delete temp file
   } catch (error) {
     console.error(`Error creating product:  ${error.message}`, error);
     responseHandler.error(res, `Error creating product : ${error.message}`);
