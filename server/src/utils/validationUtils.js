@@ -185,8 +185,14 @@ const validateProduct = [
 
   (req, res, next) => {
     const errors = validationResult(req);
+    const errorsArray = errors.array();
+    let errorMsg = "";
     if (!errors.isEmpty()) {
-      return responseHandler.badRequest(res, null, errors);
+      errorsArray.forEach(error => {
+        errorMsg += error.msg + ". ";
+      });
+
+      return responseHandler.badRequest(res, errorMsg, {errors});
     }
     next();
   },

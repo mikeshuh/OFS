@@ -6,12 +6,13 @@ const fs = require('fs').promises;
 const targetSize = 512;
 const outputDir = path.join(__dirname, '../assets/images/products');
 
-const downloadImage = (name, filepath) => {
 
+const downloadImage = (name, filepath) => {
   const fileName = name + '.jpg';
   const outputPath = path.join(outputDir, fileName);
 
   try {
+
     sharp(filepath)
     .resize(targetSize, targetSize, {
       fit: 'cover'

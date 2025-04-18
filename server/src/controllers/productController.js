@@ -66,9 +66,13 @@ const createProduct = async (req, res) => {
     // create product
     const productId = await Product.create(productData);
     if (!productId || !Number.isInteger(productId)) {
+      //delete temp file and image file
       return responseHandler.error(res, 'Error creating product');
+
     }
+
     responseHandler.created(res, { productId }, 'Product created successfully');
+    //delete temp file
   } catch (error) {
     console.error(`Error creating product:  ${error.message}`, error);
     responseHandler.error(res, `Error creating product : ${error.message}`);
