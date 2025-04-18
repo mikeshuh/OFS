@@ -97,13 +97,13 @@ const Profile = () => {
                     className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded transition-colors duration-300"
                     onClick={() => navigate("/orders")}
                   >
-                    View History
+                    View Order History
                   </button>
                   <button
                     className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded transition-colors duration-300"
                     onClick={editButton}
                   >
-                    Edit Profile
+                    Change Password
                   </button>
                 </div>
               ) : (
@@ -137,7 +137,7 @@ const Profile = () => {
                       type="submit"
                       className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded transition-colors duration-300"
                     >
-                      Save Changes
+                      Change Password
                     </button>
                     <button
                       type="button"
