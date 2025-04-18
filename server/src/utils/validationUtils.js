@@ -185,6 +185,12 @@ const validateProduct = [
 
   (req, res, next) => {
     const errors = validationResult(req);
+    // Multer may not upload file if it gets filtered
+    if (!req.file) {
+      return responseHandler.error(res, "image was filtered");
+    }
+
+
     const errorsArray = errors.array();
     let errorMsg = "";
     if (!errors.isEmpty()) {
@@ -197,6 +203,16 @@ const validateProduct = [
     next();
   },
 ];
+
+//validate image
+const imageFileFilter = (req, file, cb) => {
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+    cb(null, true);
+  } else {
+    //if file is not of the correct type multer will not upload it
+    cb(null, false);
+  }
+};
 
 //validate order
 const validateOrder = [
@@ -222,6 +238,7 @@ const validateOrder = [
 
   (req, res, next) => {
     const errors = validationResult(req);
+
     if (!errors.isEmpty()) {
       return responseHandler.badRequest(res, null, errors);
     }
@@ -353,6 +370,7 @@ module.exports = {
   parseId,
   //Product Route Validation
   validateProduct,
+  imageFileFilter,
   validateOrder,
   validateParamInt,
   validateParamString,
@@ -360,4 +378,5 @@ module.exports = {
   validateAddress,
   validateOptimalRoute,
   validatePaymentIntent,
+
 };

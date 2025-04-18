@@ -3,10 +3,17 @@ const router = express.Router();
 const productController = require('../controllers/productController');
 const multer  = require('multer')
 const path = require('path');
-const upload = multer({ dest: path.join(__dirname, '../tools/tempImages/') });
-
 const { protect, admin } = require('../middleware/authMiddleware');
-const { validateParamInt, validateParamString, validateProduct } = require('../utils/validationUtils');
+const { validateParamInt, validateParamString, validateProduct, imageFileFilter,  } = require('../utils/validationUtils');
+
+const upload = multer({
+  dest: path.join(__dirname, '../tools/tempImages/'),
+  fileFilter: imageFileFilter,
+  limits: {
+    fileSize: 1024 * 1024 * 10, // 10mb allowance for images
+    files: 1
+  },
+});
 
 // unprotected routes
 router.get('/:productId', validateParamInt('productId'), productController.getProduct);
