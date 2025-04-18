@@ -15,7 +15,7 @@ const OrderList = () => {
   const [errorDetails, setErrorDetails] = useState("");
   const navigate = useNavigate();
 
-  const statusOptions = ["all", "completed", "pending"];
+  const statusOptions = ["all", "delivered", "in progress"];
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -47,16 +47,14 @@ const OrderList = () => {
 
   const filterOrders = (selectedDate, selectedStatus) => {
     const filtered = orders.filter(order => {
-      const orderDate = new Date(order.createdAt || order.orderTime);
-      const localDate = new Date(orderDate.getTime() - orderDate.getTimezoneOffset() * 60000)
-        .toISOString()
-        .split("T")[0];
+      const orderDate = new Date(order.orderTime);
+      const localDate = orderDate.toISOString().split("T")[0];
 
       const matchDate = !selectedDate || localDate === selectedDate;
       const matchStatus =
         selectedStatus === "all" ||
-        (selectedStatus === "completed" && order.orderStatus) ||
-        (selectedStatus === "pending" && !order.orderStatus);
+        (selectedStatus === "delivered" && order.orderStatus) ||
+        (selectedStatus === "in progress" && !order.orderStatus);
 
       return matchDate && matchStatus;
     });
@@ -113,7 +111,9 @@ const OrderList = () => {
                   >
                     {statusOptions.map((option) => (
                       <option key={option} value={option}>
-                        {option.charAt(0).toUpperCase() + option.slice(1)}
+                        {option === "in progress"
+                          ? "In Progress"
+                          : option.charAt(0).toUpperCase() + option.slice(1)}
                       </option>
                     ))}
                   </select>
@@ -172,25 +172,25 @@ const OrderList = () => {
             filteredOrders.length > 0 && (
               <div className="overflow-hidden rounded-xl shadow-xl ring-1 ring-gray-200 bg-white">
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
+                  <table className="min-w-full divide-y divide-gray-200 table-fixed">
                     <thead className="bg-gradient-to-r from-green-600 to-green-500">
                       <tr>
-                        <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
+                        <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider w-1/6">
                           Order ID
                         </th>
-                        <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
+                        <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider w-1/6">
                           Total Price
                         </th>
-                        <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
+                        <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider w-1/6">
                           Total Pounds
                         </th>
-                        <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
+                        <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider w-1/6">
                           Order Time
                         </th>
-                        <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
+                        <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider w-1/6">
                           Order Status
                         </th>
-                        <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider">
+                        <th className="px-6 py-4 text-left text-xs font-bold text-white uppercase tracking-wider w-1/6">
                           Payment Status
                         </th>
                       </tr>
