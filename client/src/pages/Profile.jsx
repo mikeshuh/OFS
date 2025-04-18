@@ -11,8 +11,6 @@ const Profile = () => {
   const auth = useAuth();
 
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
@@ -21,8 +19,9 @@ const Profile = () => {
   const [profileData, setProfileData] = useState(
     JSON.parse(localStorage.getItem("userProfile"))
   );
+  const [message, setMessage] = useState("");
 
-  const EditButton = () => setView(!viewMode);
+  const editButton = () => setView(!viewMode);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,12 +30,31 @@ const Profile = () => {
 
   const changeProfile = async (e) => {
     e.preventDefault();
-    if (formData.newPassword !== formData.confirmPassword) {
-      alert("New passwords do not match.");
+    if (!formData.currentPassword || !formData.newPassword || !formData.confirmPassword) {
+      setMessage("All fields are required.");
       return;
     }
+    if (formData.newPassword !== formData.confirmPassword) {
+      setMessage("Passwords do not match.");
+      return;
+    }
+    if (formData.newPassword.length < 8) {
+      setMessage("New password must be at least 8 characters long.");
+      return;
+    }
+    setMessage(""); // Clear previous messages
     const { currentPassword, newPassword } = formData;
-    auth.changePassword({ currentPassword, newPassword });
+    try {
+      const errorMsg = await auth.changePassword({ currentPassword, newPassword });
+      if (errorMsg) {
+        setMessage(errorMsg.toLowerCase().includes("current password is incorrect") ? errorMsg : "Failed to change password.");
+        return;
+      }
+    } catch (error) {
+      console.error("Error changing password:", error);
+      setMessage("Failed to change password.");
+      return;
+    }
   };
 
   return (
@@ -83,7 +101,7 @@ const Profile = () => {
                   </button>
                   <button
                     className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded transition-colors duration-300"
-                    onClick={EditButton}
+                    onClick={editButton}
                   >
                     Edit Profile
                   </button>
@@ -111,6 +129,9 @@ const Profile = () => {
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
+                  {message && (
+                    <p className="flex items-center justify-center text-red-500 text-sm ">{message}</p>
+                  )}
                   <div className="flex flex-col space-y-2">
                     <button
                       type="submit"
@@ -120,7 +141,7 @@ const Profile = () => {
                     </button>
                     <button
                       type="button"
-                      onClick={EditButton}
+                      onClick={editButton}
                       className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded transition-colors duration-300"
                     >
                       Cancel
