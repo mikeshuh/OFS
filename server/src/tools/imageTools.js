@@ -21,12 +21,17 @@ const downloadMulterImage = async (name, filePath) => {
         })
         .jpeg({ quality: 80 })
         .toFile(outputPath);
-      await deleteImage(filePath); // delete temporary image
       return outputPath; // Return the full output path on success
     } catch (sharpError) {
       console.error("Error processing image:", sharpError);
       return ''; // Return no filepath on Sharp error
     }
+    finally{
+      await deleteImage(filePath); // delete temporary image
+    }
+  }
+  finally{
+    await deleteImage(filePath); // delete temporary image
   }
 };
 
@@ -38,7 +43,11 @@ const deleteImage = async (filepath) => {
     await fsPromises.unlink(filepath);
     return true;
   } catch (error) {
-    return false;
+    if (error.code === 'ENOENT') {
+      return true; //file not found
+    } else {
+      return false;
+    }
   }
 };
 
