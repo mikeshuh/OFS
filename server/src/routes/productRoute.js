@@ -1,8 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/productController');
+const multer  = require('multer')
+const path = require('path');
 const { protect, admin } = require('../middleware/authMiddleware');
-const { validateParamInt, validateParamString, validateProduct } = require('../utils/validationUtils');
+const { validateParamInt, validateParamString, validateProduct, imageFileFilter,  } = require('../utils/validationUtils');
+
+const upload = multer({
+  dest: path.join(__dirname, '../tools/tempImages/'),
+  fileFilter: imageFileFilter,
+  limits: {
+    fileSize: 1024 * 1024 * 10, // 10mb allowance for images
+    files: 1
+  },
+});
 
 // unprotected routes
 router.get('/:productId', validateParamInt('productId'), productController.getProduct);
@@ -12,7 +23,7 @@ router.get('/category/:category', validateParamString('category'), productContro
 router.get('/', productController.getAllProduct);
 
 // routed that require admin
-router.post('/create-product', protect, admin, validateProduct, productController.createProduct);
+router.post('/create-product', protect, admin, upload.single('image'), validateProduct, productController.createProduct);
 
 router.put('/update-product/:productId', protect, admin, validateParamInt('productId'), validateProduct, productController.updateProduct);
 
