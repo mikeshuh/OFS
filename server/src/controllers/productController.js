@@ -1,6 +1,6 @@
 const Product = require('../models/productModel');
 const responseHandler = require('../utils/responseHandler');
-const { downloadMulterImage, deleteImage } = require('../tools/imageTools.js');
+const { downloadMulterImage, deleteImage } = require('../utils/imageTools.js');
 
 // get single product, route: /api/products/info/:productId
 const getProduct = async (req, res) => {
@@ -45,15 +45,18 @@ const createProduct = async (req, res) => {
     const { name, category, price, pounds, quantity } = req.body;
 
     const filePath = req.file.path;
-    const fullImagePath = await downloadMulterImage(name, filePath);
+    const downloadResults = await downloadMulterImage(name, filePath);
+    const downloadErrors = downloadResults.errors; // Access the 'errors' array
 
-    console.log(fullImagePath);
-    if(!fullImagePath){
-      return responseHandler.error(res, 'error downloading image');
+    const downloadOutputPath = downloadResults.outputPath;
+
+    // Check if the errors array has any elements
+    if (downloadErrors) {
+      return responseHandler.error(res, 'Error downloading image', downloadErrors);
     }
 
-    const imagePath = '/images/products/' + name + ".jpg"
 
+    const imagePath = '/images/products/' + name + ".jpg"
     const productData = {
       category: category,
       name: name,
@@ -66,8 +69,8 @@ const createProduct = async (req, res) => {
     // create product
     const productId = await Product.create(productData);
     if (!productId || !Number.isInteger(productId)) {
-      if(!deleteImage(fullImagePath))
-        return responseHandler.error(res, 'Error creating product and deleting product image');
+      if(!deleteImage(downloadOutputPath))
+        return responseHandler.error(res, 'Error creating product and deleting product image created with product');
       return responseHandler.error(res, 'Error creating product');
     }
 
