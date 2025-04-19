@@ -12,8 +12,7 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
   const [pounds, setPounds] = useState(0);
   const [quantity, setQuantity] = useState(0);
   const [category, setCategory] = useState('');
-  //used to reset file input component
-  const [fileInputKey, setFileInputKey] = useState(Date.now());
+  const [fileInputKey, setFileInputKey] = useState(1);
 
   const [image, setImage] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
@@ -43,6 +42,14 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
       productForm.append('quantity', quantity);
       productForm.append('image', image, image.name);
 
+      // Reset the form
+      setName('');
+      setPrice('');
+      setQuantity('');
+      setCategory('');
+      setImage(null);
+      setImagePreviewUrl(null);
+      setFileInputKey(fileInputKey+1);
 
 
       const token = localStorage.getItem("authToken");
@@ -56,13 +63,7 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
 
       if (response?.data?.success) {
         console.log("Product added successfully:", response.data.data);
-        // Reset the form
-        setName('');
-        setPrice('');
-        setQuantity('');
-        setCategory('');
-        setImage(null);
-        setImagePreviewUrl(null);
+
         if (onProductAdded) {
           onProductAdded(response.data.data); // Notify parent component
         }
@@ -164,6 +165,7 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
           <input
             type="file"
             id="image"
+            key={fileInputKey}
             className="w-full text-sm focus:outline-none"
             onChange={handleImageChange}
           />

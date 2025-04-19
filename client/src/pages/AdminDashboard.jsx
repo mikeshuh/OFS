@@ -384,7 +384,6 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-
           <div className="flex flex-col items-start w-full">
           <CreateProductForm  selectableCategories={categories} onProductAdded={handleProductAdded} />
           </div>
