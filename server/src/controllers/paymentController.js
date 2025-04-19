@@ -2,6 +2,7 @@ const stripe = require('../config/stripe');
 const Order = require('../models/orderModel');
 const Payment = require('../models/paymentModel');
 const responseHandler = require('../utils/responseHandler');
+const deliveryQueueService = require('../services/deliveryQueueService');
 
 // Create a payment intent when checkout is initiated
 const createPaymentIntent = async (req, res) => {
@@ -138,10 +139,17 @@ const handlePaymentIntentSucceeded = async (paymentIntent) => {
     // Update order payment status
     await Order.updatePaymentStatus(orderID, 'paid');
 
-    // Additional actions to trigger after successful payment:
-    // - Send confirmation email
-    // - Update inventory
-    // - Trigger delivery process
+    // **** Bull Queue Batching Integration ****
+    // Retrieve order details and add to the in-memory batch
+    const orderDetails = await Order.findById(orderID);
+    console.log("Retrieved order details:", orderDetails);
+
+    if (orderDetails) {
+      deliveryQueueService.addOrderToQueue(orderDetails);
+    } else {
+      console.error(`Order with ID ${orderID} not found for delivery queue.`);
+    }
+    // ********************************************
 
   } catch (error) {
     console.error('Error handling successful payment:', error);

@@ -150,8 +150,14 @@ const OrderConfirmation = () => {
                 </p>
                 <p>
                   <span className="font-medium text-gray-700">Delivery Status:</span>{" "}
-                  <span className="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                    {firstItem.orderStatus ? "Delivered" : "Pending"}
+                  <span
+                    className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
+                      firstItem.orderStatus
+                        ? 'bg-blue-100 text-blue-800'
+                        : 'bg-yellow-100 text-yellow-800'
+                    }`}
+                  >
+                    {firstItem.orderStatus ? 'Delivered' : 'In Progress'}
                   </span>
                 </p>
               </div>
