@@ -6,11 +6,15 @@ import { requestServer } from '../utils/Utility';
 const API_URL = import.meta.env.VITE_API_URL;
 
 const CreateProductForm = ({ }) => {
+  //Used for creating product
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);
   const [pounds, setPounds] = useState(0);
   const [quantity, setQuantity] = useState(0);
   const [category, setCategory] = useState('');
+  //used to reset file input component
+  const [fileInputKey, setFileInputKey] = useState(Date.now());
+  
   const [image, setImage] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -21,7 +25,7 @@ const CreateProductForm = ({ }) => {
   const handleSubmit = async (event) => {
 
     event.preventDefault();
-    if (!name || !price || !quantity || !category || !image) {
+    if (!name || !price || !quantity || !category || !pounds || !image) {
       setUploadError("Please fill in all fields and select an image.");
       return;
     }
@@ -58,6 +62,7 @@ const CreateProductForm = ({ }) => {
         setQuantity('');
         setCategory('');
         setImage(null);
+        setImagePreviewUrl(null);
 
       } else {
         console.error("Error adding product:", response?.data?.message);
@@ -155,8 +160,6 @@ const CreateProductForm = ({ }) => {
           <input
             type="file"
             id="image"
-
-
             className="w-full text-sm focus:outline-none"
             onChange={handleImageChange}
           />
