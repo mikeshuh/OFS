@@ -36,6 +36,7 @@ function App() {
               </Route>
               <Route path="/cart" element={<Cart />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/orders" element={<OrderList />} />
               <Route path="/map" element={<Map />} />
               <Route path="/checkout-map" element={<CheckoutMap />} />
               <Route path="/checkout" element={<StripeCheckoutWrapper />} />
@@ -45,7 +46,6 @@ function App() {
             <Route path="/logout" element={<Logout />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/about" element={<AboutPage />} />
-            <Route path="/orders" element={<OrderList />} />
             <Route path="/404" element={<NotFoundPage />} />
             <Route path="*" element={<Redirect404 />} />
           </Routes>

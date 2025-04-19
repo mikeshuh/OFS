@@ -43,6 +43,9 @@ const AuthProvider = ({ children }) => {
     try {
       const decode = jwtDecode(token);
       const response = await requestServer(`${API_URL}/api/users/profile/${decode.id}`, "GET", token);
+      if (!response.data?.success) {
+        throw new Error("Failed to fetch profile.");
+      }
       localStorage.setItem("userProfile", JSON.stringify(response.data.data));
     } catch (error) {
       console.error("Error fetching profile", error);
@@ -55,18 +58,17 @@ const AuthProvider = ({ children }) => {
     try {
       const response = await requestServer(`${API_URL}/api/users/login`, "POST", "", data);
       if (response.data?.success) {
-        const data = response.data;
-        localStorage.setItem("authToken", data.data?.token);
-        console.log(data.data?.token);
-        setToken(data.data?.token);
-        await getProfile(data.data?.token);
+        const token = response.data.data?.token;
+        await getProfile(token);
+        localStorage.setItem("authToken", token);
+        setToken(token);
         setLoggedIn(true);
         navigate("/");
       }
       return response;
-    } catch (err) {
-      window.alert("Error: ", err);
-      return err;
+    } catch (error) {
+      window.alert(`Error: ${error.message || error}`);
+      return error;
     }
   };
 
@@ -79,16 +81,16 @@ const AuthProvider = ({ children }) => {
         if (cartFunctions.clearCart) {
           cartFunctions.clearCart();
         }
-
         window.alert("You have been logged out successfully.");
         setToken("");
         setLoggedIn(false);
         localStorage.clear();
+        navigate("/login");
       }
       return response;
-    } catch (err) {
-      window.alert("Error: ", err);
-      return err;
+    } catch (error) {
+      window.alert(`Error: ${error.message || error}`);
+      return error;
     }
   };
 
@@ -101,18 +103,17 @@ const AuthProvider = ({ children }) => {
         if (cartFunctions.clearCart) {
           cartFunctions.clearCart();
         }
-
-        navigate("/login");
+        window.alert("Password changed successfully.");
         setToken("");
         setLoggedIn(false);
         localStorage.clear();
-        window.alert("Password changed successfully");
+        navigate("/login");
       } else {
-        window.alert("Error changing password: ", response.data.message);
+        throw new Error(response.data?.message || "Failed to change password.");
       }
     } catch (error) {
       console.error("Error changing password", error);
-      return error;
+      return error.message || "An unexpected error occurred.";
     }
   }
 
