@@ -206,7 +206,7 @@ const validateProduct = [
 
 //validate image
 const imageFileFilter = (req, file, cb) => {
-  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+  if (file.mimetype === 'image/jpeg') {
     cb(null, true);
   } else {
     //if file is not of the correct type multer will not upload it
