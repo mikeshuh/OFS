@@ -292,6 +292,10 @@ const AdminDashboard = () => {
     );
   };
 
+  const handleProductAdded = (newProduct) => {
+    setAllProducts((prevProducts) => [prevProducts]);
+  };
+
   return (
     <div>
       <Navbar />
@@ -383,7 +387,7 @@ const AdminDashboard = () => {
 
 
           <div className="flex flex-col items-start w-full">
-          <CreateProductForm />
+          <CreateProductForm  />
           </div>
 
         </div>

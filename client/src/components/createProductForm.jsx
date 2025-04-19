@@ -5,7 +5,7 @@ import { requestServer } from '../utils/Utility';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const CreateProductForm = ({ onProductAdded }) => {
+const CreateProductForm = ({ }) => {
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);
   const [pounds, setPounds] = useState(0);
@@ -58,9 +58,7 @@ const CreateProductForm = ({ onProductAdded }) => {
         setQuantity('');
         setCategory('');
         setImage(null);
-        if (onProductAdded) {
-          onProductAdded(response.data.data); // Notify parent component
-        }
+
       } else {
         console.error("Error adding product:", response?.data?.message);
         setUploadError(`Error adding product: ${response?.data?.message}`);
