@@ -9,13 +9,13 @@ const OrderList = () => {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [searchDate, setSearchDate] = useState("");
-  const [deliveryStatus, setDeliveryStatus] = useState("all");
+  const [deliveryStatus, setDeliveryStatus] = useState("All");
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorDetails, setErrorDetails] = useState("");
   const navigate = useNavigate();
 
-  const statusOptions = ["all", "delivered", "in progress"];
+  const statusOptions = ["All", "Delivered", "In Progress"];
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -52,9 +52,9 @@ const OrderList = () => {
 
       const matchDate = !selectedDate || localDate === selectedDate;
       const matchStatus =
-        selectedStatus === "all" ||
-        (selectedStatus === "delivered" && order.orderStatus) ||
-        (selectedStatus === "in progress" && !order.orderStatus);
+        selectedStatus === "All" ||
+        (selectedStatus === "Delivered" && order.orderStatus) ||
+        (selectedStatus === "In Progress" && !order.orderStatus);
 
       return matchDate && matchStatus;
     });
@@ -111,9 +111,7 @@ const OrderList = () => {
                   >
                     {statusOptions.map((option) => (
                       <option key={option} value={option}>
-                        {option === "in progress"
-                          ? "In Progress"
-                          : option.charAt(0).toUpperCase() + option.slice(1)}
+                        {option}
                       </option>
                     ))}
                   </select>
@@ -139,7 +137,7 @@ const OrderList = () => {
               <button
                 onClick={() => {
                   setSearchDate("");
-                  setDeliveryStatus("all");
+                  setDeliveryStatus("All");
                   setFilteredOrders(orders);
                 }}
                 className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-transparent rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
@@ -163,7 +161,7 @@ const OrderList = () => {
               </svg>
               <h3 className="mt-4 text-lg font-medium text-gray-900">No orders found</h3>
               <p className="mt-2 text-gray-500">
-                {searchDate || deliveryStatus !== "all"
+                {searchDate || deliveryStatus !== "All"
                   ? "No orders match your filter criteria. Try changing your filters."
                   : "You haven't made any orders yet."}
               </p>
