@@ -52,9 +52,8 @@ const createProduct = async (req, res) => {
 
     // Check if the errors array has any elements
     if (downloadErrors) {
-      return responseHandler.error(res, 'Error downloading image', downloadErrors);
+      return responseHandler.badRequest(res, 'Error downloading image', downloadErrors);
     }
-
 
     const imagePath = '/images/products/' + name + ".jpg"
     const productData = {
@@ -74,7 +73,10 @@ const createProduct = async (req, res) => {
       return responseHandler.error(res, 'Error creating product');
     }
 
-    responseHandler.created(res, productData, 'Product created successfully');
+    const product = { ...productData, productID: productId };
+
+    //send back product so Frontend Can update view
+    responseHandler.created(res, product, 'Product created successfully');
   } catch (error) {
     console.error(`Error creating product:  ${error.message}`, error);
     responseHandler.error(res, `Error creating product : ${error.message}`);

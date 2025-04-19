@@ -5,7 +5,7 @@ import { requestServer } from '../utils/Utility';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const CreateProductForm = ({ }) => {
+const CreateProductForm = ({selectableCategories, onProductAdded }) => {
   //Used for creating product
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);
@@ -14,12 +14,11 @@ const CreateProductForm = ({ }) => {
   const [category, setCategory] = useState('');
   //used to reset file input component
   const [fileInputKey, setFileInputKey] = useState(Date.now());
-  
+
   const [image, setImage] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
-  const selectableCategories = ["Fruit", "Vegetable", "Dairy", "Meat", "Bakery", "Pantry"];
 
 
   const handleSubmit = async (event) => {
@@ -45,6 +44,7 @@ const CreateProductForm = ({ }) => {
       productForm.append('image', image, image.name);
 
 
+
       const token = localStorage.getItem("authToken");
 
       const response = await requestServer(`${API_URL}/api/products/create-product`,
@@ -63,6 +63,10 @@ const CreateProductForm = ({ }) => {
         setCategory('');
         setImage(null);
         setImagePreviewUrl(null);
+        if (onProductAdded) {
+          onProductAdded(response.data.data); // Notify parent component
+        }
+
 
       } else {
         console.error("Error adding product:", response?.data?.message);

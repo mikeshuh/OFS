@@ -233,7 +233,6 @@ const AdminDashboard = () => {
   const [Error, setError] = useState(null);
 
   const itemsPerPageList = [5, 10, 20, 50];
-  const dropCategories = ['Fruit, Vegetable, Dairy, Meat, Bakery'];
 
   // Filter products based on category and search
   const filteredProducts = useMemo(() => {
@@ -293,7 +292,7 @@ const AdminDashboard = () => {
   };
 
   const handleProductAdded = (newProduct) => {
-    setAllProducts((prevProducts) => [prevProducts]);
+    setAllProducts((prevProducts) => [...prevProducts, newProduct]);
   };
 
   return (
@@ -387,7 +386,7 @@ const AdminDashboard = () => {
 
 
           <div className="flex flex-col items-start w-full">
-          <CreateProductForm  />
+          <CreateProductForm  selectableCategories={categories} onProductAdded={handleProductAdded} />
           </div>
 
         </div>
