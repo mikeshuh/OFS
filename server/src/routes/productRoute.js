@@ -6,11 +6,12 @@ const path = require('path');
 const { protect, admin } = require('../middleware/authMiddleware');
 const { validateParamInt, validateParamString, validateProduct, imageFileFilter,  } = require('../utils/validationUtils');
 
+
 const upload = multer({
-  dest: path.join(__dirname, '../tools/tempImages/'),
+  storage: multer.memoryStorage(),
   fileFilter: imageFileFilter,
   limits: {
-    fileSize: 1024 * 1024 * 10, // 10mb allowance for images
+    fileSize: 1024 * 1024 * 3, // 10mb allowance for images
     files: 1
   },
 });

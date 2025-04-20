@@ -185,11 +185,6 @@ const validateProduct = [
 
   (req, res, next) => {
     const errors = validationResult(req);
-    // Multer may not upload file if it gets filtered
-    if (!req.file) {
-      return responseHandler.error(res, "image was filtered");
-    }
-
 
     const errorsArray = errors.array();
     let errorMsg = "";

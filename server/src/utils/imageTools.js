@@ -15,9 +15,9 @@ const imageExists = async (filePath) => {
   }
 }
 
-const processImage = async (filePath, outputPath) => {
+const processImage = async (buffer, outputPath) => {
   try {
-    await sharp(filePath)
+    await sharp(buffer)
       .resize(targetSize, targetSize, {
         fit: 'cover'
       })
@@ -30,28 +30,19 @@ const processImage = async (filePath, outputPath) => {
 }
 
 //returns no filepath if something went wrong.
-const downloadMulterImage = async (name, filePath) => {
+const downloadImage = async (name, buffer) => {
   const fileName = name + '.jpg';
   const outputPath = path.join(outputDir, fileName);
   const errors = [];
 
   if(await imageExists(outputPath)){
-    //delete temporary file saved by multer
-    await deleteImage(filePath);
     return {outputPath: null, errors: ["Image already exists"] };
   }
 
-    const processingResult = await processImage(filePath, outputPath);
+    const processingResult = await processImage(buffer, outputPath);
 
-    //delete file multer has saved
-    const tempFileDeletionResult = await deleteImage(filePath);
-
-    if(!tempFileDeletionResult){
-      errors.push("Deleting Temp File Failed");
-    }
 
     if (processingResult) {
-
       return { outputPath, errors: null};
     }
     else{
@@ -77,6 +68,6 @@ const deleteImage = async (filepath) => {
 };
 
 module.exports = {
-  downloadMulterImage,
+  downloadImage,
   deleteImage
 };

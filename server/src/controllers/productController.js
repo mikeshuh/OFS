@@ -1,6 +1,6 @@
 const Product = require('../models/productModel');
 const responseHandler = require('../utils/responseHandler');
-const { downloadMulterImage, deleteImage } = require('../utils/imageTools.js');
+const { downloadImage, deleteImage } = require('../utils/imageTools.js');
 
 // get single product, route: /api/products/info/:productId
 const getProduct = async (req, res) => {
@@ -44,10 +44,13 @@ const createProduct = async (req, res) => {
   try {
     const { name, category, price, pounds, quantity } = req.body;
 
-    const filePath = req.file.path;
-    const downloadResults = await downloadMulterImage(name, filePath);
+    let imageBuffer = req.file.buffer;
+    if (!imageBuffer) {
+      return responseHandler.error(res, "image invalid");
+    }
+    const downloadResults = await downloadImage(name, imageBuffer);
+    imageBuffer = null; //remove imageBuffer
     const downloadErrors = downloadResults.errors; // Access the 'errors' array
-
     const downloadOutputPath = downloadResults.outputPath;
 
     // Check if the errors array has any elements
@@ -68,7 +71,9 @@ const createProduct = async (req, res) => {
     // create product
     const productId = await Product.create(productData);
     if (!productId || !Number.isInteger(productId)) {
-      if(!deleteImage(downloadOutputPath))
+      //delete processed image if msyql doesn't create product
+      imageDeletionResult = deleteImage(downloadOutputPath)
+      if(!imageDeletionResult)
         return responseHandler.error(res, 'Error creating product and deleting product image created with product');
       return responseHandler.error(res, 'Error creating product');
     }

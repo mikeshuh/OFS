@@ -48,6 +48,7 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
       setQuantity('');
       setCategory('');
       setImage(null);
+      setPounds('');
       setImagePreviewUrl(null);
       setFileInputKey(fileInputKey+1);
 
