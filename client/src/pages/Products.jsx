@@ -23,6 +23,10 @@ const Products = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Sort state
+  const [sortField, setSortField] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
+
   // 1) Fetch all products once on mount
   useEffect(() => {
     const fetchAllProducts = async () => {
@@ -75,6 +79,21 @@ const Products = () => {
     p.name.toLowerCase().includes(searchTerm)
   );
 
+  // 3) Sort products if sortField is set
+  const sortedProducts = sortField
+    ? [...finalProducts].sort((a, b) => {
+        let aVal = a[sortField];
+        let bVal = b[sortField];
+        if (typeof aVal === "string") {
+          aVal = aVal.toLowerCase();
+          bVal = bVal.toLowerCase();
+        }
+        if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
+        if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
+        return 0;
+      })
+    : finalProducts;
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
@@ -119,14 +138,41 @@ const Products = () => {
           ))}
         </div>
 
+        {/* Sort Controls */}
+        <div className="flex items-center gap-2 mb-4">
+          <label htmlFor="sortField" className="text-sm font-medium">
+            Sort by:
+          </label>
+          <select
+            id="sortField"
+            value={sortField}
+            onChange={(e) => setSortField(e.target.value)}
+            className="px-2 py-1 border rounded"
+          >
+            <option value="">None</option>
+            <option value="name">Name</option>
+            <option value="category">Category</option>
+            <option value="price">Price</option>
+            <option value="pounds">Weight</option>
+          </select>
+          <button
+            onClick={() =>
+              setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
+            }
+            className="px-2 py-1 border rounded"
+          >
+            {sortOrder === "asc" ? "▲" : "▼"}
+          </button>
+        </div>
+
         {/* Product Grid or Messages */}
         {loading ? (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-green-500 border-t-transparent"></div>
             <p className="mt-2 text-gray-600">Loading products...</p>
           </div>
-        ) : finalProducts.length > 0 ? (
-          <ProductGrid products={finalProducts} />
+        ) : sortedProducts.length > 0 ? (
+          <ProductGrid products={sortedProducts} />
         ) : searchTerm ? (
           <div className="text-center py-12 text-gray-600">
             No products match “<strong>{searchTerm}</strong>”.
