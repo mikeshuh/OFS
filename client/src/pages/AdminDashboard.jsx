@@ -292,7 +292,10 @@ const AdminDashboard = () => {
   };
 
   const handleProductAdded = (newProduct) => {
-    setAllProducts((prevProducts) => [...prevProducts, newProduct]);
+    const parsedPrice = parseFloat(newProduct.price).toFixed(2);
+    const parsedPounds = parseFloat(newProduct.pounds).toFixed(2);
+
+    setAllProducts((prevProducts) => [...prevProducts, {...newProduct, price: parsedPrice, pounds: parsedPounds}]);
   };
 
   return (

@@ -1,16 +1,25 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import { Form } from 'react-bootstrap';
 import { requestServer } from '../utils/Utility';
 
+
+const MAX_PRICE = 9999.99;
+const MIN_PRICE_POUNDS = .01;
+const MIN_QUANTITY = 1;
+const MAX_POUNDS = 999.99;
+const MAX_QUANTITY = 1000;
+
+const REGEX_PRICE_POUNDS = /^\d+(\.\d{1,2})?$/;
+const REGEX_QUANTITY = /^\d+$/;
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const CreateProductForm = ({selectableCategories, onProductAdded }) => {
   //Used for creating product
   const [name, setName] = useState('');
-  const [price, setPrice] = useState(0);
-  const [pounds, setPounds] = useState(0);
-  const [quantity, setQuantity] = useState(0);
+  const [price, setPrice] = useState('');
+  const [pounds, setPounds] = useState('');
+  const [quantity, setQuantity] = useState('');
   const [category, setCategory] = useState('');
   const [fileInputKey, setFileInputKey] = useState(1);
 
@@ -64,12 +73,7 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
 
       if (response?.data?.success) {
         console.log("Product added successfully:", response.data.data);
-
-        if (onProductAdded) {
-          onProductAdded(response.data.data); // Notify parent component
-        }
-
-
+        onProductAdded(response.data.data);
       } else {
         console.error("Error adding product:", response?.data?.message);
         setUploadError(`Error adding product: ${response?.data?.message}`);
@@ -97,6 +101,24 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
     }
   };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === 'price' || name === 'pounds') {
+      if (REGEX_PRICE_POUNDS.test(value) || value === '') {
+        if(name === 'price')
+          setPrice(value);
+        else
+          setPounds(value);
+      }
+    }
+
+    if(name ==='quantity') {
+      if(REGEX_QUANTITY.test(value) || value === '') {
+        setQuantity(value);
+      }
+    }
+  }
 
   return (
     <div className="rounded-lg flex flex-col w-full border border-opacity-20 border-[#304c57] bg-white shadow-sm">
@@ -109,7 +131,7 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
           <label className="text-[#304c57] text-sm font-medium opacity-80">Name</label>
           <input
             type="text"
-            id="name"
+            name="name"
             className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#304c57]"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -119,36 +141,44 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
           <label className="text-[#304c57] text-sm font-medium opacity-80">Price</label>
           <input
             type="number"
-            id="price"
+            name="price"
             className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#304c57]"
             value={price}
-            onChange={(e) => setPrice(e.target.value)}
+            max={MAX_PRICE}
+            min={MIN_PRICE_POUNDS}
+            step=".01"
+            onChange={handleChange}
           />
         </div>
         <div className="flex flex-col gap-1">
           <label className="text-[#304c57] text-sm font-medium opacity-80">Quantity</label>
           <input
             type="number"
-            id="quantity"
+            name="quantity"
             className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#304c57]"
             value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
+            max={MAX_QUANTITY}
+            min={MIN_QUANTITY}
+            onChange={handleChange}
           />
         </div>
         <div className="flex flex-col gap-1">
           <label className="text-[#304c57] text-sm font-medium opacity-80">Pounds</label>
           <input
             type="number"
-            id="pounds"
+            name="pounds"
             className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#304c57]"
+            max={MAX_POUNDS}
+            min={MIN_PRICE_POUNDS}
+            step=".01"
             value={pounds}
-            onChange={(e) => setPounds(e.target.value)}
+            onChange={handleChange}
           />
         </div>
         <div className="flex flex-col gap-1">
           <label className="text-[#304c57] text-sm font-medium opacity-80">Category</label>
           <Form.Select
-            id="category"
+            name="category"
             className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#304c57]"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
@@ -165,7 +195,7 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
           <label className="text-[#304c57] text-sm font-medium opacity-80">Image</label>
           <input
             type="file"
-            id="image"
+            name="image"
             key={fileInputKey}
             className="w-full text-sm focus:outline-none"
             onChange={handleImageChange}
@@ -173,7 +203,7 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
           {imagePreviewUrl && (
             <div className="mt-2">
               <span className="text-gray-600 text-xs">Selected file: {image.name}</span>
-            <img src={imagePreviewUrl} alt='input image' className='max-w-[500px] max-h-[500px] object-cover' />
+            <img src={imagePreviewUrl} alt="input image" className="max-w-[500px] max-h-[500px] object-cover" />
             </div>
           )}
         </div>
