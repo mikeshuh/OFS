@@ -139,15 +139,15 @@ const Products = () => {
         </div>
 
         {/* Sort Controls */}
-        <div className="flex items-center gap-2 mb-4">
-          <label htmlFor="sortField" className="text-sm font-medium">
+        <div className="flex items-center gap-3 mb-6">
+          <label htmlFor="sortField" className="text-sm font-medium text-gray-700">
             Sort by:
           </label>
           <select
             id="sortField"
             value={sortField}
             onChange={(e) => setSortField(e.target.value)}
-            className="px-2 py-1 border rounded"
+            className="px-3 py-1 border border-gray-300 rounded-md text-sm bg-white focus:outline-none"
           >
             <option value="">None</option>
             <option value="name">Name</option>
@@ -159,7 +159,7 @@ const Products = () => {
             onClick={() =>
               setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))
             }
-            className="px-2 py-1 border rounded"
+            className="px-2 py-1 border border-gray-300 rounded-md text-sm bg-white hover:bg-gray-50 focus:outline-none"
           >
             {sortOrder === "asc" ? "▲" : "▼"}
           </button>
