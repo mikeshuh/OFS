@@ -231,6 +231,8 @@ const AdminDashboard = () => {
   const [searchValue, setSearchValue] = useState('');
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [Error, setError] = useState(null);
+  const selectableCategories = categories.filter(category => category !== 'all');
+
 
   const itemsPerPageList = [5, 10, 20, 50];
 
@@ -294,7 +296,6 @@ const AdminDashboard = () => {
   const handleProductAdded = (newProduct) => {
     const parsedPrice = parseFloat(newProduct.price).toFixed(2);
     const parsedPounds = parseFloat(newProduct.pounds).toFixed(2);
-
     setAllProducts((prevProducts) => [...prevProducts, {...newProduct, price: parsedPrice, pounds: parsedPounds}]);
   };
 
@@ -388,7 +389,7 @@ const AdminDashboard = () => {
           </div>
 
           <div className="flex flex-col items-start w-full">
-          <CreateProductForm  selectableCategories={categories} onProductAdded={handleProductAdded} />
+          <CreateProductForm  selectableCategories={selectableCategories} onProductAdded={handleProductAdded} />
           </div>
 
         </div>

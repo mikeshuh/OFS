@@ -35,20 +35,15 @@ const downloadImage = async (name, buffer) => {
   const outputPath = path.join(outputDir, fileName);
   const errors = [];
 
-  if(await imageExists(outputPath)){
-    return {outputPath: null, errors: ["Image already exists"] };
+  const processingResult = await processImage(buffer, outputPath);
+
+  if (processingResult) {
+    return { outputPath, errors: null};
   }
-
-    const processingResult = await processImage(buffer, outputPath);
-
-
-    if (processingResult) {
-      return { outputPath, errors: null};
-    }
-    else{
-      errors.push("Image processing failed");
-      return {outputPath: null, errors};
-    }
+  else{
+    errors.push("Image processing failed");
+    return {outputPath: null, errors};
+  }
 };
 
 

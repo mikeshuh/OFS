@@ -44,14 +44,22 @@ const createProduct = async (req, res) => {
   try {
     const { name, category, price, pounds, quantity } = req.body;
 
+    //if product already exists dont create new product
+    productFound = await Product.findByName(name);
+
+    if(productFound){
+      return responseHandler.badRequest(res, 'Product already exists')
+    }
+
+    //download image to server
     let imageBuffer = req.file.buffer;
     if (!imageBuffer) {
-      return responseHandler.error(res, "image invalid");
+      return responseHandler.error(res, "Image invalid");
     }
     const downloadResults = await downloadImage(name, imageBuffer);
     imageBuffer = null; //remove imageBuffer
     const downloadErrors = downloadResults.errors; // Access the 'errors' array
-    const downloadOutputPath = downloadResults.outputPath;
+    const downloadOutputPath = downloadResults.outputPath; //Used to delete downloaded image if update-product fails
 
     // Check if the errors array has any elements
     if (downloadErrors) {
