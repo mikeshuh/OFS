@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ProductGrid from "../components/ProductGrid";
@@ -7,60 +7,50 @@ import fruitImage from "../assets/fruits.jpg";
 import vegetablesImage from "../assets/vegetables.jpg";
 import dairyImage from "../assets/dairy.jpg";
 import deliveryImage from "../assets/delivery.jpg";
+import { requestServer } from "../utils/Utility";
 
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Home = () => {
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Sample products data
-  const products = [
-    {
-      id: 1,
-      name: "Almond Milk",
-      category: "Milk",
-      price: 80,
-      rating: 4.8,
-      reviews: 231,
-      unit: "1 L",
-    },
-    {
-      id: 2,
-      name: "Wheat Flour",
-      category: "Grain",
-      price: 50,
-      rating: 4.7,
-      reviews: 198,
-      unit: "1 Kg",
-    },
-    {
-      id: 3,
-      name: "Sunflower Oil",
-      category: "Oil",
-      price: 120,
-      rating: 4.5,
-      reviews: 182,
-      unit: "1 L",
-    },
-    {
-      id: 4,
-      name: "Mix Vegetables",
-      category: "Vegetables",
-      price: 90,
-      rating: 4.3,
-      reviews: 156,
-      unit: "2 Kg",
-    },
-    {
-      id: 5,
-      name: "Mix Chocolate Bread",
-      category: "Grain",
-      price: 50,
-      rating: 4.7,
-      reviews: 210,
-      unit: "500 g",
-    },
-  ];
+  useEffect(() => {
+    const shuffleArray = (array) => {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    };
+
+    const fetchAllProductsAndSetFeatured = async () => {
+      try {
+        setLoading(true);
+        const res = await requestServer(`${API_URL}/api/products`, "GET");
+        if (!res?.data?.success) {
+          throw new Error(res?.data?.message || "Failed to fetch products");
+        }
+        const data = res.data.data;
+
+        // Set featured products (random 5 products)
+        const shuffled = shuffleArray(data);
+        const selected = shuffled.slice(0, 5);
+        setFeaturedProducts(selected);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAllProductsAndSetFeatured();
+  }, []);
 
   const features = [
     {
@@ -103,12 +93,6 @@ const Home = () => {
     },
   ];
 
-  // Handle adding product to cart
-  const handleAddToCart = (product) => {
-    setCartItems([...cartItems, product]);
-    alert(`Added ${product.name} to cart!`);
-  };
-
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       {/* Navbar - with sticky positioning */}
@@ -132,7 +116,7 @@ const Home = () => {
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 drop-shadow-lg">
                   Farm Fresh Vegetables & Food 100% Organic.
                 </h1>
-                <p className="text-lg md:text-xl text-white mb-6 drop-shadow-lg">Always fresh product for you</p>
+                <p className="text-lg md:text-xl text-white mb-6 drop-shadow-lg">Always fresh produce for you</p>
                 <button
                   onClick={() => navigate("/products")}
                   className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 md:py-3 md:px-6 rounded"
@@ -197,7 +181,7 @@ const Home = () => {
               />
             </div>
             <div className="absolute inset-0 flex flex-col justify-center p-6 bg-gradient-to-r from-black/50 to-transparent">
-              <h3 className="text-2xl font-bold text-white mb-2">Farm Fresh<br />Vegetables<br />For Everyday</h3>
+              <h3 className="text-2xl font-bold text-white mb-2">Farm Fresh<br />Vegetables<br />Everyday</h3>
               <button className="bg-white hover:bg-gray-100 text-gray-800 text-sm font-semibold py-2 px-4 rounded w-24 mt-2"
                 onClick={() => navigate("/products/vegetable")}
               >
@@ -249,7 +233,7 @@ const Home = () => {
                   Check If We Deliver To Your Area
                 </h1>
                 <p className="text-lg md:text-xl text-white mb-6 drop-shadow-lg">
-                  Enter your location and find out if you're in our delivery zone.
+                  Enter your location and find out if you're within our delivery zone.
                 </p>
                 <button
                   onClick={() => navigate("/map")}
@@ -263,14 +247,26 @@ const Home = () => {
         </div>
       </div>
 
+      {/* Featured Products Section */}
+      <div className="w-full px-4 md:px-12 py-10">
+        <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 text-gray-800">Featured Products</h2>
 
-      {/* Featured Products */}
-      <div className="w-full px-4 md:px-12 py-6 mb-10">
-        <ProductGrid
-          products={products}
-          onAddToCart={handleAddToCart}
-          title="Featured Products"
-        />
+        {error ? (
+          <div className="text-center bg-red-100 text-red-700 p-4 rounded mb-6 max-w-xl mx-auto">
+            <p>Error loading products: {error}</p>
+          </div>
+        ) : loading ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-green-500 border-t-transparent"></div>
+            <p className="mt-2 text-gray-600">Loading featured products...</p>
+          </div>
+        ) : featuredProducts.length > 0 ? (
+          <ProductGrid products={featuredProducts} />
+        ) : (
+          <div className="text-center py-12 text-gray-600">
+            <p>No featured products available at the moment.</p>
+          </div>
+        )}
       </div>
     </div>
   );
