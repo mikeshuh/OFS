@@ -15,20 +15,20 @@ const ProtectedRoute = () => {
     const checkAuth = async () => {
       try {
         if (!token) {
-          window.alert("Please login to access this page");
+          window.alert("Please login to access this page.");
           setIsAuthorized(false);
           return;
         }
         const decode = jwtDecode(token);
         const response = await requestServer(`${API_URL}/api/users/profile/${decode.id}`, "GET", token);
         if (!response.data?.success) {
-          window.alert("Please login to access this page");
+          window.alert("Please login to access this page.");
           setIsAuthorized(false);
           return;
         }
         setIsAuthorized(true);
       } catch {
-        window.alert("Please login to access this page");
+        window.alert("Please login to access this page.");
         setIsAuthorized(false);
       }
     };
