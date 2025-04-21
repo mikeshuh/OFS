@@ -64,5 +64,6 @@ const deleteImage = async (filepath) => {
 
 module.exports = {
   downloadImage,
-  deleteImage
+  deleteImage,
+  imageExists
 };

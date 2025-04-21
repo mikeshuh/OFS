@@ -27,6 +27,9 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
+  const categories = ['New Category', ...selectableCategories];
+  const [categoryOption, setCategoryOption] = useState(false);
+
 
 
   const handleSubmit = async (event) => {
@@ -101,7 +104,21 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
     }
   };
 
-  const handleChange = (e) => {
+  const handleCategoryChange = (e) => {
+    const value  = e.target.value;
+
+    if(value === 'New Category'){
+      setCategoryOption('New Category');
+      setCategory('');
+    } else {
+      setCategoryOption(value);
+      setCategory(value);
+    }
+
+  }
+
+
+  const handleNumberChange = (e) => {
     const { name, value } = e.target;
 
     if (name === 'price' || name === 'pounds') {
@@ -147,7 +164,7 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
             max={MAX_PRICE}
             min={MIN_PRICE_POUNDS}
             step=".01"
-            onChange={handleChange}
+            onChange={handleNumberChange}
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -159,7 +176,7 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
             value={quantity}
             max={MAX_QUANTITY}
             min={MIN_QUANTITY}
-            onChange={handleChange}
+            onChange={handleNumberChange}
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -172,7 +189,7 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
             min={MIN_PRICE_POUNDS}
             step=".01"
             value={pounds}
-            onChange={handleChange}
+            onChange={handleNumberChange}
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -180,17 +197,30 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
           <Form.Select
             name="category"
             className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#304c57]"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            value={categoryOption}
+            onChange={handleCategoryChange}
           >
-            <option value="">Select a category</option>
-            {selectableCategories.map((cat, catID) => (
+            <option value="">Select an existing category</option>
+            {categories.map((cat, catID) => (
               <option key={catID} value={cat}>
                 {cat}
               </option>
             ))}
           </Form.Select>
         </div>
+        {categoryOption === 'New Category' && (
+          <div className="flex flex-col gap-1">
+            <label className="text-[#304c57] text-sm font-medium opacity-80">New Category</label>
+            <input
+              type="text"
+              className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#304c57]"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            />
+          </div>
+        )
+
+        }
         <div className="flex flex-col gap-1">
           <label className="text-[#304c57] text-sm font-medium opacity-80">Image</label>
           <input

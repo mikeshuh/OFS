@@ -1,6 +1,6 @@
 const Product = require('../models/productModel');
 const responseHandler = require('../utils/responseHandler');
-const { downloadImage, deleteImage } = require('../utils/imageTools.js');
+const { downloadImage, deleteImage } = require('../utils/imageUtils.js');
 
 // get single product, route: /api/products/info/:productId
 const getProduct = async (req, res) => {
