@@ -60,7 +60,8 @@ function Navbar() {
   };
 
   return (
-    <div className="w-full">
+    /*Z value is assgined so that dropdown does not hide behind other elements.*/
+    <div className="z-[20] w-full">
       {/* Top Bar */}
       <div className="flex items-center justify-between px-6 py-4 bg-white border-b">
         {/* Logo */}
@@ -232,19 +233,20 @@ function Navbar() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </Link>
-          <div className="absolute bg-white ">
+          <div className="absolute bg-white rounded-b-xl">
             {open1 ?
-              <ul className="w-full list-none ml-2 mr-2 text-left">
-              <li className="mt-5 mb-5"><Link to="/login" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
+              <ul className="list-nonetext-left border-1 border-black rounded-b-xl">
+
+              <li className="border-b-1 border-black"><Link to="/login" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Login</Link>
               </li>
-              <li className="mt-5 mb-5"><Link to="/signup" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
+              <li className="border-b-1 border-black"><Link to="/signup" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Signup</Link>
               </li> {/* Todo: Change Link from /about to another page*/}
-              <li className="mt-5 mb-5"><Link to="/about" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
+              <li className="border-b-1 border-black"><Link to="/about" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Delivery</Link>
               </li>
-              <li className="mt-5 mb-5"><Link to="/profile" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
+              <li className=""><Link to="/profile" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Profile</Link>
               </li>
               </ul> : null
@@ -261,26 +263,26 @@ function Navbar() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </Link>
-          <div className="absolute bg-white">
+          <div className="absolute bg-white rounded-b-xl">
             {open2 ?
-              <ul className="w-full list-none ml-2 mr-2 text-left">
+              <ul className="list-none text-left border-1 border-black rounded-b-xl">
                 {/* Todo: Change Link from /product to the proper category*/}
-              <li className="mt-5 mb-5"><Link to="/products/fruit" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
+              <li className="border-b-1 border-black"><Link to="/products/fruit" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Fruit</Link>
               </li>
-              <li className="mt-5 mb-5"><Link to="/products/vegetable" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
+              <li className="border-b-1 border-black"><Link to="/products/vegetable" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Vegetable</Link>
               </li>
-              <li className="mt-5 mb-5"><Link to="/products/dairy" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
+              <li className="border-b-1 border-black"><Link to="/products/dairy" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Dairy</Link>
               </li>
-              <li className="mt-5 mb-5"><Link to="/products/meat" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
+              <li className="border-b-1 border-black"><Link to="/products/meat" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Meat</Link>
               </li>
-              <li className="mt-5 mb-5"><Link to="/products/bakery" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
+              <li className="border-b-1 border-black"><Link to="/products/bakery" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Bakery</Link>
               </li>
-              <li className="mt-5 mb-5"><Link to="/products/pantry" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
+              <li className=""><Link to="/products/pantry" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Pantry</Link>
               </li>
               </ul> : null
@@ -304,3 +306,34 @@ function Navbar() {
 }
 
 export default Navbar;
+
+/*
+<div className="flex flex-row items-center justify-between w-full">
+            <div className="flex flex-row gap-2.5 items-center">
+              <FilterDropdown
+                label="Category:"
+                selectedValue={selectedCategory}
+                options={categories}
+                onSelect={setSelectedCategory}
+              />
+
+              <div className="z-40 bg-white rounded-lg border border-opacity-20 border-[#304c57] py-2.5 px-4 flex items-center shadow-sm">
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  className="outline-none text-[#304c57] font-medium w-full"
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  value={searchValue}
+                />
+              </div>
+
+              <FilterDropdown
+                label="items per page:"
+                selectedValue={itemsPerPage}
+                options={itemsPerPageList}
+                onSelect={setItemsPerPage}
+                capitalize={false}
+              />
+            </div>
+          </div>
+*/
