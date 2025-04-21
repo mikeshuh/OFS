@@ -20,7 +20,7 @@ const Checkout = () => {
 
   const isOverWeightLimit = calculateTotalWeight() > 50;
   const [isProcessing, setIsProcessing] = useState(false);
-  const [Error, setError] = useState(isOverWeightLimit ? "Cart weight exceeds 50 lbs" : null);
+  const [error, setError] = useState(isOverWeightLimit ? "Your cart weight exceeds the maximum allowed weight of 50 lbs" : null);
   const [clientSecret, setClientSecret] = useState("");
   const [orderID, setOrderID] = useState(null);
   const [isOrderCreated, setIsOrderCreated] = useState(false);
@@ -84,7 +84,7 @@ const Checkout = () => {
             navigate(`/order-confirmation/${existingOrderID}`);
           }
         } catch (error) {
-          console.error("Error checking order payment status:", error);
+          console.error("error checking order payment status:", error);
           setError("Failed to check order payment status. Please try again.");
         }
       };
@@ -116,7 +116,7 @@ const Checkout = () => {
               );
             }
           } catch (error) {
-            console.error("Error fetching order details:", error);
+            console.error("error fetching order details:", error);
             setError("Failed to retrieve order details. Please try again.");
           }
         };
@@ -195,7 +195,7 @@ const Checkout = () => {
         setClientSecret(createdClientSecret);
         localStorage.setItem(LS_CLIENT_SECRET, createdClientSecret);
       } catch (error) {
-        console.error("Error creating order and payment:", error);
+        console.error("error creating order and payment:", error);
         setError("An error occurred while setting up your payment. Please try again.");
       }
     };
@@ -226,12 +226,12 @@ const Checkout = () => {
         );
         if (!response.data?.success) {$
           setError(response.data?.message || "Failed to update order");
-          throw new Error("Failed to update order");
+          throw new error("Failed to update order");
         }
       } catch (error) {
         setError(response.data?.message || "Failed to update order");
-        console.error("Error fetching order details:", error);
-        throw new Error("Failed to update order");
+        console.error("error fetching order details:", error);
+        throw new error("Failed to update order");
       }
     }
 
@@ -261,7 +261,7 @@ const Checkout = () => {
     }
   };
 
-  if (!clientSecret && !Error) {
+  if (!clientSecret && !error) {
     return <div className="text-center mt-10 text-gray-600">Preparing your checkout...</div>;
   }
 
@@ -356,7 +356,7 @@ const Checkout = () => {
                   {/* Message if cart weight exceeds 50 lbs */}
                   {isOverWeightLimit && (
                     <p className="mt-2 text-red-500 text-sm">
-                      {Error}
+                      {error}
                     </p>
                   )}
                 </div>
