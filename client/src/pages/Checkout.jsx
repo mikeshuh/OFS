@@ -20,7 +20,7 @@ const Checkout = () => {
 
   const isOverWeightLimit = calculateTotalWeight() > 50;
   const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentError, setPaymentError] = useState(null);
+  const [Error, setError] = useState(isOverWeightLimit ? "Cart weight exceeds 50 lbs" : null);
   const [clientSecret, setClientSecret] = useState("");
   const [orderID, setOrderID] = useState(null);
   const [isOrderCreated, setIsOrderCreated] = useState(false);
@@ -59,7 +59,6 @@ const Checkout = () => {
     const existingOrderID = localStorage.getItem(LS_ORDER_ID);
     const existingClientSecret = localStorage.getItem(LS_CLIENT_SECRET);
 
-    console.log(calculateTotalWeight())
     if (existingOrderID && existingClientSecret) {
       setOrderID(existingOrderID);
       setClientSecret(existingClientSecret);
@@ -86,7 +85,7 @@ const Checkout = () => {
           }
         } catch (error) {
           console.error("Error checking order payment status:", error);
-          setPaymentError("Failed to check order payment status. Please try again.");
+          setError("Failed to check order payment status. Please try again.");
         }
       };
 
@@ -118,7 +117,7 @@ const Checkout = () => {
             }
           } catch (error) {
             console.error("Error fetching order details:", error);
-            setPaymentError("Failed to retrieve order details. Please try again.");
+            setError("Failed to retrieve order details. Please try again.");
           }
         };
 
@@ -149,7 +148,7 @@ const Checkout = () => {
           cartItems.length === 0 ||
           !token
         ) {
-          setPaymentError("Missing address information or cart is empty");
+          setError("Missing address information or cart is empty");
           return;
         }
 
@@ -171,7 +170,7 @@ const Checkout = () => {
         );
 
         if (!orderResponse.data?.success) {
-          setPaymentError(orderResponse.data?.message || "Failed to create order");
+          setError(orderResponse.data?.message || "Failed to create order");
           return;
         }
 
@@ -188,7 +187,7 @@ const Checkout = () => {
         );
 
         if (!paymentResponse.data?.success) {
-          setPaymentError(paymentResponse.data?.message || "Failed to create payment intent");
+          setError(paymentResponse.data?.message || "Failed to create payment intent");
           return;
         }
 
@@ -197,7 +196,7 @@ const Checkout = () => {
         localStorage.setItem(LS_CLIENT_SECRET, createdClientSecret);
       } catch (error) {
         console.error("Error creating order and payment:", error);
-        setPaymentError("An error occurred while setting up your payment. Please try again.");
+        setError("An error occurred while setting up your payment. Please try again.");
       }
     };
 
@@ -210,7 +209,7 @@ const Checkout = () => {
     if (!stripe || !elements || !clientSecret) return;
 
     setIsProcessing(true);
-    setPaymentError(null);
+    setError(null);
     const updateOrderDetails = async () => {
       const existingOrderID = localStorage.getItem(LS_ORDER_ID);
       try {
@@ -225,10 +224,12 @@ const Checkout = () => {
             }))
           }
         );
-        if (!response.data?.success) {
+        if (!response.data?.success) {$
+          setError(response.data?.message || "Failed to update order");
           throw new Error("Failed to update order");
         }
       } catch (error) {
+        setError(response.data?.message || "Failed to update order");
         console.error("Error fetching order details:", error);
         throw new Error("Failed to update order");
       }
@@ -242,7 +243,7 @@ const Checkout = () => {
       });
 
       if (error) {
-        setPaymentError(error.message);
+        setError(error.message);
         setIsProcessing(false);
       } else if (paymentIntent.status === "succeeded") {
         justPaidRef.current = true;
@@ -250,17 +251,17 @@ const Checkout = () => {
         clearCheckoutSession();
         navigate(`/order-confirmation/${orderID}`);
       } else {
-        setPaymentError("Payment processing failed. Please try again.");
+        setError("Payment processing failed. Please try again.");
         setIsProcessing(false);
       }
     } catch (error) {
       console.error("Payment error:", error);
-      setPaymentError("An unexpected error occurred. Please try again.");
+      setError("An unexpected error occurred. Please try again.");
       setIsProcessing(false);
     }
   };
 
-  if (!clientSecret && !paymentError) {
+  if (!clientSecret && !Error) {
     return <div className="text-center mt-10 text-gray-600">Preparing your checkout...</div>;
   }
 
@@ -330,12 +331,6 @@ const Checkout = () => {
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">Payment Details</h2>
 
-              {paymentError && (
-                <div className="bg-red-100 text-red-700 p-4 rounded mb-4">
-                  {paymentError}
-                </div>
-              )}
-
               <form onSubmit={handleSubmit}>
                 <div className="mb-6">
                   <label className="block text-gray-700 text-sm font-medium mb-2">
@@ -361,7 +356,7 @@ const Checkout = () => {
                   {/* Message if cart weight exceeds 50 lbs */}
                   {isOverWeightLimit && (
                     <p className="mt-2 text-red-500 text-sm">
-                      Your cart weight exceeds the maximum allowed weight of 50 lbs.
+                      {Error}
                     </p>
                   )}
                 </div>
