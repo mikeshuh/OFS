@@ -58,7 +58,7 @@ const FilterDropdown = ({ label, selectedValue, options, onSelect, capitalize = 
   const [isOpen, setIsOpen] = useState(false);
 
   const displayValue = capitalize
-    ? selectedValue.charAt(0).toUpperCase() + selectedValue.slice(1)
+    ? String(selectedValue).charAt(0).toUpperCase() + String(selectedValue).slice(1)
     : selectedValue;
 
   const handleSelect = useCallback((value) => {
@@ -69,7 +69,7 @@ const FilterDropdown = ({ label, selectedValue, options, onSelect, capitalize = 
   return (
     <div className="relative z-50 bg-white rounded-lg border border-opacity-20 border-[#304c57] py-2.5 px-4 flex items-center shadow-sm">
       {label && <span className="text-[#304c57] font-medium opacity-80 mr-2">{label}</span>}
-      <Dropdown show={isOpen} onToggle={(isOpen) => setIsOpen(isOpen)}>
+      <Dropdown show={isOpen} onToggle={(open) => setIsOpen(open)}>
         <Dropdown.Toggle as={CustomToggle} id={`dropdown-${label}`}>
           {displayValue}
         </Dropdown.Toggle>
@@ -83,7 +83,7 @@ const FilterDropdown = ({ label, selectedValue, options, onSelect, capitalize = 
                   className="w-full text-left py-2 px-4 hover:bg-[#f7fbfc] block border-b border-opacity-10 border-black last:border-b-0"
                   onClick={() => handleSelect(option)}
                 >
-                  {capitalize ? option.charAt(0).toUpperCase() + option.slice(1) : option}
+                  {capitalize ? String(option).charAt(0).toUpperCase() + String(option).slice(1) : option}
                 </Dropdown.Item>
               </div>
             ))}
@@ -234,6 +234,10 @@ const AdminDashboard = () => {
   const selectableCategories = categories.filter(category => category !== 'all');
 
 
+  // sort state
+  const [sortField, setSortField] = useState('');
+  const [sortOrder, setSortOrder] = useState('asc');
+
   const itemsPerPageList = [5, 10, 20, 50];
 
   // Filter products based on category and search
@@ -251,9 +255,25 @@ const AdminDashboard = () => {
       );
   }, [allProducts, selectedCategory, searchValue]);
 
+  // sort the filtered products
+  const sortedProducts = useMemo(() => {
+    if (!sortField) return filteredProducts;
+    return [...filteredProducts].sort((a, b) => {
+      let aVal = a[sortField];
+      let bVal = b[sortField];
+      if (typeof aVal === 'string') {
+        aVal = aVal.toLowerCase();
+        bVal = bVal.toLowerCase();
+      }
+      if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [filteredProducts, sortField, sortOrder]);
+
   // Get pagination data using custom hook
   const { currentPage, totalPages, pages, paginatedItems: products, setPage } =
-    usePagination(filteredProducts, itemsPerPage, [selectedCategory, searchValue]);
+    usePagination(sortedProducts, itemsPerPage, [selectedCategory, searchValue, sortField, sortOrder]);
 
   // Fetch products on component mount
   useEffect(() => {
@@ -264,9 +284,8 @@ const AdminDashboard = () => {
         if (response?.data?.success) {
           const productsData = response.data.data;
           setAllProducts(productsData);
-          setError(null)
-          // Extract unique categories
-          const uniqueCategories = [...new Set(productsData.map(product => product.category))];
+          setError(null);
+          const uniqueCategories = [...new Set(productsData.map(p => p.category))];
           setCategories(['all', ...uniqueCategories]);
         } else {
           console.error("Error fetching products:", response?.data?.message);
@@ -280,7 +299,6 @@ const AdminDashboard = () => {
         setLoading(false);
       }
     };
-
     fetchAllProducts();
   }, []);
 
@@ -302,8 +320,6 @@ const AdminDashboard = () => {
   return (
     <div>
       <Navbar />
-
-
       <div className="w-full mt-20 p-8 flex flex-col gap-5 items-start max-w-[1280px] ps-[50px] overflow-hidden">
         {Error && (
           <div className="bg-red-100 text-red-700 border border-red-400 px-4 py-3 rounded mb-4 text-sm w-full">
@@ -311,12 +327,8 @@ const AdminDashboard = () => {
           </div>
         )}
         <div className="flex flex-row items-center justify-between w-full">
-          <div className="flex flex-col gap-0 items-start">
-            <div className="text-[#120213] text-2xl font-semibold">Product Information</div>
-          </div>
+          <div className="text-[#120213] text-2xl font-semibold">Product Information</div>
         </div>
-
-
 
         <div className="flex flex-col gap-2.5 items-start w-full">
           <div className="flex flex-row items-center justify-between w-full">
@@ -327,7 +339,6 @@ const AdminDashboard = () => {
                 options={categories}
                 onSelect={setSelectedCategory}
               />
-
               <div className="z-40 bg-white rounded-lg border border-opacity-20 border-[#304c57] py-2.5 px-4 flex items-center shadow-sm">
                 <input
                   type="text"
@@ -337,7 +348,6 @@ const AdminDashboard = () => {
                   value={searchValue}
                 />
               </div>
-
               <FilterDropdown
                 label="items per page:"
                 selectedValue={itemsPerPage}
@@ -345,47 +355,54 @@ const AdminDashboard = () => {
                 onSelect={setItemsPerPage}
                 capitalize={false}
               />
+              {/* ←— NEW: Sort Controls */}
+              <FilterDropdown
+                label="Sort by:"
+                selectedValue={sortField || 'none'}
+                options={['none','name','category','price','pounds']}
+                onSelect={value => setSortField(value === 'none' ? '' : value)}
+              />
+              <div
+                onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+                className="bg-white rounded-lg border border-opacity-20 border-[#304c57] py-2.5 px-4 flex items-center shadow-sm cursor-pointer"
+              >
+                {sortOrder === 'asc' ? '▲' : '▼'}
+              </div>
             </div>
           </div>
 
           {/* Product List */}
-          <div className="flex flex-col items-start w-full">
-            <div className="rounded-lg flex flex-col w-full border border-opacity-20 border-[#304c57]">
-              <div className="bg-[#f7fbfc] border-b border-black rounded-t-lg py-4 flex flex-row px-5">
-                <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Name</div>
-                <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Category</div>
-                <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Price</div>
-                <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Pound</div>
-                <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Quantity</div>
-                <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Image</div>
-                <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Action</div>
-                <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Status</div>
-              </div>
-
-              {loading ? (
-                <div className="text-center py-12">
-                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-green-500 border-t-transparent"></div>
-                  <p className="mt-2 text-gray-600">Loading products...</p>
-                </div>
-              ) : (
-                products.length > 0 ? (
-                  products.map((product, idx) => (
-                    <ProductCardAdmin key={product.productID} product={product} onUpdate={handleUpdateProduct} />
-                  ))
-                ) : (
-                  <div className="text-center py-12 border-b border-black">
-                    <p className="text-gray-600">No products found in this category.</p>
-                  </div>
-                )
-              )}
-
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                pages={pages}
-                setPage={setPage}
-              />
+          <div className="rounded-lg flex flex-col w-full border border-opacity-20 border-[#304c57]">
+            <div className="bg-[#f7fbfc] border-b border-black rounded-t-lg py-4 flex flex-row px-5">
+              <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Name</div>
+              <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Category</div>
+              <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Price</div>
+              <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Pound</div>
+              <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Quantity</div>
+              <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Image</div>
+              <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Action</div>
+              <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Status</div>
             </div>
+            {loading ? (
+              <div className="text-center py-12">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-green-500 border-t-transparent"></div>
+                <p className="mt-2 text-gray-600">Loading products...</p>
+              </div>
+            ) : products.length > 0 ? (
+              products.map((product) => (
+                <ProductCardAdmin key={product.productID} product={product} onUpdate={handleUpdateProduct} />
+              ))
+            ) : (
+              <div className="text-center py-12 border-b border-black">
+                <p className="text-gray-600">No products found in this category.</p>
+              </div>
+            )}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              pages={pages}
+              setPage={setPage}
+            />
           </div>
 
           <div className="flex flex-col items-start w-full">
