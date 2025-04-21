@@ -122,7 +122,7 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
     const { name, value } = e.target;
 
     if (name === 'price' || name === 'pounds') {
-      if (REGEX_PRICE_POUNDS.test(value) || value === '') {
+      if (REGEX_PRICE_POUNDS.test(value)) {
         if(name === 'price')
           setPrice(value);
         else
@@ -131,7 +131,7 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
     }
 
     if(name ==='quantity') {
-      if(REGEX_QUANTITY.test(value) || value === '') {
+      if(REGEX_QUANTITY.test(value)) {
         setQuantity(value);
       }
     }

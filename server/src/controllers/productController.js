@@ -57,7 +57,6 @@ const createProduct = async (req, res) => {
       return responseHandler.error(res, "Image invalid");
     }
     const downloadResults = await downloadImage(name, imageBuffer);
-    imageBuffer = null; //remove imageBuffer
     const downloadErrors = downloadResults.errors; // Access the 'errors' array
     const downloadOutputPath = downloadResults.outputPath; //Used to delete downloaded image if update-product fails
 
