@@ -26,7 +26,7 @@ router.get('/', productController.getAllProduct);
 // routed that require admin
 router.post('/create-product', protect, admin, upload.single('image'), validateProduct, productController.createProduct);
 
-router.put('/update-product/:productId', protect, admin, validateParamInt('productId'), validateProduct, productController.updateProduct);
+router.put('/update-product/:productId', protect, admin, validateParamInt('productId'), upload.single('image'), validateProduct, productController.updateProduct);
 
 router.delete('/delete-product/:productId', protect, admin, validateParamInt('productId'), productController.deleteProduct);
 

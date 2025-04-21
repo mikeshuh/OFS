@@ -116,6 +116,7 @@ const updateProduct = async (req, res) => {
     const { productId } = req.params;
     const { category, name, price, pounds, quantity, imagePath } = req.body;
 
+
     const productData = {
       category: category,
       name: name,
