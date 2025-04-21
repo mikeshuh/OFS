@@ -243,7 +243,7 @@ function Navbar() {
               <li className="border-b-1 border-black"><Link to="/signup" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Signup</Link>
               </li> {/* Todo: Change Link from /about to another page*/}
-              <li className="border-b-1 border-black"><Link to="/about" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
+              <li className="border-b-1 border-black"><Link to="/orders" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Delivery</Link>
               </li>
               <li className=""><Link to="/profile" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
