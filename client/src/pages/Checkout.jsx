@@ -13,11 +13,12 @@ const LS_DELIVERY_ADDRESS = "deliveryAddress";
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const { cartItems, calculateTotal, calculateTotalWithShipping, getTaxRate, clearCart } = useCart();
+  const { cartItems, calculateTotal, calculateTotalWithShipping, getTaxRate, calculateTotalWeight, clearCart } = useCart();
   const { token } = useAuth();
   const stripe = useStripe();
   const elements = useElements();
 
+  const isOverWeightLimit = calculateTotalWeight() > 50;
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentError, setPaymentError] = useState(null);
   const [clientSecret, setClientSecret] = useState("");
@@ -58,6 +59,7 @@ const Checkout = () => {
     const existingOrderID = localStorage.getItem(LS_ORDER_ID);
     const existingClientSecret = localStorage.getItem(LS_CLIENT_SECRET);
 
+    console.log(calculateTotalWeight())
     if (existingOrderID && existingClientSecret) {
       setOrderID(existingOrderID);
       setClientSecret(existingClientSecret);
@@ -76,7 +78,6 @@ const Checkout = () => {
             "GET",
             token
           );
-          console.log("Order details response:", orderDetails);
           const orderPaymentStatus = orderDetails.data.data[0].paymentStatus;
           if (orderPaymentStatus === "paid" || orderPaymentStatus === "refunded") {
             clearCart();
@@ -357,12 +358,18 @@ const Checkout = () => {
                   <p className="text-gray-500 text-xs mt-1">
                     Test card: 4242 4242 4242 4242, any future date, any 3 digits for CVC, any 5 digits for postal code
                   </p>
+                  {/* Message if cart weight exceeds 50 lbs */}
+                  {isOverWeightLimit && (
+                    <p className="mt-2 text-red-500 text-sm">
+                      Your cart weight exceeds the maximum allowed weight of 50 lbs.
+                    </p>
+                  )}
                 </div>
 
                 <button
                   type="submit"
-                  disabled={isProcessing || !stripe || !clientSecret}
-                  className={`w-full py-3 rounded font-medium ${isProcessing || !stripe || !clientSecret
+                  disabled={isProcessing || !stripe || !clientSecret || isOverWeightLimit}
+                  className={`w-full py-3 rounded font-medium ${isProcessing || !stripe || !clientSecret || isOverWeightLimit
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-green-600 hover:bg-green-700"
                     } text-white`}
