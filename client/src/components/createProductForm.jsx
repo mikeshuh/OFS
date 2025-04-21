@@ -14,7 +14,7 @@ const REGEX_QUANTITY = /^\d+$/;
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const CreateProductForm = ({selectableCategories, onProductAdded }) => {
+const CreateProductForm = ({selectableCategories, onProductAdded, products }) => {
   //Used for creating product
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
@@ -39,9 +39,15 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
       setUploadError("Please fill in all fields and select an image.");
       return;
     }
+
+
+    if (products.some(product => product.name.toLowerCase() === name.toLowerCase())) {
+      setUploadError("Product already exists");
+      return;
+    }
+
     setUploading(true);
     setUploadError(null);
-
 
     try {
 
@@ -52,7 +58,7 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
       productForm.append('price', price);
       productForm.append('pounds', pounds);
       productForm.append('quantity', quantity);
-      productForm.append('image', image, image.name);
+      productForm.append('image', image);
 
       // Reset the form
       setName('');
