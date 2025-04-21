@@ -225,7 +225,6 @@ const Checkout = () => {
           }
         );
         if (!response.data?.success) {
-          $
           setErrorMessage(response.data?.message || "Failed to update order");
           throw new error("Failed to update order");
         }
