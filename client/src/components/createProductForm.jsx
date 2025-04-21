@@ -155,44 +155,6 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-[#304c57] text-sm font-medium opacity-80">Price</label>
-          <input
-            type="number"
-            name="price"
-            className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#304c57]"
-            value={price}
-            max={MAX_PRICE}
-            min={MIN_PRICE_POUNDS}
-            step=".01"
-            onChange={handleNumberChange}
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-[#304c57] text-sm font-medium opacity-80">Quantity</label>
-          <input
-            type="number"
-            name="quantity"
-            className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#304c57]"
-            value={quantity}
-            max={MAX_QUANTITY}
-            min={MIN_QUANTITY}
-            onChange={handleNumberChange}
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-[#304c57] text-sm font-medium opacity-80">Pounds</label>
-          <input
-            type="number"
-            name="pounds"
-            className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#304c57]"
-            max={MAX_POUNDS}
-            min={MIN_PRICE_POUNDS}
-            step=".01"
-            value={pounds}
-            onChange={handleNumberChange}
-          />
-        </div>
-        <div className="flex flex-col gap-1">
           <label className="text-[#304c57] text-sm font-medium opacity-80">Category</label>
           <Form.Select
             name="category"
@@ -200,7 +162,7 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
             value={categoryOption}
             onChange={handleCategoryChange}
           >
-            <option value="">Select an existing category</option>
+            <option value="">Select a category</option>
             {categories.map((cat, catID) => (
               <option key={catID} value={cat}>
                 {cat}
@@ -218,9 +180,45 @@ const CreateProductForm = ({selectableCategories, onProductAdded }) => {
               onChange={(e) => setCategory(e.target.value)}
             />
           </div>
-        )
-
-        }
+        )}
+        <div className="flex flex-col gap-1">
+          <label className="text-[#304c57] text-sm font-medium opacity-80">Price</label>
+          <input
+            type="number"
+            name="price"
+            className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#304c57]"
+            value={price}
+            max={MAX_PRICE}
+            min={MIN_PRICE_POUNDS}
+            step=".01"
+            onChange={handleNumberChange}
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-[#304c57] text-sm font-medium opacity-80">Pounds</label>
+          <input
+            type="number"
+            name="pounds"
+            className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#304c57]"
+            max={MAX_POUNDS}
+            min={MIN_PRICE_POUNDS}
+            step=".01"
+            value={pounds}
+            onChange={handleNumberChange}
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-[#304c57] text-sm font-medium opacity-80">Quantity</label>
+          <input
+            type="number"
+            name="quantity"
+            className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#304c57]"
+            value={quantity}
+            max={MAX_QUANTITY}
+            min={MIN_QUANTITY}
+            onChange={handleNumberChange}
+          />
+        </div>
         <div className="flex flex-col gap-1">
           <label className="text-[#304c57] text-sm font-medium opacity-80">Image</label>
           <input
