@@ -255,7 +255,7 @@ const Checkout = () => {
         setErrorMessage("Payment processing failed. Please try again.");
       }
     } catch (error) {
-      console.error("Payment error: 1", error);
+      console.error("Payment error: ", error);
       setErrorMessage("An unexpected error occurred. Please try again.");
     } finally {
       setIsProcessing(false);
