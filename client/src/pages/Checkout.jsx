@@ -20,7 +20,7 @@ const Checkout = () => {
 
   const isOverWeightLimit = calculateTotalWeight() > 50;
   const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState(isOverWeightLimit ? "Your cart weight exceeds the maximum allowed weight of 50 lbs" : null);
+  const [errorMessage, setErrorMessage] = useState(isOverWeightLimit ? "Your cart weight exceeds the maximum allowed weight of 50 lbs" : null);
   const [clientSecret, setClientSecret] = useState("");
   const [orderID, setOrderID] = useState(null);
   const [isOrderCreated, setIsOrderCreated] = useState(false);
@@ -85,7 +85,7 @@ const Checkout = () => {
           }
         } catch (error) {
           console.error("error checking order payment status:", error);
-          setError("Failed to check order payment status. Please try again.");
+          setErrorMessage("Failed to check order payment status. Please try again.");
         }
       };
 
@@ -117,7 +117,7 @@ const Checkout = () => {
             }
           } catch (error) {
             console.error("error fetching order details:", error);
-            setError("Failed to retrieve order details. Please try again.");
+            setErrorMessage("Failed to retrieve order details. Please try again.");
           }
         };
 
@@ -148,7 +148,7 @@ const Checkout = () => {
           cartItems.length === 0 ||
           !token
         ) {
-          setError("Missing address information or cart is empty");
+          setErrorMessage("Missing address information or cart is empty");
           return;
         }
 
@@ -170,7 +170,7 @@ const Checkout = () => {
         );
 
         if (!orderResponse.data?.success) {
-          setError(orderResponse.data?.message || "Failed to create order");
+          setErrorMessage(orderResponse.data?.message || "Failed to create order");
           return;
         }
 
@@ -187,7 +187,7 @@ const Checkout = () => {
         );
 
         if (!paymentResponse.data?.success) {
-          setError(paymentResponse.data?.message || "Failed to create payment intent");
+          setErrorMessage(paymentResponse.data?.message || "Failed to create payment intent");
           return;
         }
 
@@ -196,7 +196,7 @@ const Checkout = () => {
         localStorage.setItem(LS_CLIENT_SECRET, createdClientSecret);
       } catch (error) {
         console.error("error creating order and payment:", error);
-        setError("An error occurred while setting up your payment. Please try again.");
+        setErrorMessage("An error occurred while setting up your payment. Please try again.");
       }
     };
 
@@ -209,7 +209,7 @@ const Checkout = () => {
     if (!stripe || !elements || !clientSecret) return;
 
     setIsProcessing(true);
-    setError(null);
+    setErrorMessage(null);
     const updateOrderDetails = async () => {
       const existingOrderID = localStorage.getItem(LS_ORDER_ID);
       try {
@@ -224,44 +224,45 @@ const Checkout = () => {
             }))
           }
         );
-        if (!response.data?.success) {$
-          setError(response.data?.message || "Failed to update order");
+        if (!response.data?.success) {
+          $
+          setErrorMessage(response.data?.message || "Failed to update order");
           throw new error("Failed to update order");
         }
       } catch (error) {
-        setError(response.data?.message || "Failed to update order");
+        setErrorMessage(response.data?.message || "Failed to update order");
         console.error("error fetching order details:", error);
         throw new error("Failed to update order");
       }
     }
 
     try {
-      await updateOrderDetails();
+
       const cardElement = elements.getElement(CardElement);
       const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: { card: cardElement }
       });
 
       if (error) {
-        setError(error.message);
-        setIsProcessing(false);
+        setErrorMessage(`Payment failed with code: ${error.code}`);
       } else if (paymentIntent.status === "succeeded") {
         justPaidRef.current = true;
+        await updateOrderDetails();
         clearCart();
         clearCheckoutSession();
         navigate(`/order-confirmation/${orderID}`);
       } else {
-        setError("Payment processing failed. Please try again.");
-        setIsProcessing(false);
+        setErrorMessage("Payment processing failed. Please try again.");
       }
     } catch (error) {
-      console.error("Payment error:", error);
-      setError("An unexpected error occurred. Please try again.");
+      console.error("Payment error: 1", error);
+      setErrorMessage("An unexpected error occurred. Please try again.");
+    } finally {
       setIsProcessing(false);
     }
   };
 
-  if (!clientSecret && !error) {
+  if (!clientSecret && !errorMessage) {
     return <div className="text-center mt-10 text-gray-600">Preparing your checkout...</div>;
   }
 
@@ -354,9 +355,9 @@ const Checkout = () => {
                     Test card: 4242 4242 4242 4242, any future date, any 3 digits for CVC, any 5 digits for postal code
                   </p>
                   {/* Message if cart weight exceeds 50 lbs */}
-                  {isOverWeightLimit && (
+                  {errorMessage && (
                     <p className="mt-2 text-red-500 text-sm">
-                      {error}
+                      {errorMessage}
                     </p>
                   )}
                 </div>
