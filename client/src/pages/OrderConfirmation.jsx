@@ -17,9 +17,12 @@ const OrderConfirmation = () => {
 
   // Fetch order details
   useEffect(() => {
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
     const fetchOrderDetails = async () => {
       try {
         setLoading(true);
+        await delay(1000);
         const response = await requestServer(
           `${API_URL}/api/orders/details/${orderID}`,
           "GET",
@@ -75,7 +78,7 @@ const OrderConfirmation = () => {
     const subtotal = orderDetails.reduce((sum, item) => sum + (item.price * item.orderQuantity), 0);
     const shippingFee = orderDetails[0].deliveryFee ? 10 : 0;
     const tax = (subtotal + shippingFee) * getTaxRate();
-    const total = subtotal + tax;
+    const total = subtotal + shippingFee + tax;
 
     return { subtotal, shippingFee, tax, total };
   };
@@ -145,8 +148,14 @@ const OrderConfirmation = () => {
                 </p>
                 <p>
                   <span className="font-medium text-gray-700">Payment Status:</span>{" "}
-                  <span className="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                    Paid
+                  <span
+                    className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
+                      firstItem.paymentStatus === 'paid'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}
+                  >
+                    {firstItem.paymentStatus === 'paid' ? 'Paid' : 'Pending'}
                   </span>
                 </p>
                 <p>
@@ -233,7 +242,7 @@ const OrderConfirmation = () => {
                 <div className="flex justify-between pt-2 border-t mt-2">
                   <span className="font-semibold">Total</span>
                   <span className="font-semibold text-lg">
-                    ${(total + (firstItem.deliveryFee ? 10 : 0)).toFixed(2)}
+                    ${total.toFixed(2)}
                   </span>
                 </div>
               </div>
