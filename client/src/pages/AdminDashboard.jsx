@@ -349,7 +349,7 @@ const AdminDashboard = () => {
               <FilterDropdown
                 label="Sort by:"
                 selectedValue={sortField || 'none'}
-                options={['none','name','category','price','pounds']}
+                options={['none','name','category','price','pounds','quantity']}
                 onSelect={value => setSortField(value === 'none' ? '' : value)}
               />
               <div
@@ -367,7 +367,7 @@ const AdminDashboard = () => {
               <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Name</div>
               <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Category</div>
               <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Price</div>
-              <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Pound</div>
+              <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Pounds</div>
               <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Quantity</div>
               <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Image</div>
               <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Action</div>
