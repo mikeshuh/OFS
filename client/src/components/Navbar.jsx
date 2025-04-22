@@ -235,18 +235,18 @@ function Navbar() {
           </Link>
           <div className="absolute bg-white rounded-b-xl">
             {open1 ?
-              <ul className="list-nonetext-left border-1 border-black rounded-b-xl">
+              <ul className="list-none text-left border-1 border-opacity-20 border-[#304c57] rounded-b-xl">
 
-              <li className="border-b-1 border-black"><Link to="/login" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
+              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/login" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Login</Link>
               </li>
-              <li className="border-b-1 border-black"><Link to="/signup" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
+              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/signup" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Signup</Link>
-              </li> {/* Todo: Change Link from /about to another page*/}
-              <li className="border-b-1 border-black"><Link to="/orders" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
+              </li>
+              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/orders" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Delivery</Link>
               </li>
-              <li className=""><Link to="/profile" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
+              <li className="hover:bg-[#f7fbfc] rounded-b-xl"><Link to="/profile" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Profile</Link>
               </li>
               </ul> : null
@@ -265,24 +265,24 @@ function Navbar() {
           </Link>
           <div className="absolute bg-white rounded-b-xl">
             {open2 ?
-              <ul className="list-none text-left border-1 border-black rounded-b-xl">
-                {/* Todo: Change Link from /product to the proper category*/}
-              <li className="border-b-1 border-black"><Link to="/products/fruit" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
+              <ul className="list-none text-left border-1 border-opacity-20 border-[#304c57] rounded-b-xl">
+                
+              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/products/fruit" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Fruit</Link>
               </li>
-              <li className="border-b-1 border-black"><Link to="/products/vegetable" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
+              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/products/vegetable" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Vegetable</Link>
               </li>
-              <li className="border-b-1 border-black"><Link to="/products/dairy" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
+              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/products/dairy" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Dairy</Link>
               </li>
-              <li className="border-b-1 border-black"><Link to="/products/meat" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
+              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/products/meat" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Meat</Link>
               </li>
-              <li className="border-b-1 border-black"><Link to="/products/bakery" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
+              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/products/bakery" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Bakery</Link>
               </li>
-              <li className=""><Link to="/products/pantry" className="m-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
+              <li className="hover:bg-[#f7fbfc] rounded-b-xl"><Link to="/products/pantry" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
                 Pantry</Link>
               </li>
               </ul> : null
