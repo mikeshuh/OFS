@@ -123,7 +123,7 @@ function AboutPage() {
         <div className="absolute top-10 left-10 w-32 h-32 bg-green-300 rounded-full opacity-20 blur-2xl"></div>
       </section>
 
-      {/* Attention Grabber - Removed hover effect */}
+      {/* Attention Grabber */}
       <section ref={featuresRef} className="container mx-auto text-center py-16 px-6">
         <div className="px-4 md:px-12 pb-12">
           <div className="text-center fade-in">
@@ -186,7 +186,7 @@ function AboutPage() {
         </div>
       </section>
 
-      {/* Meet the team section with GitHub links (without text labels) */}
+      {/* Meet the team section with GitHub links */}
       <section ref={teamRef} className="py-20 px-6 bg-gradient-to-b from-white to-green-50">
         <div className="container mx-auto text-center">
           <h1 className="text-4xl font-bold mb-4 fade-in">Meet the team behind OFS</h1>
@@ -239,7 +239,7 @@ function AboutPage() {
         </div>
       </section>
 
-      {/* Technologies Section - with wider container and larger logos */}
+      {/* Technologies Section */}
       <section ref={techRef} className="py-20 px-6 bg-gradient-to-b from-green-50 to-green-100">
         <div className="container mx-auto text-center mb-12">
           <h2 className="text-3xl font-bold mb-4 fade-in">Technologies Used For This Website</h2>
