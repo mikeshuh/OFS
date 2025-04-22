@@ -2,9 +2,8 @@ const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/productController');
 const multer  = require('multer')
-const path = require('path');
 const { protect, admin } = require('../middleware/authMiddleware');
-const { validateParamInt, validateParamString, validateProduct, imageFileFilter,  } = require('../utils/validationUtils');
+const { validateParamInt, validateParamString, validateProduct, imageFileFilter, fileSizeLimitErrorHandler } = require('../utils/validationUtils');
 
 
 const upload = multer({
@@ -24,9 +23,9 @@ router.get('/category/:category', validateParamString('category'), productContro
 router.get('/', productController.getAllProduct);
 
 // routed that require admin
-router.post('/create-product', protect, admin, upload.single('image'), validateProduct, productController.createProduct);
+router.post('/create-product', protect, admin, upload.single('image'), fileSizeLimitErrorHandler, validateProduct, productController.createProduct);
 
-router.put('/update-product/:productId', protect, admin, validateParamInt('productId'), upload.single('image'), validateProduct, productController.updateProduct);
+router.put('/update-product/:productId', protect, admin, validateParamInt('productId'), upload.single('image'), fileSizeLimitErrorHandler,  validateProduct, productController.updateProduct);
 
 router.delete('/delete-product/:productId', protect, admin, validateParamInt('productId'), productController.deleteProduct);
 

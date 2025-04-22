@@ -209,6 +209,14 @@ const imageFileFilter = (req, file, cb) => {
   }
 };
 
+//
+const fileSizeLimitErrorHandler = (err, req, res, next) => {
+  if (err) {
+    return responseHandler.badRequest(res, 'Image Invalid: please choose images less than 10mb in size');
+  } else {
+    next()
+  }
+}
 //validate order
 const validateOrder = [
   body('streetAddress')
@@ -363,9 +371,9 @@ module.exports = {
   validateProfileUpdate,
   validatePasswordChange,
   parseId,
+
   //Product Route Validation
   validateProduct,
-  imageFileFilter,
   validateOrder,
   validateParamInt,
   validateParamString,
@@ -373,5 +381,10 @@ module.exports = {
   validateAddress,
   validateOptimalRoute,
   validatePaymentIntent,
+
+  // Used for multer
+  fileSizeLimitErrorHandler,
+  imageFileFilter
+
 
 };
