@@ -42,22 +42,13 @@ const Order = {
           throw new Error(`Insufficient inventory for product ID ${orderProduct.productID}. Requested: ${orderProduct.cartQuantity}, Available: ${inventoryResult[0]?.quantity || 0}`);
         }
       }
-
-      // All inventory checks passed, now add products to order
       for (const orderProduct of orderProducts) {
-        // Insert the product into the OrderProduct table
+        // Insert each product into the OrderProduct table
         await connection.execute(
           'INSERT INTO OrderProduct (orderID, productID, quantity) VALUES (?, ?, ?)',
           [orderID, orderProduct.productID, orderProduct.cartQuantity]
         );
-
-        // Update product inventory (decrease available quantity)
-        await connection.execute(
-          'UPDATE Product SET quantity = quantity - ? WHERE productID = ?',
-          [orderProduct.cartQuantity, orderProduct.productID]
-        );
       }
-
       await connection.commit();
       return orderID; // Return the ID of the newly created order
     } catch (error) {
@@ -161,6 +152,62 @@ const Order = {
       [orderID]
     );
     return rows[0]; // Return the order with payment info
+  },
+  updateOrderDetails: async (orderData, orderProducts) => {
+
+    // Begin a transaction
+    const connection = await db.getConnection();
+    try {
+      await connection.beginTransaction();
+      const {
+        userID,
+        totalPrice,
+        totalPounds,
+        deliveryFee,
+        orderID
+      } = orderData;
+
+      await connection.execute(
+        `UPDATE \`Order\`
+          SET userID = ?, totalPrice = ?, totalPounds = ?, deliveryFee = ?
+          WHERE orderID = ?`,
+        [userID, totalPrice, totalPounds, deliveryFee, orderID]
+      );
+
+      orderProducts.sort((a, b) => a.productID - b.productID);
+
+      // Check if all products have sufficient inventory
+      for (const orderProduct of orderProducts) {
+        const [inventoryResult] = await connection.execute(
+          'SELECT quantity FROM Product WHERE productID = ? FOR UPDATE',
+          [orderProduct.productID]
+        );
+        if (!inventoryResult[0] || inventoryResult[0].quantity < orderProduct.cartQuantity) {
+          throw new Error(`Insufficient inventory for product ID ${orderProduct.productID}. Requested: ${orderProduct.cartQuantity}, Available: ${inventoryResult[0]?.quantity || 0}`);
+        }
+      }
+
+      // All checks passed, now update products in orderProduct
+      for (const orderProduct of orderProducts) {
+        await connection.execute(
+          `UPDATE OrderProduct
+          SET quantity = ?
+          WHERE orderID = ? AND productID = ?`,
+          [orderProduct.cartQuantity, orderID, orderProduct.productID]
+        );
+        const [productResult] = await connection.execute(
+          'UPDATE Product SET quantity = quantity - ? WHERE productID = ?',
+          [orderProduct.cartQuantity, orderProduct.productID]
+        );
+      }
+      await connection.commit();
+    } catch (error) {
+      await connection.rollback(); // Rollback transaction on error
+      throw error;
+    } finally {
+      connection.release(); // Release the connection back to the pool
+    }
+
   },
 
   updateOrderAddress: async (orderID, deliveryAddress) => {

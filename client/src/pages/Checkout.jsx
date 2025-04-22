@@ -13,13 +13,14 @@ const LS_DELIVERY_ADDRESS = "deliveryAddress";
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const { cartItems, calculateTotal, calculateTotalWithShipping, getTaxRate, clearCart } = useCart();
+  const { cartItems, calculateTotal, calculateTotalWithShipping, getTaxRate, calculateTotalWeight, clearCart } = useCart();
   const { token } = useAuth();
   const stripe = useStripe();
   const elements = useElements();
 
+  const isOverWeightLimit = calculateTotalWeight() > 50;
   const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentError, setPaymentError] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(isOverWeightLimit ? "Your cart weight exceeds the maximum allowed weight of 50 lbs" : null);
   const [clientSecret, setClientSecret] = useState("");
   const [orderID, setOrderID] = useState(null);
   const [isOrderCreated, setIsOrderCreated] = useState(false);
@@ -83,8 +84,8 @@ const Checkout = () => {
             navigate(`/order-confirmation/${existingOrderID}`);
           }
         } catch (error) {
-          console.error("Error checking order payment status:", error);
-          setPaymentError("Failed to check order payment status. Please try again.");
+          console.error("error checking order payment status:", error);
+          setErrorMessage("Failed to check order payment status. Please try again.");
         }
       };
 
@@ -115,8 +116,8 @@ const Checkout = () => {
               );
             }
           } catch (error) {
-            console.error("Error fetching order details:", error);
-            setPaymentError("Failed to retrieve order details. Please try again.");
+            console.error("error fetching order details:", error);
+            setErrorMessage("Failed to retrieve order details. Please try again.");
           }
         };
 
@@ -147,7 +148,7 @@ const Checkout = () => {
           cartItems.length === 0 ||
           !token
         ) {
-          setPaymentError("Missing address information or cart is empty");
+          setErrorMessage("Missing address information or cart is empty");
           return;
         }
 
@@ -169,7 +170,7 @@ const Checkout = () => {
         );
 
         if (!orderResponse.data?.success) {
-          setPaymentError(orderResponse.data?.message || "Failed to create order");
+          setErrorMessage(orderResponse.data?.message || "Failed to create order");
           return;
         }
 
@@ -186,7 +187,7 @@ const Checkout = () => {
         );
 
         if (!paymentResponse.data?.success) {
-          setPaymentError(paymentResponse.data?.message || "Failed to create payment intent");
+          setErrorMessage(paymentResponse.data?.message || "Failed to create payment intent");
           return;
         }
 
@@ -194,8 +195,8 @@ const Checkout = () => {
         setClientSecret(createdClientSecret);
         localStorage.setItem(LS_CLIENT_SECRET, createdClientSecret);
       } catch (error) {
-        console.error("Error creating order and payment:", error);
-        setPaymentError("An error occurred while setting up your payment. Please try again.");
+        console.error("error creating order and payment:", error);
+        setErrorMessage("An error occurred while setting up your payment. Please try again.");
       }
     };
 
@@ -208,35 +209,59 @@ const Checkout = () => {
     if (!stripe || !elements || !clientSecret) return;
 
     setIsProcessing(true);
-    setPaymentError(null);
-
-    const cardElement = elements.getElement(CardElement);
+    setErrorMessage(null);
+    const updateOrderDetails = async () => {
+      const existingOrderID = localStorage.getItem(LS_ORDER_ID);
+      try {
+        const response = await requestServer(
+          `${API_URL}/api/orders/update-order/${existingOrderID}`,
+          "PUT",
+          token,
+          {
+            orderProducts: cartItems.map(item => ({
+              productID: item.productID,
+              cartQuantity: item.cartQuantity
+            }))
+          }
+        );
+        if (!response.data?.success) {
+          setErrorMessage(response.data?.message || "Failed to update order");
+          throw new error("Failed to update order");
+        }
+      } catch (error) {
+        setErrorMessage(response.data?.message || "Failed to update order");
+        console.error("error fetching order details:", error);
+        throw new error("Failed to update order");
+      }
+    }
 
     try {
+
+      const cardElement = elements.getElement(CardElement);
       const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: { card: cardElement }
       });
 
       if (error) {
-        setPaymentError(error.message);
-        setIsProcessing(false);
+        setErrorMessage(`Payment failed with code: ${error.code}`);
       } else if (paymentIntent.status === "succeeded") {
         justPaidRef.current = true;
+        await updateOrderDetails();
         clearCart();
         clearCheckoutSession();
         navigate(`/order-confirmation/${orderID}`);
       } else {
-        setPaymentError("Payment processing failed. Please try again.");
-        setIsProcessing(false);
+        setErrorMessage("Payment processing failed. Please try again.");
       }
     } catch (error) {
-      console.error("Payment error:", error);
-      setPaymentError("An unexpected error occurred. Please try again.");
+      console.error("Payment error: ", error);
+      setErrorMessage("An unexpected error occurred. Please try again.");
+    } finally {
       setIsProcessing(false);
     }
   };
 
-  if (!clientSecret && !paymentError) {
+  if (!clientSecret && !errorMessage) {
     return <div className="text-center mt-10 text-gray-600">Preparing your checkout...</div>;
   }
 
@@ -306,12 +331,6 @@ const Checkout = () => {
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">Payment Details</h2>
 
-              {paymentError && (
-                <div className="bg-red-100 text-red-700 p-4 rounded mb-4">
-                  {paymentError}
-                </div>
-              )}
-
               <form onSubmit={handleSubmit}>
                 <div className="mb-6">
                   <label className="block text-gray-700 text-sm font-medium mb-2">
@@ -334,16 +353,21 @@ const Checkout = () => {
                   <p className="text-gray-500 text-xs mt-1">
                     Test card: 4242 4242 4242 4242, any future date, any 3 digits for CVC, any 5 digits for postal code
                   </p>
+                  {/* Message if cart weight exceeds 50 lbs */}
+                  {errorMessage && (
+                    <p className="mt-2 text-red-500 text-sm">
+                      {errorMessage}
+                    </p>
+                  )}
                 </div>
 
                 <button
                   type="submit"
-                  disabled={isProcessing || !stripe || !clientSecret}
-                  className={`w-full py-3 rounded font-medium ${
-                    isProcessing || !stripe || !clientSecret
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-green-600 hover:bg-green-700"
-                  } text-white`}
+                  disabled={isProcessing || !stripe || !clientSecret || isOverWeightLimit}
+                  className={`w-full py-3 rounded font-medium ${isProcessing || !stripe || !clientSecret || isOverWeightLimit
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-green-600 hover:bg-green-700"
+                    } text-white`}
                 >
                   {isProcessing ? "Processing..." : `Pay $${formattedTotals.total}`}
                 </button>
