@@ -86,7 +86,7 @@ const ProductCard = ({ product }) => {
 
       <div className="flex justify-between items-center">
         <span className="text-lg font-bold text-gray-800">${parseFloat(price).toFixed(2)}</span>
-        <span className="text-sm text-gray-500">{quantity > 10 ? 'In Stock' : (quantity > 0 ? 'Low Stock' : 'Out of Stock')}</span>
+        <span className="text-sm text-gray-500">{quantity > 10 ? 'In Stock' : (quantity > 0 ? `${quantity} in Stock` : 'Out of Stock')}</span>
       </div>
 
       {cartQuantity > 0 ? (
