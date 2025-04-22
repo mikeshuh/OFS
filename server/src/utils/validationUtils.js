@@ -2,7 +2,7 @@
 // Provides functions for validating and sanitizing user inputs
 const { body, param, validationResult } = require('express-validator');
 const responseHandler = require('../utils/responseHandler');
-
+const multer = require('multer');
 
 // Validate email format
 const isValidEmail = (email) => {
@@ -209,12 +209,15 @@ const imageFileFilter = (req, file, cb) => {
   }
 };
 
-//
+
+//handle errors that occur from multer limits
 const fileSizeLimitErrorHandler = (err, req, res, next) => {
-  if (err) {
+  if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
     return responseHandler.badRequest(res, 'Image Invalid: please choose images less than 10mb in size');
+  } else if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_COUNT') {
+    return responseHandler.badRequest(res, 'Image Invalid: please only upload one image');
   } else {
-    next()
+    next();
   }
 }
 //validate order
