@@ -123,7 +123,11 @@ function Navbar() {
             </svg>
             <div className="ml-2">
               <div className="text-sm text-gray-600">Contact Us:</div>
-              <div className="text-sm font-medium">(+01) 111-111-1111</div>
+              <div className="text-sm font-medium">
+                <a href="mailto:sj.ofs.official@gmail.com" className="hover:underline">
+                  sj.ofs.official@gmail.com
+                </a>
+              </div>
             </div>
           </div>
 
