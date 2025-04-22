@@ -40,8 +40,28 @@ function Navbar() {
     navigate(`/products/${currentCategory}`);
   };
 
+  const [open1, openDropDown1] = useState(false);
+  const [open2, openDropDown2] = useState(false);
+
+  {/*Dropdown: login, signup, delivery, profile*/}
+  const handleDropDown1 = () => {
+    openDropDown1(!open1);
+    if (open2) {
+      openDropDown2(!open2);
+    }
+  };
+
+  {/*Dropdown: product categories*/}
+  const handleDropDown2 = () => {
+    openDropDown2(!open2);
+    if (open1) {
+      openDropDown1(!open1);
+    }
+  };
+
   return (
-    <div className="w-full">
+    /*Z value is assgined so that dropdown does not hide behind other elements.*/
+    <div className="z-[20] w-full">
       {/* Top Bar */}
       <div className="flex items-center justify-between px-6 py-4 bg-white border-b">
         {/* Logo */}
@@ -203,33 +223,82 @@ function Navbar() {
       {/* Navigation Menu */}
       <div className="flex justify-center bg-white shadow-sm">
         <div className="flex space-x-10 py-4">
-          <Link
-            to="/"
-            className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center"
-          >
+
+          <div>
+          {/*Dropdown: login, signup, delivery, profile*/}
+          <Link className="text-gray-800 text-base font-medium hover:text-green-600 flex"
+          onClick={handleDropDown1}>
             Home
-            <svg className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </Link>
-          <Link
-            to="/products"
-            className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center"
-          >
+          <div className="absolute bg-white rounded-b-xl">
+            {open1 ?
+              <ul className="list-none text-left border-1 border-opacity-20 border-[#304c57] rounded-b-xl">
+
+              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/login" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
+                Login</Link>
+              </li>
+              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/signup" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
+                Signup</Link>
+              </li>
+              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/orders" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
+                Delivery</Link>
+              </li>
+              <li className="hover:bg-[#f7fbfc] rounded-b-xl"><Link to="/profile" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
+                Profile</Link>
+              </li>
+              </ul> : null
+            }
+          </div>
+        </div>
+        
+        <div>
+          {/*Dropdown: product categories*/}
+          <Link className="text-gray-800 text-base font-medium hover:text-green-600 flex"
+          onClick={handleDropDown2}>
             Products
-            <svg className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </Link>
-          <Link
-            to="/about"
-            className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center"
-          >
+          <div className="absolute bg-white rounded-b-xl">
+            {open2 ?
+              <ul className="list-none text-left border-1 border-opacity-20 border-[#304c57] rounded-b-xl">
+                
+              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/products/fruit" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
+                Fruit</Link>
+              </li>
+              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/products/vegetable" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
+                Vegetable</Link>
+              </li>
+              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/products/dairy" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
+                Dairy</Link>
+              </li>
+              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/products/meat" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
+                Meat</Link>
+              </li>
+              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/products/bakery" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
+                Bakery</Link>
+              </li>
+              <li className="hover:bg-[#f7fbfc] rounded-b-xl"><Link to="/products/pantry" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
+                Pantry</Link>
+              </li>
+              </ul> : null
+            }
+          </div>
+        </div>
+
+          <Link to="/about" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
             About Us
-            <svg className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              {/*
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              */}
             </svg>
           </Link>
+
         </div>
       </div>
     </div>
