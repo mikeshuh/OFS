@@ -65,6 +65,7 @@ const CreateProductForm = ({selectableCategories, onProductAdded, products }) =>
       setPrice('');
       setQuantity('');
       setCategory('');
+      setCategoryOption('');
       setImage(null);
       setPounds('');
       setImagePreviewUrl(null);

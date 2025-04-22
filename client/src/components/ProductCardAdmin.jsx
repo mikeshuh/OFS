@@ -18,8 +18,8 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
     quantity: product.quantity
   });
   const [message, setMessage] = useState("");
-  const [fileInputKey, setFileInputKey] = useState(1);
   const [image, setImage] = useState(null);
+  const [bustCache, setBustCache] = useState("");
 
 
   // Clear message after 3 seconds
@@ -115,7 +115,13 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
       if (!response?.data?.success) {
         throw new Error(response?.data?.message || "Update failed");
       }
+      console.log(response);
 
+      if(response.data.data){
+
+        setBustCache(response.data.data);
+
+      }
       // Update parent state with updated product data
       onUpdate?.({
         ...product,
@@ -189,12 +195,11 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
             <p className="text-[10px] text-gray-500 mt-1">Max: {MAX_QUANTITY}</p>
           </div>
           <div className="w-[15%] pr-2">
-               <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1">
           <label className="text-[#304c57] text-sm font-medium opacity-80">Image</label>
           <input
             type="file"
             name="image"
-            key={fileInputKey}
             className="w-full text-sm focus:outline-none"
             onChange={handleImageChange}
           />
@@ -227,7 +232,7 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
           <div className="w-[15%]">
             {product.imagePath ? (
               <img
-                src={`${API_URL}/static/${product.imagePath}`}
+                src={`${API_URL}/static/${product.imagePath}?v=${bustCache}`}
                 alt={product.name}
                 className="w-16 h-12 object-cover rounded"
               />

@@ -312,10 +312,16 @@ const AdminDashboard = () => {
   };
 
   const handleProductAdded = (newProduct) => {
+    const category = newProduct.category
     const parsedPrice = parseFloat(newProduct.price).toFixed(2);
     const parsedPounds = parseFloat(newProduct.pounds).toFixed(2);
+    if (category && !categories.includes(category)) {
+      setCategories(prevCategories => [...prevCategories, category]);
+    }
     setAllProducts((prevProducts) => [...prevProducts, {...newProduct, price: parsedPrice, pounds: parsedPounds}]);
   };
+
+
 
   return (
     <div>

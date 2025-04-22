@@ -57,11 +57,10 @@ const createProduct = async (req, res) => {
       return responseHandler.error(res, "Image invalid");
     }
     const downloadResults = await downloadImage(name, imageBuffer);
-    const downloadErrors = downloadResults.errors; // Access the 'errors' array
     const downloadOutputPath = downloadResults.outputPath; //Used to delete downloaded image if update-product fails
 
     // Check if the errors array has any elements
-    if (downloadErrors) {
+    if (downloadResults.errors) {
       return responseHandler.badRequest(res, 'Error downloading image', downloadErrors);
     }
 
@@ -82,7 +81,8 @@ const createProduct = async (req, res) => {
       const imageDeletionResult = deleteImage(downloadOutputPath)
       if(!imageDeletionResult)
         return responseHandler.error(res, 'Error creating product and deleting product image created with product');
-      return responseHandler.error(res, 'Error creating product');
+      else
+        return responseHandler.error(res, 'Error creating product');
     }
 
     const product = { ...productData, productID: productId };
@@ -115,63 +115,39 @@ const updateProduct = async (req, res) => {
     //update product
     const { productId } = req.params;
     const { name, category, price, pounds, quantity, imagePath } = req.body;
-    console.log('path');
-    if (!req.file) {
-      console.log('path');
-      const productData = {
-        category: category,
-        name: name,
-        price: price,
-        pounds: pounds,
-        quantity: quantity,
-        imagePath: imagePath
-      };
+    const cacheBuster = Date.now();
 
-      const updated = await Product.update(productId, productData);
+
+    const productData = {
+      category: category,
+      name: name,
+      price: price,
+      pounds: pounds,
+      quantity: quantity,
+      imagePath: imagePath
+    };
+
+    const updated = await Product.update(productId, productData);
+
+    if(!req.file){
       if (!updated) {
         return responseHandler.notFound(res, 'Product not found.');
       }
       return responseHandler.success(res, null, 'Product updated successfully');
-
     } else {
-      //download image to server
-      const imageBuffer = req.file.buffer; // check if needs to be let
-
-      const downloadResults = await downloadImage(name + 'temp', imageBuffer);
-      const downloadErrors = downloadResults.errors; // Access the 'errors' array
-      const downloadOutputPath = downloadResults.outputPath; //Used to delete downloaded image if update-product fails
-
-      const oldImagePath = await getProductImagePath(name);
-      // Check if the errors array has any elements
-      if (downloadErrors) {
-        return responseHandler.badRequest(res, 'Error downloading image', downloadErrors);
-      }
-
-      const productData = {
-        category: category,
-        name: name,
-        price: price,
-        pounds: pounds,
-        quantity: quantity,
-        imagePath: imagePath
-      };
-
-      const updated = await Product.update(productId, productData);
       if (!updated) {
-        //delete new image
-        const imageDeletionResult = deleteImage(downloadOutputPath)
-        if(!imageDeletionResult)
-          return responseHandler.error(res, 'Error updating product and deleting uploaded product image');
-        return responseHandler.notFound(res, 'Product not found.');
-      }
-
-      fileRenamingResult = await renameFile(downloadOutputPath, oldImagePath);
-      if(fileRenamingResult)
-        return responseHandler.success(res, null, 'Product updated successfully');
-      else{
-        return responseHandler.error(res, null, 'Failed to download image ');
+        return responseHandler.badRequest(res, 'Error downloading image', downloadErrors);
+      } else {
+        //Overwrite image
+        const imageBuffer = req.file.buffer;
+        const downloadResults = await downloadImage(name, imageBuffer);
+        if (downloadResults.errors)
+          return responseHandler.badRequest(res, 'Error downloading image', downloadErrors);
+        else
+          return responseHandler.success(res, Date.now(), 'product and product image updated succesfully' );
       }
     }
+
   } catch (error) {
     console.error(`Error updating product:  ${error.message}`, error);
     responseHandler.error(res, `Error updating product : ${error.message}`);
