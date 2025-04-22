@@ -1,3 +1,4 @@
+const { rename } = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 const fsPromises = require('fs').promises;
@@ -5,13 +6,15 @@ const fsPromises = require('fs').promises;
 const targetSize = 512;
 const outputDir = path.join(__dirname, '../assets/images/products');
 
-const imageExists = async (filePath) => {
+const getProductImagePath = async (name) => {
+  const fileName = name + '.jpg';
+  const imagePath = path.join(outputDir, fileName);
   try {
-    await fsPromises.access(filePath, fsPromises.constants.F_OK);
-    return true;
+    await fsPromises.access(imagePath, fsPromises.constants.F_OK);
+    return imagePath;
   }
   catch (accessError) {
-    return false;
+    return '';
   }
 }
 
@@ -46,7 +49,15 @@ const downloadImage = async (name, buffer) => {
   }
 };
 
-
+const renameFile = async (originalFilepath, newFilepath) => {
+  try{
+    await fsPromises.rename(originalFilepath, newFilepath);
+    return true;
+  }
+  catch{
+    return false;
+  }
+}
 
 const deleteImage = async (filepath) => {
   try {
@@ -65,5 +76,6 @@ const deleteImage = async (filepath) => {
 module.exports = {
   downloadImage,
   deleteImage,
-  imageExists
+  getProductImagePath,
+  renameFile
 };

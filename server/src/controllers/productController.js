@@ -1,6 +1,6 @@
 const Product = require('../models/productModel');
 const responseHandler = require('../utils/responseHandler');
-const { downloadImage, deleteImage } = require('../utils/imageUtils.js');
+const { downloadImage, deleteImage, getProductImagePath, renameFile } = require('../utils/imageUtils.js');
 
 // get single product, route: /api/products/info/:productId
 const getProduct = async (req, res) => {
@@ -79,7 +79,7 @@ const createProduct = async (req, res) => {
     const productId = await Product.create(productData);
     if (!productId || !Number.isInteger(productId)) {
       //delete processed image if msyql doesn't create product
-      imageDeletionResult = deleteImage(downloadOutputPath)
+      const imageDeletionResult = deleteImage(downloadOutputPath)
       if(!imageDeletionResult)
         return responseHandler.error(res, 'Error creating product and deleting product image created with product');
       return responseHandler.error(res, 'Error creating product');
@@ -114,23 +114,64 @@ const updateProduct = async (req, res) => {
   try {
     //update product
     const { productId } = req.params;
-    const { category, name, price, pounds, quantity, imagePath } = req.body;
+    const { name, category, price, pounds, quantity, imagePath } = req.body;
+    console.log('path');
+    if (!req.file) {
+      console.log('path');
+      const productData = {
+        category: category,
+        name: name,
+        price: price,
+        pounds: pounds,
+        quantity: quantity,
+        imagePath: imagePath
+      };
 
+      const updated = await Product.update(productId, productData);
+      if (!updated) {
+        return responseHandler.notFound(res, 'Product not found.');
+      }
+      return responseHandler.success(res, null, 'Product updated successfully');
 
-    const productData = {
-      category: category,
-      name: name,
-      price: price,
-      pounds: pounds,
-      quantity: quantity,
-      imagePath: imagePath
-    };
+    } else {
+      //download image to server
+      const imageBuffer = req.file.buffer; // check if needs to be let
 
-    const updated = await Product.update(productId, productData);
-    if (!updated) {
-      return responseHandler.notFound(res, 'Product not found.');
+      const downloadResults = await downloadImage(name + 'temp', imageBuffer);
+      const downloadErrors = downloadResults.errors; // Access the 'errors' array
+      const downloadOutputPath = downloadResults.outputPath; //Used to delete downloaded image if update-product fails
+
+      const oldImagePath = await getProductImagePath(name);
+      // Check if the errors array has any elements
+      if (downloadErrors) {
+        return responseHandler.badRequest(res, 'Error downloading image', downloadErrors);
+      }
+
+      const productData = {
+        category: category,
+        name: name,
+        price: price,
+        pounds: pounds,
+        quantity: quantity,
+        imagePath: imagePath
+      };
+
+      const updated = await Product.update(productId, productData);
+      if (!updated) {
+        //delete new image
+        const imageDeletionResult = deleteImage(downloadOutputPath)
+        if(!imageDeletionResult)
+          return responseHandler.error(res, 'Error updating product and deleting uploaded product image');
+        return responseHandler.notFound(res, 'Product not found.');
+      }
+
+      fileRenamingResult = await renameFile(downloadOutputPath, oldImagePath);
+      if(fileRenamingResult)
+        return responseHandler.success(res, null, 'Product updated successfully');
+      else{
+        return responseHandler.error(res, null, 'Failed to download image ');
+      }
     }
-    responseHandler.success(res, null, 'Product updated successfully');
   } catch (error) {
     console.error(`Error updating product:  ${error.message}`, error);
     responseHandler.error(res, `Error updating product : ${error.message}`);
