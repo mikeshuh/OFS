@@ -47,7 +47,6 @@ const Login = () => {
   // Logic to login user
   const loginDB = async (e) => {
     e.preventDefault();
-    setError("");  // clear any previous error
 
     // 1. Pull & trim
     const email = formData.email?.trim() || "";

@@ -48,7 +48,6 @@ const Signup = () => {
   // Handle signup logic upon form submission
   const signupDB = async (e) => {
     e.preventDefault();
-    setError("");  // clear previous error
 
     // pull & trim once
     const firstName = formData.firstName?.trim() || "";

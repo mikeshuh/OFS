@@ -31,7 +31,6 @@ const Profile = () => {
   // Logic to change user password
   const changeProfile = async (e) => {
     e.preventDefault();
-    setMessage(""); // clear previous message
 
     // 1. Pull & trim
     const currentPassword    = formData.currentPassword?.trim()    || "";

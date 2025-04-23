@@ -26,7 +26,7 @@ const getGeocode = async (req, res) => {
   try {
     const validationResult = validation.validateAddress(req.body);
     if (!validationResult.isValid) {
-      responseHandler.error(res, validationResult.errors);
+      responseHandler.badRequest(res, validationResult.errors);
       return;
     }
 
@@ -35,7 +35,7 @@ const getGeocode = async (req, res) => {
     const address = `${streetAddress}, ${city}, California, United States, ${zipCode}`;
     const sanitizedAddress = validation.sanitizeString(address);
     if (!sanitizedAddress || sanitizedAddress === '') {
-      responseHandler.error(res, 'Invalid address');
+      responseHandler.badRequest(res, 'Invalid address');
       return;
     }
 
