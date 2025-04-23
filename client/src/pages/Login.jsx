@@ -82,7 +82,7 @@ const Login = () => {
       const response = await auth.loginAction({ email, password });
       console.log("Response login: ", response);
       if (!response.data?.success) {
-        setError(response.data?.errors?.errors[0].msg || response.data?.message || "Failed to login user.");
+        setError(response || "Failed to login user.");
       }
     } catch (err) {
       console.error("Login error:", err);
