@@ -1,6 +1,6 @@
 const Product = require('../models/productModel');
 const responseHandler = require('../utils/responseHandler');
-const { downloadImage, deleteImage, getProductImagePath, renameFile } = require('../utils/imageUtils.js');
+const { downloadImage, deleteImage } = require('../utils/imageUtils.js');
 
 // get single product, route: /api/products/info/:productId
 const getProduct = async (req, res) => {
@@ -91,10 +91,12 @@ const createProduct = async (req, res) => {
     responseHandler.created(res, product, 'Product created successfully');
   } catch (error) {
     if(downloadOutputPath){
-      if(!imageDeletionResult)
-        return responseHandler.error(res, 'Error creating product and deleting product image created with product');
-      else
-        return responseHandler.error(res, 'Error creating product');
+      const catchImageDeletionResult = deleteImage(downloadOutputPath)
+       if(!catchImageDeletionResult)
+         return responseHandler.error(res, 'Error creating product and deleting product image created with product');
+       else
+         return responseHandler.error(res, 'Error creating product');
+     }
     }
     console.error(`Error creating product:  ${error.message}`, error);
     responseHandler.error(res, `Error creating product : ${error.message}`);
