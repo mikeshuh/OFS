@@ -52,12 +52,16 @@ const createProduct = async (req, res) => {
     }
 
     //download image to server
-    let imageBuffer = req.file.buffer;
-    if (!imageBuffer) {
+
+    if (!req.file) {
       return responseHandler.badRequest(res, "Image invalid please upload a JPEG image ");
     }
+    let imageBuffer = req.file.buffer;
+
+
     const downloadResults = await downloadImage(name, imageBuffer);
-    const downloadOutputPath = downloadResults.outputPath; //Used to delete downloaded image if update-product fails
+
+    const downloadOutputPath = downloadResults.outputPath;
 
     // Check if the errors array has any elements
     if (downloadResults.errors) {
@@ -90,6 +94,7 @@ const createProduct = async (req, res) => {
     //send back product so Frontend Can update view
     responseHandler.created(res, product, 'Product created successfully');
   } catch (error) {
+
     if(downloadOutputPath){
       const catchImageDeletionResult = deleteImage(downloadOutputPath)
        if(!catchImageDeletionResult)
