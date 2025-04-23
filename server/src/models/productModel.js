@@ -27,6 +27,15 @@ const Product = {
     return rows[0]; // Return the product object or undefined
   },
 
+  // find a product by name
+  findByName: async (productName) => {
+    const [rows] = await db.execute(
+      'SELECT * FROM Product WHERE name = ?',
+      [productName]
+    );
+    return rows[0]; // Return the product object or undefined
+  },
+
   // Create a new product
   create: async (productData) => {
     const { category, name, price, pounds, quantity, imagePath } = productData;

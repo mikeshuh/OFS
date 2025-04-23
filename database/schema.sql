@@ -34,7 +34,7 @@ CREATE TABLE `Order` (
 CREATE TABLE Product (
     productID INT PRIMARY KEY AUTO_INCREMENT,
     category VARCHAR(16) NOT NULL,
-    name VARCHAR(32) NOT NULL,
+    name VARCHAR(32) UNIQUE NOT NULL,
     price DECIMAL(10,2) NOT NULL,
     pounds DECIMAL(10,2) NOT NULL,
     quantity INT NOT NULL,
