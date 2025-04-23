@@ -6,6 +6,7 @@ import { useCart } from "./CartContext";
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 
+
 function Navbar() {
   const auth = useAuth();
   const { cartItemsCount, calculateTotal } = useCart();
@@ -54,11 +55,13 @@ function Navbar() {
               style={{
                 transform: open ? "scaleX(1)" : "scaleX(0)",
               }}
-              className="absolute -bottom-2 -left-0 -right-0 h-1 origin-left round-full bg-green-300 transition-transform duration-300 ease-in-out group-hover:w-full"
+              className="absolute -bottom-2 -left-0 -right-0 h-1 origin-left rounded-full bg-green-300 transition-transform duration-300 ease-in-out group-hover:w-full"
             />
           </a>
           {open ?
-            <div className="absolute bg-white top-10 w-full">
+            <div
+              className="absolute bg-white w-full mt-2 rounded-md shadow-lg z-50"
+            >
               <ProductContent />
             </div>
             : null
