@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import logo from "../assets/OFS_logo.png";
 import { useAuth } from "./AuthContext";
@@ -38,29 +38,59 @@ function Navbar() {
       navigate(`/products/${currentCategory}`);
     }
   };
-  function ProductsDropdown({children, href, productContent}){
-    const [open,setOpen] = useState(false);
-    const showProduct = open & productContent;
+  function ProductsDropdown({ children, href, ProductContent }) {
+    const [open, setOpen] = useState(false);
+    console.log(open)
     return (
-      <div className="text-gray-800 text-base font-medium  flex justify-center ">
+      <div className="text-gray-800 text-base font-medium  flex justify-center">
         <div
-          className= "group relative h-fit w-fit"
+          className="group relative h-fit w-fit"
           onMouseEnter={() => setOpen(true)}
           onMouseLeave={() => setOpen(false)}
         >
-          <a className = "relative text">
+          <a className="relative text">
             {children}
+            <span
+              style={{
+                transform: open ? "scaleX(1)" : "scaleX(0)",
+              }}
+              className="absolute -bottom-2 -left-0 -right-0 h-1 origin-left round-full bg-green-300 transition-transform duration-300 ease-in-out group-hover:w-full"
+            />
           </a>
-          <span
-            style = {{
-              transform: showProduct ? "scaleX(1)" : "scaleX(0)",
-            }}
-            className = "absolute -bottom-2 -left-2 -right-2 h-1 origin-left round-full bg-green-300 transition-transform duration-300 ease-in-out group-hover:w-full"
-          />
+          {open ?
+            <div className="absolute bg-white top-10 w-full">
+              <ProductContent />
+            </div>
+            : null
+          }
         </div>
       </div>
     )
   }
+  const Products = () => {
+    return (
+      <div className="flex flex-col p-4">
+        <Link
+          to="/products/all"
+          className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center"
+        >
+          All Products
+        </Link>
+        <Link
+          to="/products/vegetables"
+          className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center"
+        >
+          Vegetables
+        </Link>
+        <Link
+          to="/products/fruits"
+          className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center"
+        >
+          Fruits
+        </Link>
+      </div>
+    );
+  };
   const handleClear = () => {
     setSearchQuery("");
     navigate(`/products/${currentCategory}`);
@@ -235,7 +265,7 @@ function Navbar() {
           >
             Home
           </Link>
-          <ProductsDropdown href="/products" productContent>
+          <ProductsDropdown href="/products" ProductContent={Products}>
             Product
           </ProductsDropdown>
           <Link
