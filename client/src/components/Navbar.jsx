@@ -16,6 +16,13 @@ function Navbar() {
 
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState(["all"]);
+
+  /*
+    These are the functions for the dropdown menu
+    DropdownBar is a reusable component that allows input and generates a dropdown menu
+    DropdownContent is the input for the dropdown menu
+    HomeContent and ProductContent are the dropdown menus for the Home and Product menu respectively
+  */
   useEffect(() => {
     const fetchAllProducts = async () => {
       try {
@@ -41,6 +48,111 @@ function Navbar() {
     fetchAllProducts();
   }, []);
 
+  function DropdownBar({ children, href, DropdownContent }) {
+    const [open, setOpen] = useState(false);
+    const timeoutRef = useRef(null);
+
+    // This timeout is used to delay the closing of the dropdown menu
+    // This resets the timer for closing if the mouse reenter the dropdown menu
+    const handleMouseEnter = () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      setOpen(true);
+    };
+
+    // This checks the timeout for closing the dropdown menu
+    const handleMouseLeave = () => {
+      timeoutRef.current = setTimeout(() => {
+        setOpen(false);
+      }, 100);
+    };
+
+    return (
+      <div className="text-gray-800 text-base font-medium flex justify-center">
+        <div
+          className="group relative h-fit w-fit"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {/* The style is for the green underline bar*/}
+          <Link to={href} className="relative">
+            {children}
+            <span
+              style={{
+                transform: open ? "scaleX(1)" : "scaleX(0)",
+              }}
+              className="absolute -bottom-2 -left-0 -right-0 h-1 origin-left rounded-full bg-green-300 transition-transform duration-300 ease-in-out group-hover:w-full"
+            />
+          </Link>
+          {open &&
+            (!loading ? (
+              <div
+                className="absolute left-0 top-7.5 bg-white w-56 mt-3 rounded-md shadow-lg z-50"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              >
+                <DropdownContent />
+              </div>
+            ) : (
+              // Loading spinner
+              <div
+                className="absolute left-0 bg-white w-56 mt-3 rounded-md shadow-lg z-50"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              >
+                <div className="flex items-center justify-center p-4">
+                  <svg
+                    className="animate-spin h-5 w-5 text-green-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm0 18a8 8 0 1 1 8-8A8.009 8.009 0 0 1 12 20z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Renders the dropdown content for the Home menu
+  const HomeContent = () => {
+    return (
+      <div className="flex flex-col py-2">
+        {homeNav.map(([path, name]) => (
+          <Link
+            key={path}
+            to={`/${path}`}
+            className="block px-6 py-2 text-gray-800 hover:bg-green-100 hover:text-green-600 transition-colors duration-200"
+          >
+            {name}
+          </Link>
+        ))}
+      </div>
+    );
+  };
+
+  // Renders the dropdown content for the Product menu
+  const ProductContent = () => {
+    return (
+      <div className="flex flex-col py-2">
+        {categories.map((category) => (
+          <Link
+            key={category}
+            to={`/products/${category}`}
+            className="block px-6 py-2 text-gray-800 hover:bg-green-100 hover:text-green-600 transition-colors duration-200"
+          >
+            {category.charAt(0).toUpperCase() + category.slice(1)}
+          </Link>
+        ))}
+      </div>
+    );
+  };
   // Figure out current category from the path (/products/:category)
   const pathSegments = location.pathname.split("/");
   const currentCategory =
@@ -66,103 +178,7 @@ function Navbar() {
     }
   };
 
-  function DropdownBar({ children, href, DropdownContent }) {
-    const [open, setOpen] = useState(false);
-    const timeoutRef = useRef(null);
 
-    const handleMouseEnter = () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-      setOpen(true);
-    };
-
-    const handleMouseLeave = () => {
-      timeoutRef.current = setTimeout(() => {
-        setOpen(false);
-      }, 300);
-    };
-
-    return (
-      <div className="text-gray-800 text-base font-medium flex justify-center">
-        <div
-          className="group relative h-fit w-fit"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <Link to={href} className="relative">
-            {children}
-            <span
-              style={{
-                transform: open ? "scaleX(1)" : "scaleX(0)",
-              }}
-              className="absolute -bottom-2 -left-0 -right-0 h-1 origin-left rounded-full bg-green-300 transition-transform duration-300 ease-in-out group-hover:w-full"
-            />
-          </Link>
-          {open &&
-            (!loading ? (
-              <div
-                className="absolute left-0 bg-white w-56 mt-3 rounded-md shadow-lg z-50"
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-              >
-                <DropdownContent />
-              </div>
-            ) : (
-              <div
-                className="absolute left-0 bg-white w-56 mt-3 rounded-md shadow-lg z-50"
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-              >
-                <div className="flex items-center justify-center p-4">
-                  <svg
-                    className="animate-spin h-5 w-5 text-green-600"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm0 18a8 8 0 1 1 8-8A8.009 8.009 0 0 1 12 20z"
-                    />
-                  </svg>
-                </div>
-              </div>
-            ))}
-        </div>
-      </div>
-    );
-  }
-
-  const HomeContent = () => {
-    return (
-      <div className="flex flex-col p-4 ">
-        {homeNav.map(([path, name]) => (
-          <Link
-            key={path}
-            to={`/${path}`}
-            className="block px-4 py-2 text-gray-800 hover:bg-green-100"
-          >
-            {name}
-          </Link>
-        ))}
-      </div>
-    );
-  }
-  const ProductContent = () => {
-    return (
-      <div className="flex flex-col p-4 ">
-        {categories.map((category) => (
-          <Link
-            key={category}
-            to={`/products/${category}`}
-            className="block px-4 py-2 text-gray-800 hover:bg-green-100"
-          >
-            {category.charAt(0).toUpperCase() + category.slice(1)}
-          </Link>
-        ))}
-      </div>
-    );
-  };
   const handleClear = () => {
     setSearchQuery("");
     navigate(`/products/${currentCategory}`);
