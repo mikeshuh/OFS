@@ -18,7 +18,7 @@ const validateParamInt = (paramName) => {
     .escape()
     .trim()
     .toInt()
-    .isInt()
+    .isInt({ max: 1000000000 })
     .withMessage('Param must be an integer'),
 
     (req, res, next) => {
@@ -37,6 +37,7 @@ const validateParamString = (paramName) => {
     .escape()
     .trim()
     .isString()
+    .isLength({ max: 100 })
     .withMessage('Param must be a string'),
 
     (req, res, next) => {
@@ -60,21 +61,21 @@ const validateRegistration = [
     .escape()
     .notEmpty().withMessage('First name is required')
     .isString()
-    .isLength({ min: 0, max: 32 }).withMessage('First name must be less than 32 characters'),
+    .isLength({ max: 32 }).withMessage('First name must be less than 32 characters'),
 
   body('lastName')
     .trim()
     .escape()
     .notEmpty().withMessage('Last name is required')
     .isString()
-    .isLength({ min: 0, max: 32 }).withMessage('Last name must be less than 32 characters'),
+    .isLength({ max: 32 }).withMessage('Last name must be less than 32 characters'),
 
   body('email')
     .trim()
     .escape()
     .notEmpty().withMessage('Email is required')
     .isEmail().withMessage('Email must be a valid email address')
-    .isLength({ min: 0, max: 64 }).withMessage('Email must be less than 64 characters'),
+    .isLength({ max: 64 }).withMessage('Email must be less than 64 characters'),
 
   body('password')
     .trim()
@@ -116,7 +117,7 @@ const validateLogin = [
     .escape()
     .notEmpty().withMessage('Email is required')
     .isEmail().withMessage('Email must be a valid email address')
-    .isLength({ min: 0, max: 64 }).withMessage('Email must be less than 64 characters'),
+    .isLength({ max: 64 }).withMessage('Email must be less than 64 characters'),
 
   body('password')
     .trim()
@@ -188,7 +189,7 @@ const validateProduct = [
   .notEmpty()
   .withMessage('Category is required')
   .isString()
-  .isLength({min: 0, max: 16})
+  .isLength({max: 16})
   .withMessage('Category must be less than 16 characters'),
 
   //sanitize name
@@ -199,7 +200,7 @@ const validateProduct = [
   .notEmpty()
   .withMessage('Name is required')
   .isString()
-  .isLength({min: 0, max: 32})
+  .isLength({max: 32})
   .withMessage('Name must be less than 32 characters'),
 
   //sanitize
@@ -210,7 +211,7 @@ const validateProduct = [
   .notEmpty()
   .withMessage('Price is required')
   .toFloat()
-  .isFloat({min: 0})
+  .isFloat({min: 0, max: 10000})
   .withMessage('Price must be positive a positive float'),
 
   //sanitize
@@ -221,7 +222,7 @@ const validateProduct = [
   .notEmpty()
   .withMessage('Pounds is required')
   .toFloat()
-  .isFloat({min: 0})
+  .isFloat({min: 0, max: 1000})
   .withMessage('Pounds must be a positive float'),
 
   //sanitize
@@ -232,7 +233,7 @@ const validateProduct = [
   .notEmpty()
   .withMessage('Quantity is required')
   .toInt()
-  .isInt({min: 0})
+  .isInt({min: 0, max:1000})
   .withMessage('Quantity must be a positive integer'),
 
   (req, res, next) => {

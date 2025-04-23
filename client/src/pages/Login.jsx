@@ -79,7 +79,6 @@ const Login = () => {
     // 4. All checks passed → call backend
     try {
       const response = await auth.loginAction({ email, password });
-      console.log("Response login: ", response);
       if (!response.data?.success) {
         setError(response || "Failed to login user.");
       }
