@@ -5,7 +5,7 @@ import { useAuth } from "./AuthContext";
 import { useCart } from "./CartContext";
 
 function Navbar() {
-  const { auth, loggedIn } = useAuth();
+  const auth = useAuth();
   const { cartItemsCount, calculateTotal } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
@@ -61,35 +61,14 @@ function Navbar() {
             />
           </Link>
           {open &&
-            (!loading ? (
-              <div
-                className="absolute left-0 top-7 bg-white w-40 mt-3 rounded-md shadow-lg z-50"
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-              >
-                <DropdownContent />
-              </div>
-            ) : (
-              // Loading spinner
-              <div
-                className="absolute left-0 bg-white w-40 mt-3 rounded-md shadow-lg z-50"
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-              >
-                <div className="flex items-center justify-center p-4">
-                  <svg
-                    className="animate-spin h-5 w-5 text-green-600"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm0 18a8 8 0 1 1 8-8A8.009 8.009 0 0 1 12 20z"
-                    />
-                  </svg>
-                </div>
-              </div>
-            ))}
+            <div
+              className="absolute left-0 top-7 bg-white w-40 mt-3 rounded-md shadow-lg z-50"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              <DropdownContent />
+            </div>
+          }
         </div>
       </div>
     );
@@ -99,7 +78,7 @@ function Navbar() {
   const HomeContent = () => {
     return (
       <div className="flex flex-col py-2">
-        {loggedIn ? (homeNav.map(([path, name]) => (
+        {!auth.loggedIn ? (homeNav.map(([path, name]) => (
           <Link
             key={path}
             to={`/${path}`}
@@ -315,7 +294,7 @@ function Navbar() {
 
       {/* Navigation Menu */}
       <div className="flex justify-center bg-white shadow-sm">
-        <div className="flex space-x-10 py-4">
+        <div className="flex gap-40 py-4">
           <DropdownBar href="/" DropdownContent={HomeContent}>
             Home
           </DropdownBar>
