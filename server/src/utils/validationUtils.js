@@ -2,6 +2,7 @@
 // Provides functions for validating and sanitizing user inputs
 const { body, param, validationResult } = require('express-validator');
 const responseHandler = require('../utils/responseHandler');
+const multer = require('multer');
 
 // Sanitize string (trim whitespace)
 const sanitizeString = (str) => {
@@ -179,6 +180,27 @@ const validatePasswordChange = [
  * Product validation
  ************************************************************************************************************/
 
+//validate image
+const imageFileFilter = (req, file, cb) => {
+  if (file.mimetype === 'image/jpeg') {
+    cb(null, true);
+  } else {
+    //if file is not of the correct type multer will not upload it
+    cb(null, false);
+  }
+};
+
+//handle errors that occur from multer limits
+const fileSizeLimitErrorHandler = (err, req, res, next) => {
+  if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
+    return responseHandler.badRequest(res, 'Image Invalid: please choose images less than 10mb in size');
+  } else if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_COUNT') {
+    return responseHandler.badRequest(res, 'Image Invalid: please only upload one image');
+  } else {
+    next();
+  }
+};
+
 //validate product
 const validateProduct = [
   //sanitize category
@@ -238,8 +260,15 @@ const validateProduct = [
 
   (req, res, next) => {
     const errors = validationResult(req);
+
+    const errorsArray = errors.array();
+    let errorMsg = "";
     if (!errors.isEmpty()) {
-      return responseHandler.badRequest(res, null, errors);
+      errorsArray.forEach(error => {
+        errorMsg += error.msg + ". ";
+      });
+
+      return responseHandler.badRequest(res, errorMsg, {errors});
     }
     next();
   },
@@ -273,6 +302,7 @@ const validateOrder = [
 
   (req, res, next) => {
     const errors = validationResult(req);
+
     if (!errors.isEmpty()) {
       return responseHandler.badRequest(res, null, errors);
     }
@@ -367,5 +397,7 @@ module.exports = {
   validateRoute,
   validateAddress,
   validateOptimalRoute,
-  validatePaymentIntent
+  validatePaymentIntent,
+  fileSizeLimitErrorHandler,
+  imageFileFilter
 };
