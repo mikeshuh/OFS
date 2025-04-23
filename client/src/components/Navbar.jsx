@@ -3,50 +3,25 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import logo from "../assets/OFS_logo.png";
 import { useAuth } from "./AuthContext";
 import { useCart } from "./CartContext";
-import { requestServer } from "../utils/Utility";
-
-const API_URL = import.meta.env.VITE_API_URL;
 
 function Navbar() {
-  const auth = useAuth();
+  const { auth, loggedIn } = useAuth();
   const { cartItemsCount, calculateTotal } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
-  const homeNav = [["", "Home"], ["login", "Login"], ["signup", "Sign up"], ["map", "Check Delivery"]]
-
-  const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState(["all"]);
+  const homeNav = [["login", "Login"], ["signup", "Sign up"]];
+  const homeNavLoggedIn = [
+    ["profile", "Profile"],
+    ["orders", "Order History"],
+    ["map", "Check Delivery"]
+  ];
 
   /*
     These are the functions for the dropdown menu
     DropdownBar is a reusable component that allows input and generates a dropdown menu
     DropdownContent is the input for the dropdown menu
-    HomeContent and ProductContent are the dropdown menus for the Home and Product menu respectively
+    HomeContent is the dropdown menus for the Home menu
   */
-  useEffect(() => {
-    const fetchAllProducts = async () => {
-      try {
-        setLoading(true);
-        const res = await requestServer(`${API_URL}/api/products`, "GET");
-        if (!res?.data?.success) {
-          throw new Error(res?.data?.message || "Failed to fetch products");
-        }
-        const data = res.data.data;
-
-        // build category list
-        const cats = [
-          "all",
-          ...new Set(data.map((p) => p.category.toLowerCase()))
-        ];
-        setCategories(cats);
-      } catch (err) {
-        console.error("Error fetching products:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAllProducts();
-  }, []);
 
   function DropdownBar({ children, href, DropdownContent }) {
     const [open, setOpen] = useState(false);
@@ -88,7 +63,7 @@ function Navbar() {
           {open &&
             (!loading ? (
               <div
-                className="absolute left-0 top-7.4 bg-white w-40 mt-3 rounded-md shadow-lg z-50"
+                className="absolute left-0 top-7 bg-white w-40 mt-3 rounded-md shadow-lg z-50"
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >
@@ -124,7 +99,7 @@ function Navbar() {
   const HomeContent = () => {
     return (
       <div className="flex flex-col py-2">
-        {homeNav.map(([path, name]) => (
+        {loggedIn ? (homeNav.map(([path, name]) => (
           <Link
             key={path}
             to={`/${path}`}
@@ -132,27 +107,21 @@ function Navbar() {
           >
             {name}
           </Link>
-        ))}
+        ))) : (
+          (homeNavLoggedIn.map(([path, name]) => (
+            <Link
+              key={path}
+              to={`/${path}`}
+              className="block px-6 py-2 text-gray-800 hover:bg-green-100 hover:text-green-600 transition-colors duration-200"
+            >
+              {name}
+            </Link>
+          )))
+        )}
       </div>
     );
   };
 
-  // Renders the dropdown content for the Product menu
-  const ProductContent = () => {
-    return (
-      <div className="flex flex-col py-2">
-        {categories.map((category) => (
-          <Link
-            key={category}
-            to={`/products/${category}`}
-            className="block px-6 py-2 text-gray-800 hover:bg-green-100 hover:text-green-600 transition-colors duration-200"
-          >
-            {category.charAt(0).toUpperCase() + category.slice(1)}
-          </Link>
-        ))}
-      </div>
-    );
-  };
   // Figure out current category from the path (/products/:category)
   const pathSegments = location.pathname.split("/");
   const currentCategory =
@@ -350,9 +319,12 @@ function Navbar() {
           <DropdownBar href="/" DropdownContent={HomeContent}>
             Home
           </DropdownBar>
-          <DropdownBar href="/products" DropdownContent={ProductContent}>
-            Product
-          </DropdownBar>
+          <Link
+            to="/products/all"
+            className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center"
+          >
+            Products
+          </Link>
           <Link
             to="/about"
             className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center"
