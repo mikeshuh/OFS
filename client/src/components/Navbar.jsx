@@ -3,17 +3,43 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import logo from "../assets/OFS_logo.png";
 import { useAuth } from "./AuthContext";
 import { useCart } from "./CartContext";
-import DropdownButton from 'react-bootstrap/DropdownButton';
-import Dropdown from 'react-bootstrap/Dropdown';
+import { requestServer } from "../utils/Utility";
 
+const API_URL = import.meta.env.VITE_API_URL;
 
 function Navbar() {
   const auth = useAuth();
   const { cartItemsCount, calculateTotal } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
+  const homeNav = [["", "Home"], ["login", "Login"], ["signup", "Sign up"], ["map", "Check Delivery"]]
 
+  const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState(["all"]);
+  useEffect(() => {
+    const fetchAllProducts = async () => {
+      try {
+        setLoading(true);
+        const res = await requestServer(`${API_URL}/api/products`, "GET");
+        if (!res?.data?.success) {
+          throw new Error(res?.data?.message || "Failed to fetch products");
+        }
+        const data = res.data.data;
 
+        // build category list
+        const cats = [
+          "all",
+          ...new Set(data.map((p) => p.category.toLowerCase()))
+        ];
+        setCategories(cats);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAllProducts();
+  }, []);
 
   // Figure out current category from the path (/products/:category)
   const pathSegments = location.pathname.split("/");
@@ -39,17 +65,32 @@ function Navbar() {
       navigate(`/products/${currentCategory}`);
     }
   };
-  function ProductsDropdown({ children, href, ProductContent }) {
+
+  function DropdownBar({ children, href, DropdownContent }) {
     const [open, setOpen] = useState(false);
-    console.log(open)
+    const timeoutRef = useRef(null);
+
+    const handleMouseEnter = () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      setOpen(true);
+    };
+
+    const handleMouseLeave = () => {
+      timeoutRef.current = setTimeout(() => {
+        setOpen(false);
+      }, 300);
+    };
+
     return (
-      <div className="text-gray-800 text-base font-medium  flex justify-center">
+      <div className="text-gray-800 text-base font-medium flex justify-center">
         <div
           className="group relative h-fit w-fit"
-          onMouseEnter={() => setOpen(true)}
-          onMouseLeave={() => setOpen(false)}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
-          <a className="relative text">
+          <Link to={href} className="relative">
             {children}
             <span
               style={{
@@ -57,40 +98,68 @@ function Navbar() {
               }}
               className="absolute -bottom-2 -left-0 -right-0 h-1 origin-left rounded-full bg-green-300 transition-transform duration-300 ease-in-out group-hover:w-full"
             />
-          </a>
-          {open ?
-            <div
-              className="absolute bg-white w-full mt-2 rounded-md shadow-lg z-50"
-            >
-              <ProductContent />
-            </div>
-            : null
-          }
+          </Link>
+          {open &&
+            (!loading ? (
+              <div
+                className="absolute left-0 bg-white w-56 mt-3 rounded-md shadow-lg z-50"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              >
+                <DropdownContent />
+              </div>
+            ) : (
+              <div
+                className="absolute left-0 bg-white w-56 mt-3 rounded-md shadow-lg z-50"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              >
+                <div className="flex items-center justify-center p-4">
+                  <svg
+                    className="animate-spin h-5 w-5 text-green-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm0 18a8 8 0 1 1 8-8A8.009 8.009 0 0 1 12 20z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            ))}
         </div>
       </div>
-    )
+    );
   }
-  const Products = () => {
+
+  const HomeContent = () => {
     return (
-      <div className="flex flex-col p-4">
-        <Link
-          to="/products/all"
-          className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center"
-        >
-          All Products
-        </Link>
-        <Link
-          to="/products/vegetables"
-          className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center"
-        >
-          Vegetables
-        </Link>
-        <Link
-          to="/products/fruits"
-          className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center"
-        >
-          Fruits
-        </Link>
+      <div className="flex flex-col p-4 ">
+        {homeNav.map(([path, name]) => (
+          <Link
+            key={path}
+            to={`/${path}`}
+            className="block px-4 py-2 text-gray-800 hover:bg-green-100"
+          >
+            {name}
+          </Link>
+        ))}
+      </div>
+    );
+  }
+  const ProductContent = () => {
+    return (
+      <div className="flex flex-col p-4 ">
+        {categories.map((category) => (
+          <Link
+            key={category}
+            to={`/products/${category}`}
+            className="block px-4 py-2 text-gray-800 hover:bg-green-100"
+          >
+            {category.charAt(0).toUpperCase() + category.slice(1)}
+          </Link>
+        ))}
       </div>
     );
   };
@@ -262,15 +331,12 @@ function Navbar() {
       {/* Navigation Menu */}
       <div className="flex justify-center bg-white shadow-sm">
         <div className="flex space-x-10 py-4">
-          <Link
-            to="/"
-            className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center"
-          >
+          <DropdownBar href="/" DropdownContent={HomeContent}>
             Home
-          </Link>
-          <ProductsDropdown href="/products" ProductContent={Products}>
+          </DropdownBar>
+          <DropdownBar href="/products" DropdownContent={ProductContent}>
             Product
-          </ProductsDropdown>
+          </DropdownBar>
           <Link
             to="/about"
             className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center"
