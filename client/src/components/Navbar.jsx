@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import logo from "../assets/OFS_logo.png";
 import { useAuth } from "./AuthContext";
 import { useCart } from "./CartContext";
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 function Navbar() {
   const auth = useAuth();
   const { cartItemsCount, calculateTotal } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
+
+
 
   // Figure out current category from the path (/products/:category)
   const pathSegments = location.pathname.split("/");
@@ -34,7 +38,29 @@ function Navbar() {
       navigate(`/products/${currentCategory}`);
     }
   };
-
+  function ProductsDropdown({children, href, productContent}){
+    const [open,setOpen] = useState(false);
+    const showProduct = open & productContent;
+    return (
+      <div className="text-gray-800 text-base font-medium  flex justify-center ">
+        <div
+          className= "group relative h-fit w-fit"
+          onMouseEnter={() => setOpen(true)}
+          onMouseLeave={() => setOpen(false)}
+        >
+          <a className = "relative text">
+            {children}
+          </a>
+          <span
+            style = {{
+              transform: showProduct ? "scaleX(1)" : "scaleX(0)",
+            }}
+            className = "absolute -bottom-2 -left-2 -right-2 h-1 origin-left round-full bg-green-300 transition-transform duration-300 ease-in-out group-hover:w-full"
+          />
+        </div>
+      </div>
+    )
+  }
   const handleClear = () => {
     setSearchQuery("");
     navigate(`/products/${currentCategory}`);
@@ -208,27 +234,15 @@ function Navbar() {
             className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center"
           >
             Home
-            <svg className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
           </Link>
-          <Link
-            to="/products"
-            className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center"
-          >
-            Products
-            <svg className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </Link>
+          <ProductsDropdown href="/products" productContent>
+            Product
+          </ProductsDropdown>
           <Link
             to="/about"
             className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center"
           >
             About Us
-            <svg className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
           </Link>
         </div>
       </div>
