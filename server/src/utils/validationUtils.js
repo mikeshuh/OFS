@@ -4,126 +4,201 @@ const { body, param, validationResult } = require('express-validator');
 const responseHandler = require('../utils/responseHandler');
 const multer = require('multer');
 
-// Validate email format
-const isValidEmail = (email) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
-
-const isValidString = (str) => {
-  return str && str.length > 0 && str.length < 255;
-};
-
-// Validate password (minimum 8 characters)
-const isValidPassword = (password) => {
-  return password && password.length >= 8;
-};
-
 // Sanitize string (trim whitespace)
 const sanitizeString = (str) => {
   return str ? str.trim() : '';
 };
 
-// Sanitize BLOB (right now no sanitization, will do in the future)
-const sanitizeBLOB = (blob) => {
-  return blob ? blob : null;
-}
-// Sanitize number
-const sanitizeInteger = (num) => {
-  return num ? parseInt(num, 10) < 1e9 ? parseInt(num,10) : null : null;
+/************************************************************************************************************
+ * General validation
+ ************************************************************************************************************/
+
+const validateParamInt = (paramName) => {
+  return [
+    param(paramName)
+    .escape()
+    .trim()
+    .toInt()
+    .isInt({ max: 1000000000 })
+    .withMessage('Param must be an integer'),
+
+    (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return responseHandler.badRequest(res, null, errors);
+      }
+      next();
+    },
+  ]
 };
 
-const sanitizeFloat = (num) => {
-  return num ? parseFloat(num) < 1e9 ? parseFloat(num) : null : null;
+const validateParamString = (paramName) => {
+  return [
+    param(paramName)
+    .escape()
+    .trim()
+    .isString()
+    .isLength({ max: 100 })
+    .withMessage('Param must be a string'),
+
+    (req, res, next) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return responseHandler.badRequest(res, null, errors);
+      }
+      next();
+    },
+  ]
 };
 
-// Sanitize email (trim and lowercase)
-const sanitizeEmail = (email) => {
-  return email ? email.trim().toLowerCase() : '';
-};
+/************************************************************************************************************
+ * User validation
+ ************************************************************************************************************/
 
-// Validate user registration input
-const validateRegistration = (userData) => {
-  const { firstName, lastName, email, password } = userData;
-  const errors = [];
+//validate registration
+const validateRegistration = [
+  body('firstName')
+    .trim()
+    .escape()
+    .notEmpty().withMessage('First name is required')
+    .isString()
+    .isLength({ max: 32 }).withMessage('First name must be less than 32 characters'),
 
-  // Check required fields
-  if (!firstName || !lastName || !email || !password) {
-    errors.push('All fields are required (firstName, lastName, email, password)');
-  }
+  body('lastName')
+    .trim()
+    .escape()
+    .notEmpty().withMessage('Last name is required')
+    .isString()
+    .isLength({ max: 32 }).withMessage('Last name must be less than 32 characters'),
 
-  // Validate email format
-  if (email && !isValidEmail(email)) {
-    errors.push('Invalid email format');
-  }
+  body('email')
+    .trim()
+    .escape()
+    .notEmpty().withMessage('Email is required')
+    .isEmail().withMessage('Email must be a valid email address')
+    .isLength({ max: 64 }).withMessage('Email must be less than 64 characters'),
 
-  // Validate password
-  if (password && !isValidPassword(password)) {
-    errors.push('Password must be at least 8 characters long');
-  }
+  body('password')
+    .trim()
+    .escape()
+    .notEmpty().withMessage('Password is required')
+    .isLength({ min: 8 }).withMessage("Password must be at least 8 characters long")
+    .isLength({ max: 64 }).withMessage("Password must be less than 64 characters long")
+    .matches(/[A-Z]/).withMessage("Password must contain at least one uppercase letter")
+    .matches(/[a-z]/).withMessage("Password must contain at least one lowercase letter")
+    .matches(/[0-9]/).withMessage("Password must contain at least one number")
+    .matches(/[@$!%*?&]/).withMessage("Password must contain at least one special character (@, $, !, %, *, ?, &)"),
 
-  return {
-    isValid: errors.length === 0,
-    errors
-  };
-};
+  body('passwordConfirmed')
+    .trim()
+    .escape()
+    .notEmpty().withMessage('Password confirmation is required')
+    .isLength({ min: 8 }).withMessage("Password confirmation must be at least 8 characters long")
+    .isLength({ max: 64 }).withMessage("Password confirmation must be less than 64 characters long")
+    .custom((value, { req }) => {
+      if (value !== req.body.password) {
+        throw new Error('Passwords do not match');
+      }
+      return true;
+    }),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return responseHandler.badRequest(res, null, errors);
+    }
+    next();
+  },
+];
 
 // Validate login input
-const validateLogin = (loginData) => {
-  const { email, password } = loginData;
-  const errors = [];
+const validateLogin = [
+  body('email')
+    .trim()
+    .escape()
+    .notEmpty().withMessage('Email is required')
+    .isEmail().withMessage('Email must be a valid email address')
+    .isLength({ max: 64 }).withMessage('Email must be less than 64 characters'),
 
-  // Check required fields
-  if (!email || !password) {
-    errors.push('Email and password are required');
-  }
+  body('password')
+    .trim()
+    .escape()
+    .notEmpty().withMessage('Password is required')
+    .isLength({ max: 64 }).withMessage("Password must be less than 64 characters long"),
 
-  return {
-    isValid: errors.length === 0,
-    errors
-  };
-};
-
-// Validate profile update input
-const validateProfileUpdate = (profileData) => {
-  const { firstName, lastName, email } = profileData;
-  const errors = [];
-
-  // Check if at least one field is provided
-  if (!firstName && !lastName && !email) {
-    errors.push('At least one field is required for update');
-  }
-
-  // Validate email format if provided
-  if (email && !isValidEmail(email)) {
-    errors.push('Invalid email format');
-  }
-
-  return {
-    isValid: errors.length === 0,
-    errors
-  };
-};
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return responseHandler.badRequest(res, null, errors);
+    }
+    next();
+  },
+];
 
 // Validate password change input
-const validatePasswordChange = (passwordData) => {
-  const { currentPassword, newPassword } = passwordData;
-  const errors = [];
+const validatePasswordChange = [
+  body('currentPassword')
+    .trim()
+    .escape()
+    .notEmpty().withMessage('Current password is required')
+    .isLength({ max: 64 }).withMessage("Current password must be less than 64 characters long"),
 
-  // Check required fields
-  if (!currentPassword || !newPassword) {
-    errors.push('Current password and new password are required');
+  body('newPassword')
+    .trim()
+    .escape()
+    .notEmpty().withMessage('New password is required')
+    .isLength({ min: 8 }).withMessage("New password must be at least 8 characters long")
+    .isLength({ max: 64 }).withMessage("New password must be less than 64 characters long")
+    .matches(/[A-Z]/).withMessage("New password must contain at least one uppercase letter")
+    .matches(/[a-z]/).withMessage("New password must contain at least one lowercase letter")
+    .matches(/[0-9]/).withMessage("New password must contain at least one number")
+    .matches(/[@$!%*?&]/).withMessage("New password must contain at least one special character (@, $, !, %, *, ?, &)"),
+
+    body('passwordConfirmed')
+      .trim()
+      .escape()
+      .notEmpty().withMessage('Password confirmation is required')
+      .isLength({ min: 8 }).withMessage("Password confirmation must be at least 8 characters long")
+      .isLength({ max: 64 }).withMessage("Password confirmation must be less than 64 characters long")
+      .custom((value, { req }) => {
+        if (value !== req.body.newPassword) {
+          throw new Error('Passwords do not match');
+        }
+        return true;
+      }),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return responseHandler.badRequest(res, null, errors);
+    }
+    next();
+  },
+];
+
+/************************************************************************************************************
+ * Product validation
+ ************************************************************************************************************/
+
+//validate image
+const imageFileFilter = (req, file, cb) => {
+  if (file.mimetype === 'image/jpeg') {
+    cb(null, true);
+  } else {
+    //if file is not of the correct type multer will not upload it
+    cb(null, false);
   }
+};
 
-  // Validate new password
-  else if (!isValidPassword(newPassword)) {
-    errors.push('New password must be at least 8 characters long');
+//handle errors that occur from multer limits
+const fileSizeLimitErrorHandler = (err, req, res, next) => {
+  if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
+    return responseHandler.badRequest(res, 'Image Invalid: please choose images less than 10mb in size');
+  } else if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_COUNT') {
+    return responseHandler.badRequest(res, 'Image Invalid: please only upload one image');
+  } else {
+    next();
   }
-
-  return {
-    isValid: errors.length === 0,
-    errors
-  };
 };
 
 //validate product
@@ -136,7 +211,7 @@ const validateProduct = [
   .notEmpty()
   .withMessage('Category is required')
   .isString()
-  .isLength({min: 0, max: 16})
+  .isLength({max: 16})
   .withMessage('Category must be less than 16 characters'),
 
   //sanitize name
@@ -147,7 +222,7 @@ const validateProduct = [
   .notEmpty()
   .withMessage('Name is required')
   .isString()
-  .isLength({min: 0, max: 32})
+  .isLength({max: 32})
   .withMessage('Name must be less than 32 characters'),
 
   //sanitize
@@ -158,7 +233,7 @@ const validateProduct = [
   .notEmpty()
   .withMessage('Price is required')
   .toFloat()
-  .isFloat({min: 0})
+  .isFloat({min: 0, max: 10000})
   .withMessage('Price must be positive a positive float'),
 
   //sanitize
@@ -169,7 +244,7 @@ const validateProduct = [
   .notEmpty()
   .withMessage('Pounds is required')
   .toFloat()
-  .isFloat({min: 0})
+  .isFloat({min: 0, max: 1000})
   .withMessage('Pounds must be a positive float'),
 
   //sanitize
@@ -180,7 +255,7 @@ const validateProduct = [
   .notEmpty()
   .withMessage('Quantity is required')
   .toInt()
-  .isInt({min: 0})
+  .isInt({min: 0, max:1000})
   .withMessage('Quantity must be a positive integer'),
 
   (req, res, next) => {
@@ -199,27 +274,10 @@ const validateProduct = [
   },
 ];
 
-//validate image
-const imageFileFilter = (req, file, cb) => {
-  if (file.mimetype === 'image/jpeg') {
-    cb(null, true);
-  } else {
-    //if file is not of the correct type multer will not upload it
-    cb(null, false);
-  }
-};
+/************************************************************************************************************
+ * Order validation
+ ************************************************************************************************************/
 
-
-//handle errors that occur from multer limits
-const fileSizeLimitErrorHandler = (err, req, res, next) => {
-  if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
-    return responseHandler.badRequest(res, 'Image Invalid: please choose images less than 10mb in size');
-  } else if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_COUNT') {
-    return responseHandler.badRequest(res, 'Image Invalid: please only upload one image');
-  } else {
-    next();
-  }
-}
 //validate order
 const validateOrder = [
   body('streetAddress')
@@ -252,42 +310,9 @@ const validateOrder = [
   },
 ];
 
-const validateParamInt = (paramName) => {
-  return [
-    param(paramName)
-    .escape()
-    .trim()
-    .toInt()
-    .isInt()
-    .withMessage('Param must be an integer'),
-
-    (req, res, next) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return responseHandler.badRequest(res, null, errors);
-      }
-      next();
-    },
-  ]
-};
-
-const validateParamString = (paramName) => {
-  return [
-    param(paramName)
-    .escape()
-    .trim()
-    .isString()
-    .withMessage('Param must be a string'),
-
-    (req, res, next) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return responseHandler.badRequest(res, null, errors);
-      }
-      next();
-    },
-  ]
-};
+/************************************************************************************************************
+ * Delivery validation
+ ************************************************************************************************************/
 
 const validateOptimalRoute = (req) => {
   const { addresses } = req;
@@ -338,10 +363,9 @@ const validateRoute = (req) => {
   };
 };
 
-// Parse ID from string to integer
-const parseId = (id) => {
-  return parseInt(id, 10);
-};
+/************************************************************************************************************
+ * Payment validation
+ ************************************************************************************************************/
 
 // Payment intent req body validation
 const validatePaymentIntent = [
@@ -362,32 +386,18 @@ const validatePaymentIntent = [
 ];
 
 module.exports = {
-  isValidEmail,
-  isValidPassword,
   sanitizeString,
-  sanitizeEmail,
-  sanitizeFloat,
-  sanitizeInteger,
-  sanitizeBLOB,
-  validateRegistration,
-  validateLogin,
-  validateProfileUpdate,
-  validatePasswordChange,
-  parseId,
-
-  //Product Route Validation
-  validateProduct,
-  validateOrder,
   validateParamInt,
   validateParamString,
+  validateRegistration,
+  validateLogin,
+  validatePasswordChange,
+  validateProduct,
+  validateOrder,
   validateRoute,
   validateAddress,
   validateOptimalRoute,
   validatePaymentIntent,
-
-  // Used for multer
   fileSizeLimitErrorHandler,
   imageFileFilter
-
-
 };

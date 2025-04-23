@@ -3,31 +3,24 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
-const { protect, admin } = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/authMiddleware');
+const { validateParamInt, validateRegistration, validateLogin, validatePasswordChange } = require('../utils/validationUtils');
 
 // Public routes (no authentication required)
 // POST /api/users/register - Register a new user
-router.post('/register', userController.register);
+router.post('/register', validateRegistration, userController.register);
 
 // POST /api/users/login - Authenticate user and return JWT token
-router.post('/login', userController.login);
+router.post('/login', validateLogin, userController.login);
 
 // Protected routes (authentication required)
 // POST /api/users/logout - Blacklist current token
 router.post('/logout', protect, userController.logout);
 
 // GET /api/users/profile/:userID - Get user profile details
-router.get('/profile/:userID', protect, userController.getProfile);
-
-// PUT /api/users/profile/:userID - Update user profile
-router.put('/profile/:userID', protect, userController.updateProfile);
+router.get('/profile/:userID', protect, validateParamInt('userID'), userController.getProfile);
 
 // PUT /api/users/change-password/:userID - Change user password
-router.put('/change-password/:userID', protect, userController.changePassword);
-
-// DELETE /api/users/delete/:userID - Delete user account
-router.delete('/delete/:userID', protect, userController.deleteAccount);
-
-// Admin routes
+router.put('/change-password/:userID', protect, validateParamInt('userID'), validatePasswordChange, userController.changePassword);
 
 module.exports = router;

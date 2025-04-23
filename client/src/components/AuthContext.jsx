@@ -22,22 +22,6 @@ const AuthProvider = ({ children }) => {
     cartFunctions.clearCart = clearCartFn;
   };
 
-  // Check if the user is logged in
-  // If not, direct them to the login page
-  const checkLogin = async () => {
-    try {
-      const decode = jwtDecode(token);
-      const response = await requestServer(`${API_URL}/api/users/profile/${decode.id}`, "GET", token);
-      if (!response.data?.success) {
-        navigate("/login");
-      };
-      return response;
-    } catch (error) {
-      console.error("Login session expired:", error);
-      return error;
-    }
-  }
-
   // logic to get profile
   const getProfile = async (token) => {
     try {
@@ -49,7 +33,7 @@ const AuthProvider = ({ children }) => {
       localStorage.setItem("userProfile", JSON.stringify(response.data.data));
     } catch (error) {
       console.error("Error fetching profile", error);
-      return error;
+      throw error;
     }
   }
 
@@ -64,11 +48,12 @@ const AuthProvider = ({ children }) => {
         setToken(token);
         setLoggedIn(true);
         navigate("/");
+      } else {
+        throw new Error(response.data?.errors?.errors[0].msg || response.data?.message || "Error logging in.");
       }
       return response;
     } catch (error) {
-      window.alert(`Error: ${error.message || error}`);
-      return error;
+      return error.message || "An unexpected error occurred.";
     }
   };
 
@@ -76,21 +61,20 @@ const AuthProvider = ({ children }) => {
   const logOut = async () => {
     try {
       const response = await requestServer(`${API_URL}/api/users/logout`, "POST", token);
-      if (response.data?.success) {
-        // Clear the cart when the user logs out
-        if (cartFunctions.clearCart) {
-          cartFunctions.clearCart();
-        }
-        window.alert("You have been logged out successfully.");
-        setToken("");
-        setLoggedIn(false);
-        localStorage.clear();
-        navigate("/login");
+      if (!response.data?.success) {
+        throw new Error(response.data?.errors?.errors[0].msg || response.data?.message || "Error logging out.");
       }
       return response;
     } catch (error) {
-      window.alert(`Error: ${error.message || error}`);
       return error;
+    } finally {
+      // Clear the cart when the user logs out
+      if (cartFunctions.clearCart) {
+        cartFunctions.clearCart();
+      }
+      setToken("");
+      setLoggedIn(false);
+      localStorage.clear();
     }
   };
 
@@ -109,7 +93,7 @@ const AuthProvider = ({ children }) => {
         localStorage.clear();
         navigate("/login");
       } else {
-        throw new Error(response.data?.message || "Failed to change password.");
+        throw new Error(response.data?.errors?.errors[0].msg || response.data?.message || "Failed to change password.");
       }
     } catch (error) {
       console.error("Error changing password", error);
@@ -123,7 +107,6 @@ const AuthProvider = ({ children }) => {
         changePassword,
         token,
         loggedIn,
-        checkLogin,
         loginAction,
         logOut,
         getProfile,

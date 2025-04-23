@@ -48,19 +48,88 @@ const Signup = () => {
   // Handle signup logic upon form submission
   const signupDB = async (e) => {
     e.preventDefault();
+
+    // pull & trim once
+    const firstName = formData.firstName?.trim() || "";
+    const lastName  = formData.lastName?.trim()  || "";
+    const email     = formData.email?.trim()     || "";
+    const password  = formData.password?.trim()  || "";
+    const passwordConfirmed = formData.passwordConfirmed?.trim() || "";
+
+    // 1. Generic check for missing fields
+    if (!firstName || !lastName || !email || !password || !passwordConfirmed) {
+      setError("Please fill in all required fields.");
+      return;
+    }
+
+    // 2. Single‐error checks for name/email
+    if (firstName.length > 32) {
+      setError("First name must be less than 32 characters.");
+      return;
+    }
+    if (lastName.length > 32) {
+      setError("Last name must be less than 32 characters.");
+      return;
+    }
+
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    if (email.length > 64) {
+      setError("Email must be less than 64 characters.");
+      return;
+    }
+
+    // 3. Aggregate **all** password‐rule errors
+    const pwErrors = [];
+    if (password.length < 8) {
+      pwErrors.push("at least 8 characters");
+    }
+    if (password.length > 64) {
+      pwErrors.push("no more than 64 characters");
+    }
+    if (!/[A-Z]/.test(password)) {
+      pwErrors.push("one uppercase letter");
+    }
+    if (!/[a-z]/.test(password)) {
+      pwErrors.push("one lowercase letter");
+    }
+    if (!/[0-9]/.test(password)) {
+      pwErrors.push("one number");
+    }
+    if (!/[@$!%*?&]/.test(password)) {
+      pwErrors.push("one special character (@, $, !, %, *, ?, &)");
+    }
+    if (pwErrors.length) {
+      setError(
+        `Password must contain ${pwErrors.join(", ")}.`
+      );
+      return;
+    }
+
+    // 4. Password confirmation
+    if (passwordConfirmed !== password) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    // 5. All client‐side checks passed → submit to backend
     try {
-      if (formData.password !== formData.passwordConfirmed) {
-        setError("Passwords do not match");
-        return;
-      }
-      const response = await requestServer(`${API_URL}/api/users/register`, "POST", "", formData);
+      const response = await requestServer(
+        `${API_URL}/api/users/register`,
+        "POST",
+        "",
+        { firstName, lastName, email, password, passwordConfirmed }
+      );
       if (response.data?.success) {
         navigate("/login");
       } else {
-        setError(response.data.message);
+        setError(response.data?.errors?.errors[0].msg || response.data?.message || "Failed to register user.");
       }
-    } catch (error) {
-      setError("Network error. Please try again");
+    } catch (err) {
+      setError("Network error. Please try again.");
     }
   };
 

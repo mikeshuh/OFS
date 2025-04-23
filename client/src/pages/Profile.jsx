@@ -13,7 +13,7 @@ const Profile = () => {
   const [formData, setFormData] = useState({
     currentPassword: "",
     newPassword: "",
-    confirmPassword: "",
+    passwordConfirmed: "",
   });
   const [viewMode, setView] = useState(true);
   const [profileData, setProfileData] = useState(
@@ -28,32 +28,65 @@ const Profile = () => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  // Logic to change user password
   const changeProfile = async (e) => {
     e.preventDefault();
-    if (!formData.currentPassword || !formData.newPassword || !formData.confirmPassword) {
-      setMessage("All fields are required.");
+
+    // 1. Pull & trim
+    const currentPassword    = formData.currentPassword?.trim()    || "";
+    const newPassword        = formData.newPassword?.trim()        || "";
+    const passwordConfirmed  = formData.passwordConfirmed?.trim()  || "";
+
+    // 2. Generic missing-fields check
+    if (!currentPassword || !newPassword || !passwordConfirmed) {
+      setMessage("Please fill in all required fields.");
       return;
     }
-    if (formData.newPassword !== formData.confirmPassword) {
+
+    // 3. currentPassword length (must be < 64 chars)
+    if (currentPassword.length > 64) {
+      setMessage("Current password must be less than 64 characters long.");
+      return;
+    }
+
+    // 4. Aggregate newPassword rules
+    const pwErrors = [];
+    if (newPassword.length < 8) {
+      pwErrors.push("at least 8 characters");
+    }
+    if (newPassword.length > 64) {
+      pwErrors.push("no more than 64 characters");
+    }
+    if (!/[A-Z]/.test(newPassword)) {
+      pwErrors.push("one uppercase letter");
+    }
+    if (!/[a-z]/.test(newPassword)) {
+      pwErrors.push("one lowercase letter");
+    }
+    if (!/[0-9]/.test(newPassword)) {
+      pwErrors.push("one number");
+    }
+    if (!/[@$!%*?&]/.test(newPassword)) {
+      pwErrors.push("one special character (@, $, !, %, *, ?, &)");
+    }
+    if (pwErrors.length) {
+      setMessage(`New password must contain ${pwErrors.join(", ")}.`);
+      return;
+    }
+
+    // 5. Password confirmation
+    if (passwordConfirmed !== newPassword) {
       setMessage("Passwords do not match.");
       return;
     }
-    if (formData.newPassword.length < 8) {
-      setMessage("New password must be at least 8 characters long.");
-      return;
-    }
-    setMessage(""); // Clear previous messages
-    const { currentPassword, newPassword } = formData;
+
+    // 6. All checks passed → call backend
     try {
-      const errorMsg = await auth.changePassword({ currentPassword, newPassword });
-      if (errorMsg) {
-        setMessage(errorMsg.toLowerCase().includes("current password is incorrect") ? errorMsg : "Failed to change password.");
-        return;
-      }
-    } catch (error) {
-      console.error("Error changing password:", error);
+      const errorMsg = await auth.changePassword({ currentPassword, newPassword, passwordConfirmed });
+      setMessage(errorMsg);
+    } catch (err) {
+      console.error("Error changing password:", err);
       setMessage("Failed to change password.");
-      return;
     }
   };
 
@@ -124,7 +157,7 @@ const Profile = () => {
                   />
                   <input
                     type="password"
-                    name="confirmPassword"
+                    name="passwordConfirmed"
                     placeholder="Confirm New Password"
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
