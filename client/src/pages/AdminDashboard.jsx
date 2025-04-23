@@ -4,6 +4,8 @@ import notification from "../assets/notification.svg";
 import user from "../assets/user.svg";
 import { requestServer } from "../utils/Utility";
 import ProductCardAdmin from "../components/ProductCardAdmin.jsx";
+import CreateProductForm from "../components/CreateProductForm.jsx";
+
 import Dropdown from 'react-bootstrap/Dropdown';
 import { Link } from 'react-router-dom';
 
@@ -229,6 +231,8 @@ const AdminDashboard = () => {
   const [searchValue, setSearchValue] = useState('');
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [Error, setError] = useState(null);
+  const selectableCategories = categories.filter(category => category !== 'all');
+
 
   // sort state
   const [sortField, setSortField] = useState('');
@@ -306,6 +310,18 @@ const AdminDashboard = () => {
       )
     );
   };
+
+  const handleProductAdded = (newProduct) => {
+    const category = newProduct.category
+    const parsedPrice = parseFloat(newProduct.price).toFixed(2);
+    const parsedPounds = parseFloat(newProduct.pounds).toFixed(2);
+    if (category && !categories.includes(category)) {
+      setCategories(prevCategories => [...prevCategories, category]);
+    }
+    setAllProducts((prevProducts) => [...prevProducts, {...newProduct, price: parsedPrice, pounds: parsedPounds}]);
+  };
+
+
 
   return (
     <div>
@@ -394,6 +410,11 @@ const AdminDashboard = () => {
               setPage={setPage}
             />
           </div>
+
+          <div className="flex flex-col items-start w-full">
+          <CreateProductForm  selectableCategories={selectableCategories} onProductAdded={handleProductAdded} products={allProducts} />
+          </div>
+
         </div>
       </div>
     </div>
