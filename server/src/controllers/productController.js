@@ -99,9 +99,8 @@ const createProduct = async (req, res) => {
       const catchImageDeletionResult = deleteImage(downloadOutputPath)
        if(!catchImageDeletionResult)
          return responseHandler.error(res, 'Error creating product and deleting product image created with product');
-       else
-         return responseHandler.error(res, 'Error creating product');
      }
+     return responseHandler.error(res, 'Error creating product');
   }
 }
 
