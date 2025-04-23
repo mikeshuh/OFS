@@ -97,9 +97,6 @@ const createProduct = async (req, res) => {
        else
          return responseHandler.error(res, 'Error creating product');
      }
-    }
-    console.error(`Error creating product:  ${error.message}`, error);
-    responseHandler.error(res, `Error creating product : ${error.message}`);
   }
 }
 
