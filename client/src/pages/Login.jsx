@@ -47,15 +47,46 @@ const Login = () => {
   // Logic to login user
   const loginDB = async (e) => {
     e.preventDefault();
+    setError("");  // clear any previous error
+
+    // 1. Pull & trim
+    const email = formData.email?.trim() || "";
+    const password = formData.password?.trim() || "";
+
+    // 2. Generic missing‐fields check
+    if (!email || !password) {
+      setError("Please fill in all required fields.");
+      return;
+    }
+
+    // 3. Specific validations
+    // 3a. Email format & length
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    if (email.length > 64) {
+      setError("Email must be less than 64 characters.");
+      return;
+    }
+
+    // 3b. Password length
+    if (password.length > 64) {
+      setError("Password must be less than 64 characters.");
+      return;
+    }
+
+    // 4. All checks passed → call backend
     try {
-      const response = await auth.loginAction(formData);
+      const response = await auth.loginAction({ email, password });
       console.log("Response login: ", response);
       if (!response.data?.success) {
-        setError(response.data?.message);
+        setError(response.data?.errors?.errors[0].msg || response.data?.message || "Failed to login user.");
       }
-    } catch (error) {
-      console.log("Error: ", error);
-      setError(error.message);
+    } catch (err) {
+      console.error("Login error:", err);
+      setError("Network error. Please try again.");
     }
   };
 

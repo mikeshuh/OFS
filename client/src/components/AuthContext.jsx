@@ -64,6 +64,8 @@ const AuthProvider = ({ children }) => {
         setToken(token);
         setLoggedIn(true);
         navigate("/");
+      } else {
+        throw new Error(response.data?.errors?.errors[0].msg || response.data?.message || "Error logging in.");
       }
       return response;
     } catch (error) {
@@ -86,6 +88,8 @@ const AuthProvider = ({ children }) => {
         setLoggedIn(false);
         localStorage.clear();
         navigate("/login");
+      } else {
+        throw new Error(response.data?.errors?.errors[0].msg || response.data?.message || "Error logging out.");
       }
       return response;
     } catch (error) {
@@ -109,7 +113,7 @@ const AuthProvider = ({ children }) => {
         localStorage.clear();
         navigate("/login");
       } else {
-        throw new Error(response.data?.message || "Failed to change password.");
+        throw new Error(response.data?.errors?.errors[0].msg || response.data?.message || "Failed to change password.");
       }
     } catch (error) {
       console.error("Error changing password", error);

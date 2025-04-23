@@ -1,4 +1,3 @@
-const Order = require('../models/orderModel');
 const responseHandler = require('../utils/responseHandler');
 const validation = require('../utils/validationUtils');
 const deliveryService = require('../services/deliveryService');

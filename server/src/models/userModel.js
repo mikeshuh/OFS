@@ -35,18 +35,6 @@ const User = {
     return rows[0]; // Return the user object without password
   },
 
-  // Update user information
-  update: async (userID, userData) => {
-    const { firstName, lastName, email } = userData;
-
-    const [result] = await db.execute(
-      'UPDATE User SET firstName = ?, lastName = ?, email = ? WHERE userID = ?',
-      [firstName, lastName, email, userID]
-    );
-
-    return result.affectedRows > 0; // Return true if update was successful
-  },
-
   // Update user password
   updatePassword: async (userID, hashedPassword) => {
     const [result] = await db.execute(
@@ -57,69 +45,23 @@ const User = {
     return result.affectedRows > 0; // Return true if update was successful
   },
 
-  // Delete a user
-  delete: async (userID) => {
-    // Begin a transaction
-    const connection = await db.getConnection();
-    try {
-      await connection.beginTransaction();
-
-      // 1. Find all orders for this user
-      const [orders] = await connection.execute(
-        'SELECT orderID FROM `Order` WHERE userID = ?',
-        [userID]
-      );
-
-      // 2. For each order, delete the related OrderProduct records
-      for (const order of orders) {
-        await connection.execute(
-          'DELETE FROM OrderProduct WHERE orderID = ?',
-          [order.orderID]
-        );
-      }
-
-      // 3. Delete all orders for this user
-      await connection.execute(
-        'DELETE FROM `Order` WHERE userID = ?',
-        [userID]
-      );
-
-      // 4. Finally, delete the user
-      const [result] = await connection.execute(
-        'DELETE FROM User WHERE userID = ?',
-        [userID]
-      );
-
-      await connection.commit();
-      return {
-        success: result.affectedRows > 0,
-        ordersDeleted: orders.length
-      };
-    } catch (error) {
-      await connection.rollback(); // Rollback transaction on error
-      throw error;
-    } finally {
-      connection.release(); // Release the connection back to the pool
-    }
+  // Get user's current token version
+  getTokenVersion: async (userID) => {
+    const [rows] = await db.execute(
+      'SELECT tokenVersion FROM User WHERE userID = ?',
+      [userID]
+    );
+    return rows[0] ? rows[0].tokenVersion : null;
   },
 
-    // Get user's current token version
-    getTokenVersion: async (userID) => {
-      const [rows] = await db.execute(
-        'SELECT tokenVersion FROM User WHERE userID = ?',
-        [userID]
-      );
-      return rows[0] ? rows[0].tokenVersion : null;
-    },
-
-    // Increment user's token version
-    incrementTokenVersion: async (userID) => {
-      const [result] = await db.execute(
-        'UPDATE User SET tokenVersion = tokenVersion + 1 WHERE userID = ?',
-        [userID]
-      );
-      return result.affectedRows > 0;
-    }
+  // Increment user's token version
+  incrementTokenVersion: async (userID) => {
+    const [result] = await db.execute(
+      'UPDATE User SET tokenVersion = tokenVersion + 1 WHERE userID = ?',
+      [userID]
+    );
+    return result.affectedRows > 0;
+  }
 };
 
 module.exports = User;
