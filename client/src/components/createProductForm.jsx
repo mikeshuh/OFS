@@ -53,23 +53,22 @@ const CreateProductForm = ({selectableCategories, onProductAdded, products }) =>
 
       const productForm = new FormData();
 
-      productForm.append('name', name);
-      productForm.append('category', category);
-      productForm.append('price', price);
-      productForm.append('pounds', pounds);
-      productForm.append('quantity', quantity);
-      productForm.append('image', image);
+      const productData = [
+        ['name', name],
+        ['category', category],
+        ['price', price],
+        ['pounds', pounds],
+        ['quantity', quantity],
+        ['image', image],
+       ]
+      productData.map(([name,item]) => {
+        productForm.append(name,item)
+      })
 
-      // Reset the form
-      setName('');
-      setPrice('');
-      setQuantity('');
-      setCategory('');
-      setCategoryOption('');
-      setImage(null);
-      setPounds('');
-      setImagePreviewUrl(null);
-      setFileInputKey(fileInputKey+1);
+
+
+
+
 
 
       const token = localStorage.getItem("authToken");
@@ -83,6 +82,17 @@ const CreateProductForm = ({selectableCategories, onProductAdded, products }) =>
 
       if (response?.data?.success) {
         console.log("Product added successfully:", response.data.data);
+        // Reset the form
+        setName('');
+        setPrice('');
+        setQuantity('');
+        setCategory('');
+        setCategoryOption('');
+        setImage(null);
+        setPounds('');
+        setImagePreviewUrl(null);
+        setFileInputKey(fileInputKey+1);
+
         onProductAdded(response.data.data);
       } else {
         console.error("Error adding product:", response?.data?.message);

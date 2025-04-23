@@ -96,14 +96,20 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
       const token = localStorage.getItem("authToken");
 
       const updateProductForm = new FormData();
+      const productData = [
+        ['name',product.name],
+        ['category', product.category],
+        ['price', price],
+        ['pounds', pounds],
+        ['quantity', quantity],
+        ['image', image],
+        ['imagePath', product.imagePath]
+       ]
+      productData.map(([name,item]) => {
+        updateProductForm.append(name,item)
+      })
 
-      updateProductForm.append('name', product.name);
-      updateProductForm.append('category', product.category);
-      updateProductForm.append('price', price);
-      updateProductForm.append('pounds', pounds);
-      updateProductForm.append('quantity', quantity);
-      updateProductForm.append('image', image);
-      updateProductForm.append('imagePath', product.imagePath);
+
       const response = await requestServer(
         `${API_URL}/api/products/update-product/${product.productID}`,
         "PUT",
@@ -115,12 +121,9 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
       if (!response?.data?.success) {
         throw new Error(response?.data?.message || "Update failed");
       }
-      console.log(response);
 
       if(response.data.data){
-
         setBustCache(response.data.data);
-
       }
       // Update parent state with updated product data
       onUpdate?.({
