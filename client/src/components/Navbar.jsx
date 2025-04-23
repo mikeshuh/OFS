@@ -88,7 +88,7 @@ function Navbar() {
           {open &&
             (!loading ? (
               <div
-                className="absolute left-0 top-7.5 bg-white w-56 mt-3 rounded-md shadow-lg z-50"
+                className="absolute left-0 top-7.4 bg-white w-40 mt-3 rounded-md shadow-lg z-50"
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >
@@ -97,7 +97,7 @@ function Navbar() {
             ) : (
               // Loading spinner
               <div
-                className="absolute left-0 bg-white w-56 mt-3 rounded-md shadow-lg z-50"
+                className="absolute left-0 bg-white w-40 mt-3 rounded-md shadow-lg z-50"
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >
