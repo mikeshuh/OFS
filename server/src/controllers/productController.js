@@ -41,6 +41,7 @@ const getByCategory = async (req, res) => {
 
 // create a new product, route: /api/products/create-product, admin only
 const createProduct = async (req, res) => {
+  let downloadOutputPath;
   try {
     const { name, category, price, pounds, quantity } = req.body;
 
@@ -54,14 +55,14 @@ const createProduct = async (req, res) => {
     //download image to server
 
     if (!req.file) {
-      return responseHandler.badRequest(res, "Image invalid please upload a JPEG image ");
+      return responseHandler.badRequest(res, "Image invalid, please upload a JPEG image ");
     }
     let imageBuffer = req.file.buffer;
 
 
     const downloadResults = await downloadImage(name, imageBuffer);
 
-    const downloadOutputPath = downloadResults.outputPath;
+    downloadOutputPath = downloadResults.outputPath;
 
     // Check if the errors array has any elements
     if (downloadResults.errors) {
@@ -94,7 +95,6 @@ const createProduct = async (req, res) => {
     //send back product so Frontend Can update view
     responseHandler.created(res, product, 'Product created successfully');
   } catch (error) {
-
     if(downloadOutputPath){
       const catchImageDeletionResult = deleteImage(downloadOutputPath)
        if(!catchImageDeletionResult)
