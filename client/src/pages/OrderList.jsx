@@ -73,19 +73,19 @@ const OrderList = () => {
   }, [orders, searchDateStart, searchDateEnd, searchDeliveryStatus]);
 
   const handleDateChange = (e) => {
-    const dateValue = e.target.value;
+    const {name,value} = e.target;
     setErrorDate(null);
-    if (e.target.name === "endDate" && searchDateStart && dateValue < searchDateStart ||
-      e.target.name === "startDate" && searchDateEnd && dateValue > searchDateEnd) {
+    if (name === "endDate" && searchDateStart && value < searchDateStart ||
+      name === "startDate" && searchDateEnd && value > searchDateEnd) {
       setErrorDate("End date cannot be earlier than start date.");
       return;
     }
 
-    if (dateValue > new Date().toISOString().split('T')[0]) {
+    if (value > new Date().toISOString().split('T')[0]) {
       setErrorDate("Date cannot be in the future.");
       return;
     }
-    e.target.name == "startDate" ? setSearchDateStart(dateValue) : setSearchDateEnd(dateValue);
+    name == "startDate" ? setSearchDateStart(value) : setSearchDateEnd(value);
   };
 
   const handleStatusChange = (e) => {
@@ -182,6 +182,7 @@ const OrderList = () => {
                   setSearchDateEnd("");
                   setSearchDeliveryStatus("All");
                   setFilteredOrders(orders);
+                  setErrorDate(null);
                 }}
                 className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-transparent rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
               >
