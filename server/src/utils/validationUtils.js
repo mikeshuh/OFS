@@ -222,8 +222,8 @@ const validateProduct = [
       words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1).toLowerCase();
     }
 
-    const formattedName = words.join(" ");
-    return formattedName;
+    const formattedCategory = words.join(" ");
+    return formattedCategory;
   })
   .isLength({max: 16})
   .withMessage('Category must be less than 16 characters'),
@@ -247,8 +247,8 @@ const validateProduct = [
       words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1).toLowerCase();
     }
 
-    const formattedCategory = words.join(" ");
-    return formattedCategory;
+    const formattedName = words.join(" ");
+    return formattedName;
   })
   .isLength({max: 32})
   .withMessage('Name must be less than 32 characters'),
