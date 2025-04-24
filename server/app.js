@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const env = require('./src/config/env');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
 
 // Validate environment variables
 env.validateEnv();
@@ -29,6 +30,23 @@ app.use('/api/payments/webhook', express.raw({ type: 'application/json' })); // 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Rate limiter that skips only the webhook route
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 150,                 // limit each IP to 150 requests per windowMs
+  skip: (req) =>
+    req.originalUrl === '/api/payments/webhook', // do not rate-limit Stripe retries
+  message: {
+    status: 429,
+    message: 'Too many requests, please try again later.',
+  },
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false,  // Disable the `X-RateLimit-*` headers
+});
+
+// Apply rate limiter to all /api routes (excluding skipped paths)
+app.use('/api', apiLimiter);
 
 // Simple request logger for development
 if (env.nodeEnv === 'development') {
