@@ -90,7 +90,7 @@ const createProduct = async (req, res) => {
         return responseHandler.error(res, 'Error creating product');
     }
 
-    const product = { ...productData, productID: productId };
+    const product = { ...productData, productID: productId, active: 1 };
 
     //send back product so Frontend Can update view
     responseHandler.created(res, product, 'Product created successfully');

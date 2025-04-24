@@ -47,7 +47,7 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, type, value, checked } = e.target;
 
     // For price and pounds: allow only numbers with up to 2 decimals
     if (name === 'price' || name === 'pounds') {
@@ -66,6 +66,13 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
           [name]: value,
         }));
       }
+    }
+    // For checkbox: use checked value
+    else if (type === 'checkbox') {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: checked,
+      }));
     }
     // Default case if needed
     else {
@@ -106,8 +113,8 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
         ['quantity', quantity],
         ['image', image],
         ['imagePath', product.imagePath],
-        ['active', active]
-       ]
+        ['active', active ? 1 : 0],
+      ]
       productData.map(([name,item]) => {
         updateProductForm.append(name,item)
       })
@@ -214,7 +221,7 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
               aria-label="Active"
               type="checkbox"
               name="active"
-              value={formData.active}
+              checked={formData.active}
               onChange={handleChange}
               className="h-4 w-4 border-gray-500 rounded"
             />
@@ -254,7 +261,7 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
               <span className="text-xs text-gray-400">No image</span>
             )}
           </div>
-          <div className="w-[15%]">{product.active}</div>
+          <div className="w-[15%]">{product.active ? "✔" : "✘"}</div>
           <div className="w-[15%] text-green-700">
             <button
               onClick={handleClick}

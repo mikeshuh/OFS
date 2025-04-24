@@ -232,6 +232,7 @@ const AdminDashboard = () => {
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [Error, setError] = useState(null);
   const selectableCategories = categories.filter(category => category !== 'all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
 
 
   // sort state
@@ -248,12 +249,20 @@ const AdminDashboard = () => {
       : allProducts.filter(product => product.category === selectedCategory);
 
     // Then filter by search term
-    return searchValue === ''
+    const bySearch = searchValue === ''
       ? categoryFiltered
       : categoryFiltered.filter(product =>
         product.name.toLowerCase().includes(searchValue.toLowerCase())
       );
-  }, [allProducts, selectedCategory, searchValue]);
+
+      if (selectedStatus === 'active') {
+        return bySearch.filter(product => product.active);
+      }
+      if (selectedStatus === 'inactive') {
+        return bySearch.filter(product => !product.active);
+      }
+      return bySearch;
+  }, [allProducts, selectedCategory, searchValue, selectedStatus]);
 
   // sort the filtered products
   const sortedProducts = useMemo(() => {
@@ -273,7 +282,7 @@ const AdminDashboard = () => {
 
   // Get pagination data using custom hook
   const { currentPage, totalPages, pages, paginatedItems: products, setPage } =
-    usePagination(sortedProducts, itemsPerPage, [selectedCategory, searchValue, sortField, sortOrder]);
+    usePagination(sortedProducts, itemsPerPage, [selectedCategory, searchValue, sortField, sortOrder, selectedStatus]);
 
   // Fetch products on component mount
   useEffect(() => {
@@ -345,6 +354,12 @@ const AdminDashboard = () => {
                 options={categories}
                 onSelect={setSelectedCategory}
               />
+              <FilterDropdown
+                label="Status:"
+                selectedValue={selectedStatus}
+                options={['all','active','inactive']}
+                onSelect={setSelectedStatus}
+              />
               <div className="z-40 bg-white rounded-lg border border-opacity-20 border-[#304c57] py-2.5 px-4 flex items-center shadow-sm">
                 <input
                   type="text"
@@ -401,7 +416,7 @@ const AdminDashboard = () => {
               ))
             ) : (
               <div className="text-center py-12 border-b border-black">
-                <p className="text-gray-600">No products found in this category.</p>
+                <p className="text-gray-600">No products match search criteria.</p>
               </div>
             )}
             <Pagination

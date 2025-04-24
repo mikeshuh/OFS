@@ -60,7 +60,8 @@ const CreateProductForm = ({selectableCategories, onProductAdded, products }) =>
         ['pounds', pounds],
         ['quantity', quantity],
         ['image', image],
-       ]
+        ['active', 1],
+      ]
       productData.map(([name,item]) => {
         productForm.append(name,item)
       })
