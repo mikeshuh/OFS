@@ -142,30 +142,37 @@ const OrderList = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-gray-700 mb-2 font-medium">Filter by Date</label>
 
-                <div className="flex flex-row gap-4">
-                  <input
-                    type="date"
-                    name="startDate"
-                    value={searchDateStart}
-                    onChange={handleDateChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent shadow-sm"
-                  />
-                  <input
-                    type="date"
-                    name="endDate"
-                    value={searchDateEnd}
-                    onChange={handleDateChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent shadow-sm"
-                  />
-                </div>
-                {errorDate && (
-                  <div className="text-red-700 px-4 py-3 rounded mb-4 text-sm">
-                    {errorDate}
+                <div className ="flex flex-col ">
+
+                  <div className="flex flex-row gap-4">
+                    <label className= "block text-gray-700 mb-2 font-medium w-1/2">Start Date:</label>
+                    <label className= "block text-gray-700 mb-2 font-medium w-1/2">End Date:</label>
                   </div>
-                )}
-              </div>
+                  <div className="flex flex-row gap-4">
+
+                    <input
+                      type="date"
+                      name="startDate"
+                      value={searchDateStart}
+                      onChange={handleDateChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent shadow-sm"
+                    />
+                    <input
+                      type="date"
+                      name="endDate"
+                      value={searchDateEnd}
+                      onChange={handleDateChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent shadow-sm"
+                    />
+                  </div>
+                  {errorDate && (
+                    <div className="text-red-700 px-4 py-3 rounded mb-4 text-sm">
+                      {errorDate}
+                    </div>
+                  )}
+                </div>
+                </div>
             </div>
 
             <div className="flex justify-end">
