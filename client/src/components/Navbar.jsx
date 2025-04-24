@@ -5,7 +5,7 @@ import { useAuth } from "./AuthContext";
 import { useCart } from "./CartContext";
 import { requestServer } from "../utils/Utility";
 
-const API_URL = import .meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 function Navbar() {
   const auth = useAuth();
   const { cartItemsCount, calculateTotal } = useCart();
@@ -54,6 +54,13 @@ function Navbar() {
     const [open, setOpen] = useState(false);
     const timeoutRef = useRef(null);
 
+    // CLEAR TIMEOUT ON UNMOUNT:
+    useEffect(() => {
+      return () => {
+        clearTimeout(timeoutRef.current);
+      };
+    }, []);
+
     // This timeout is used to delay the closing of the dropdown menu
     // This resets the timer for closing if the mouse reenter the dropdown menu
     const handleMouseEnter = () => {
@@ -90,7 +97,7 @@ function Navbar() {
           {open &&
             (!loading ? (
               <div
-                className="absolute left-0 top-7.4 bg-white w-40 mt-3 rounded-md shadow-lg z-50"
+                className="absolute left-0 top-7 bg-white w-40 mt-3 rounded-md shadow-lg z-50"
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >
