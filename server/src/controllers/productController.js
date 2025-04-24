@@ -55,7 +55,7 @@ const createProduct = async (req, res) => {
 
     //download image to server
     if (!req.file) {
-      return responseHandler.badRequest(res, 'Image invalid, please upload a JPEG image ');
+      return responseHandler.badRequest(res, 'Image invalid, please upload a JPEG image');
     }
     let imageBuffer = req.file.buffer;
     const downloadResults = await downloadImage(formattedName, imageBuffer);
