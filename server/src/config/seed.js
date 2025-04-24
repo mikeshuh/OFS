@@ -23,11 +23,7 @@ const imagePathPrefix = 'images/products/';
 
 // Sample data
 const users = [
-  { isAdmin: true, firstName: 'Admin', lastName: 'User', email: 'admin@example.com' },
-  { isAdmin: false, firstName: 'John', lastName: 'Doe', email: 'john@example.com' },
-  { isAdmin: false, firstName: 'Jane', lastName: 'Smith', email: 'jane@example.com' },
-  { isAdmin: false, firstName: 'Robert', lastName: 'Johnson', email: 'robert@example.com' },
-  { isAdmin: false, firstName: 'Sarah', lastName: 'Williams', email: 'sarah@example.com' }
+  { isAdmin: true, firstName: 'Admin', lastName: 'User', email: 'admin@example.com' }
 ];
 
 const products = [
@@ -77,24 +73,9 @@ const products = [
 ];
 
 const orders = [
-  { userIndex: 1, totalPrice: 45.94, totalPounds: 13.50, deliveryFee: true, orderStatus: true, streetAddress: '123 Main St', city: 'New York', zipCode: 10001 },  // Completed order for John
-  { userIndex: 1, totalPrice: 32.95, totalPounds: 9.00, deliveryFee: true, orderStatus: false, streetAddress: '123 Main St', city: 'New York', zipCode: 10001 },  // Pending order for John
-  { userIndex: 2, totalPrice: 54.93, totalPounds: 12.00, deliveryFee: true, orderStatus: true, streetAddress: '456 Oak Ave', city: 'Los Angeles', zipCode: 90001 },  // Completed order for Jane
-  { userIndex: 3, totalPrice: 28.44, totalPounds: 6.00, deliveryFee: false, orderStatus: false, streetAddress: '789 Pine Rd', city: 'Chicago', zipCode: 60601 },  // Pending order for Robert
-  { userIndex: 4, totalPrice: 38.94, totalPounds: 11.00, deliveryFee: true, orderStatus: true, streetAddress: '321 Elm Blvd', city: 'Miami', zipCode: 33101 }  // Completed order for Sarah
 ];
 
 const orderProducts = [
-  // Order 1: John's completed order
-  { orderIndex: 0, productIndices: [0, 6, 12, 17, 22], quantities: [2, 1, 1, 1, 2] },
-  // Order 2: John's pending order
-  { orderIndex: 1, productIndices: [1, 7, 13, 23], quantities: [3, 2, 1, 1] },
-  // Order 3: Jane's completed order
-  { orderIndex: 2, productIndices: [2, 8, 14, 18, 27], quantities: [2, 1, 2, 1, 3] },
-  // Order 4: Robert's pending order
-  { orderIndex: 3, productIndices: [3, 9, 15, 24], quantities: [1, 2, 2, 1] },
-  // Order 5: Sarah's completed order
-  { orderIndex: 4, productIndices: [4, 10, 16, 19, 28], quantities: [2, 1, 1, 1, 2] }
 ];
 
 async function seed() {
@@ -114,6 +95,7 @@ async function seed() {
     await connection.execute('TRUNCATE TABLE Product');
     await connection.execute('TRUNCATE TABLE `Order`');
     await connection.execute('TRUNCATE TABLE User');
+    await connection.execute('TRUNCATE TABLE Payment');
     await connection.execute('SET FOREIGN_KEY_CHECKS = 1');
 
     // Generate hashed passwords and insert users
