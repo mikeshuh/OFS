@@ -21,19 +21,13 @@ const Login = () => {
     })();
   }, []);
 
-  const [errorMessage, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState(null);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
-  const [loginError, setLoginError] = useState(false);
 
-  // Error message for login
-  const setError = (errorMessage) => {
-    setLoginError(true);
-    setMessage(errorMessage);
-  };
 
   // Action listener for form inputs
   const handleChange = (e) => {
@@ -48,13 +42,14 @@ const Login = () => {
   const loginDB = async (e) => {
     e.preventDefault();
 
+    setErrorMessage(null);
     // 1. Pull & trim
     const email = formData.email?.trim() || "";
     const password = formData.password?.trim() || "";
 
     // 2. Generic missing‐fields check
     if (!email || !password) {
-      setError("Please fill in all required fields.");
+      setErrorMessage("Please fill in all required fields.");
       return;
     }
 
@@ -62,17 +57,17 @@ const Login = () => {
     // 3a. Email format & length
     const emailRegex = /^\S+@\S+\.\S+$/;
     if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address.");
+      setErrorMessage("Please enter a valid email address.");
       return;
     }
     if (email.length > 64) {
-      setError("Email must be less than 64 characters.");
+      setErrorMessage("Email must be less than 64 characters.");
       return;
     }
 
     // 3b. Password length
     if (password.length > 64) {
-      setError("Password must be less than 64 characters.");
+      setErrorMessage("Password must be less than 64 characters.");
       return;
     }
 
@@ -80,11 +75,11 @@ const Login = () => {
     try {
       const response = await auth.loginAction({ email, password });
       if (!response.data?.success) {
-        setError(response || "Failed to login user.");
+        setErrorMessage(response || "Failed to login user.");
       }
     } catch (err) {
       console.error("Login error:", err);
-      setError("Network error. Please try again.");
+      setErrorMessage("Network error. Please try again.");
     }
   };
 
@@ -110,7 +105,7 @@ const Login = () => {
             </h1>
 
             {/* Display Error Message */}
-            {loginError && (
+            {errorMessage && (
               <div className="bg-red-100 text-red-700 border border-red-400 px-4 py-3 rounded mb-4 text-sm">
                 {errorMessage}
               </div>
