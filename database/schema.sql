@@ -38,7 +38,8 @@ CREATE TABLE Product (
     price DECIMAL(10,2) NOT NULL,
     pounds DECIMAL(10,2) NOT NULL,
     quantity INT NOT NULL,
-    imagePath VARCHAR(255) NOT NULL
+    imagePath VARCHAR(255) NOT NULL,
+    active BOOL NOT NULL DEFAULT TRUE
 ) ENGINE=InnoDB;
 
 -- Create the OrderProduct table (Many-to-Many Relationship)

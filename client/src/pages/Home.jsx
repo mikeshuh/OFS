@@ -35,10 +35,11 @@ const Home = () => {
         if (!res?.data?.success) {
           throw new Error(res?.data?.message || "Failed to fetch products");
         }
-        const data = res.data.data;
+        // only keep active products
+        const activeOnly = res.data.data.filter(p => p.active);
 
         // Set featured products (random 5 products)
-        const shuffled = shuffleArray(data);
+        const shuffled = shuffleArray(activeOnly);
         const selected = shuffled.slice(0, 5);
         setFeaturedProducts(selected);
       } catch (err) {

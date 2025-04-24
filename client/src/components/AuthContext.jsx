@@ -49,7 +49,7 @@ const AuthProvider = ({ children }) => {
         setLoggedIn(true);
         navigate("/");
       } else {
-        throw new Error(response.data?.errors?.errors[0].msg || response.data?.message || "Error logging in.");
+        throw new Error(response.data?.errors?.errors[0].msg || response.data?.message || "Network error, please try again later.");
       }
       return response;
     } catch (error) {

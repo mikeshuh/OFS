@@ -97,7 +97,7 @@ const OrderConfirmation = () => {
     );
   }
 
-  if (error || !orderDetails) {
+  if (error || !orderDetails || orderDetails.length === 0) {
     return (
       <div className="min-h-screen flex flex-col bg-gray-50">
         <Navbar />

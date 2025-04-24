@@ -1,14 +1,177 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import logo from "../assets/OFS_logo.png";
 import { useAuth } from "./AuthContext";
 import { useCart } from "./CartContext";
+import { requestServer } from "../utils/Utility";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 function Navbar() {
   const auth = useAuth();
   const { cartItemsCount, calculateTotal } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
+  const homeNav = [["login", "Login"], ["signup", "Sign up"]];
+  const homeNavLoggedIn = [
+    ["profile", "Profile"],
+    ["orders", "Order History"],
+    ["map", "Check Delivery"]
+  ];
+  const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  /*
+    These are the functions for the dropdown menu
+    DropdownBar is a reusable component that allows input and generates a dropdown menu
+    DropdownContent is the input for the dropdown menu
+    HomeContent and ProductContent are the dropdown menus for the Home and Product menu respectively
+  */
+  useEffect(() => {
+    const fetchAllProducts = async () => {
+      try {
+        setLoading(true);
+        const res = await requestServer(`${API_URL}/api/products`, "GET");
+        if (!res?.data?.success) {
+          throw new Error(res?.data?.message || "Failed to fetch products");
+        }
+        // only keep active products
+        const activeOnly = res.data.data.filter(p => p.active);
+
+        // build category list
+        const cats = [
+          ...new Set(activeOnly.map((p) => p.category.toLowerCase()))
+        ];
+        setCategories(cats);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAllProducts();
+  }, []);
+
+  function DropdownBar({ children, href, DropdownContent }) {
+    const [open, setOpen] = useState(false);
+    const timeoutRef = useRef(null);
+
+    // CLEAR TIMEOUT ON UNMOUNT:
+    useEffect(() => {
+      return () => {
+        clearTimeout(timeoutRef.current);
+      };
+    }, []);
+
+    // This timeout is used to delay the closing of the dropdown menu
+    // This resets the timer for closing if the mouse reenter the dropdown menu
+    const handleMouseEnter = () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      setOpen(true);
+    };
+
+    // This checks the timeout for closing the dropdown menu
+    const handleMouseLeave = () => {
+      timeoutRef.current = setTimeout(() => {
+        setOpen(false);
+      }, 100);
+    };
+
+    return (
+      <div className="text-gray-800 text-base font-medium flex justify-center">
+        <div
+          className="group relative h-fit w-fit"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          {/* The style is for the green underline bar*/}
+          <Link to={href} className="relative">
+            {children}
+            <span
+              style={{
+                transform: open ? "scaleX(1)" : "scaleX(0)",
+              }}
+              className="absolute -bottom-2 -left-0 -right-0 h-1 origin-left rounded-full bg-green-300 transition-transform duration-300 ease-in-out group-hover:w-full"
+            />
+          </Link>
+          {open &&
+            (!loading ? (
+              <div
+                className="absolute left-0 top-7 bg-white w-40 mt-3 rounded-md shadow-lg z-50"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              >
+                <DropdownContent />
+              </div>
+            ) : (
+              // Loading spinner
+              <div
+                className="absolute left-0 bg-white w-40 mt-3 rounded-md shadow-lg z-50"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              >
+                <div className="flex items-center justify-center p-4">
+                  <svg
+                    className="animate-spin h-5 w-5 text-green-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2zm0 18a8 8 0 1 1 8-8A8.009 8.009 0 0 1 12 20z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            ))}
+        </div>
+      </div>
+    );
+  }
+  // Renders the dropdown content for the Home menu
+  const HomeContent = () => {
+    return (
+      <div className="flex flex-col py-2">
+        {!auth.loggedIn ? (homeNav.map(([path, name]) => (
+          <Link
+            key={path}
+            to={`/${path}`}
+            className="block px-6 py-2 text-gray-800 hover:bg-green-100 hover:text-green-600 transition-colors duration-200"
+          >
+            {name}
+          </Link>
+        ))) : (
+          (homeNavLoggedIn.map(([path, name]) => (
+            <Link
+              key={path}
+              to={`/${path}`}
+              className="block px-6 py-2 text-gray-800 hover:bg-green-100 hover:text-green-600 transition-colors duration-200"
+            >
+              {name}
+            </Link>
+          )))
+        )}
+      </div>
+    );
+  };
+
+  // Renders the dropdown content for the Product menu
+  const ProductContent = () => {
+    return (
+      <div className="flex flex-col py-2">
+        {categories.map((category) => (
+          <Link
+            key={category}
+            to={`/products/${category}`}
+            className="block px-6 py-2 text-gray-800 hover:bg-green-100 hover:text-green-600 transition-colors duration-200"
+          >
+            {category.charAt(0).toUpperCase() + category.slice(1)}
+          </Link>
+        ))}
+      </div>
+    );
+  };
 
   // Figure out current category from the path (/products/:category)
   const pathSegments = location.pathname.split("/");
@@ -35,33 +198,14 @@ function Navbar() {
     }
   };
 
+
   const handleClear = () => {
     setSearchQuery("");
     navigate(`/products/${currentCategory}`);
   };
 
-  const [open1, openDropDown1] = useState(false);
-  const [open2, openDropDown2] = useState(false);
-
-  {/*Dropdown: login, signup, delivery, profile*/}
-  const handleDropDown1 = () => {
-    openDropDown1(!open1);
-    if (open2) {
-      openDropDown2(!open2);
-    }
-  };
-
-  {/*Dropdown: product categories*/}
-  const handleDropDown2 = () => {
-    openDropDown2(!open2);
-    if (open1) {
-      openDropDown1(!open1);
-    }
-  };
-
   return (
-    /*Z value is assgined so that dropdown does not hide behind other elements.*/
-    <div className="z-[20] w-full">
+    <div className="w-full">
       {/* Top Bar */}
       <div className="flex items-center justify-between px-6 py-4 bg-white border-b">
         {/* Logo */}
@@ -173,7 +317,7 @@ function Navbar() {
                   <Link to="/profile" className="hover:underline">
                     Profile
                   </Link>
-                  <span>/</span>
+                  <span>|</span>
                   <Link to="/logout" className="hover:underline">
                     Logout
                   </Link>
@@ -183,7 +327,7 @@ function Navbar() {
                   <Link to="/login" className="hover:underline">
                     Login
                   </Link>
-                  <span>/</span>
+                  <span>|</span>
                   <Link to="/signup" className="hover:underline">
                     Register
                   </Link>
@@ -226,83 +370,20 @@ function Navbar() {
 
       {/* Navigation Menu */}
       <div className="flex justify-center bg-white shadow-sm">
-        <div className="flex space-x-10 py-4">
-
-          <div>
-          {/*Dropdown: login, signup, delivery, profile*/}
-          <Link className="text-gray-800 text-base font-medium hover:text-green-600 flex"
-          onClick={handleDropDown1}>
+        <div className="flex gap-40 py-4">
+          <DropdownBar href="/" DropdownContent={HomeContent}>
             Home
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </Link>
-          <div className="absolute bg-white rounded-b-xl">
-            {open1 ?
-              <ul className="list-none text-left border-1 border-opacity-20 border-[#304c57] rounded-b-xl">
+          </DropdownBar>
 
-              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/login" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
-                Login</Link>
-              </li>
-              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/signup" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
-                Signup</Link>
-              </li>
-              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/orders" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
-                Delivery</Link>
-              </li>
-              <li className="hover:bg-[#f7fbfc] rounded-b-xl"><Link to="/profile" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
-                Profile</Link>
-              </li>
-              </ul> : null
-            }
-          </div>
-        </div>
-        
-        <div>
-          {/*Dropdown: product categories*/}
-          <Link className="text-gray-800 text-base font-medium hover:text-green-600 flex"
-          onClick={handleDropDown2}>
+          <DropdownBar href="/products/all" DropdownContent={ProductContent}>
             Products
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </Link>
-          <div className="absolute bg-white rounded-b-xl">
-            {open2 ?
-              <ul className="list-none text-left border-1 border-opacity-20 border-[#304c57] rounded-b-xl">
-                
-              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/products/fruit" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
-                Fruit</Link>
-              </li>
-              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/products/vegetable" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
-                Vegetable</Link>
-              </li>
-              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/products/dairy" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
-                Dairy</Link>
-              </li>
-              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/products/meat" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
-                Meat</Link>
-              </li>
-              <li className="hover:bg-[#f7fbfc] border-b-1 border-opacity-20 border-[#304c57]"><Link to="/products/bakery" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
-                Bakery</Link>
-              </li>
-              <li className="hover:bg-[#f7fbfc] rounded-b-xl"><Link to="/products/pantry" className="p-2 text-gray-800 text-base font-medium hover:text-green-600 flex">
-                Pantry</Link>
-              </li>
-              </ul> : null
-            }
-          </div>
-        </div>
-
-          <Link to="/about" className="text-gray-800 text-base font-medium hover:text-green-600 flex">
+          </DropdownBar>
+          <Link
+            to="/about"
+            className="text-gray-800 text-base font-medium hover:text-green-600 flex items-center"
+          >
             About Us
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              {/*
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              */}
-            </svg>
           </Link>
-
         </div>
       </div>
     </div>
