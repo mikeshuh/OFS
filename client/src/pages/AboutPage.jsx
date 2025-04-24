@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react"
 
 import Navbar from "../components/Navbar"
 //Why choose OFS image
-import wheatField from "../assets/wheatField.jpg"
+import wheatField from "../assets/wheatField.webp"
 
 //icons
 import reactIcon from "../assets/aboutpage/reactIcon.png"

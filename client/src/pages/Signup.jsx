@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { requestServer, checkLogin } from "../utils/Utility";
-import signupBackground from "../assets/signup.jpg"
+import signupBackground from "../assets/signup.webp"
 
 const API_URL = import.meta.env.VITE_API_URL;
 

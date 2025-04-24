@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
-import profileBackground from "../assets/profile_background.jpg";
+import profileBackground from "../assets/profile_background.webp";
 
 const API_URL = import.meta.env.VITE_API_URL;
 

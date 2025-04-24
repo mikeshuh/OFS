@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import ProductGrid from "../components/ProductGrid";
-import Banner from "../assets/banner.jpg";
-import fruitImage from "../assets/fruits.jpg";
-import vegetablesImage from "../assets/vegetables.jpg";
-import dairyImage from "../assets/dairy.jpg";
-import deliveryImage from "../assets/delivery.jpg";
+import Banner from "../assets/banner.webp";
+import fruitImage from "../assets/fruits.webp";
+import vegetablesImage from "../assets/vegetables.webp";
+import dairyImage from "../assets/dairy.webp";
+import deliveryImage from "../assets/delivery.webp";
 import { requestServer } from "../utils/Utility";
 
 const API_URL = import.meta.env.VITE_API_URL;
