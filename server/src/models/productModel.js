@@ -50,11 +50,11 @@ const Product = {
 
   // Update a product
   update: async (productID, productData) => {
-    const { category, name, price, pounds, quantity, imagePath } = productData;
+    const { category, name, price, pounds, quantity, imagePath, active } = productData;
 
     const [result] = await db.execute(
-      'UPDATE Product SET category = ?, name = ?, price = ?, pounds = ?, quantity = ?, imagePath = ? WHERE productID = ?',
-      [category, name, price, pounds, quantity, imagePath, productID]
+      'UPDATE Product SET category = ?, name = ?, price = ?, pounds = ?, quantity = ?, imagePath = ?, active = ? WHERE productID = ?',
+      [category, name, price, pounds, quantity, imagePath, active, productID]
     );
 
     return result.affectedRows > 0; // Return true if update was successful

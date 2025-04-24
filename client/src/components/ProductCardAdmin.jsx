@@ -4,7 +4,7 @@ import { requestServer } from "../utils/Utility";
 const API_URL = import.meta.env.VITE_API_URL;
 
 const MAX_PRICE = 9999.99;
-const MAX_POUNDS = 999.99;
+const MAX_POUNDS = 50.00;
 const MAX_QUANTITY = 1000;
 
 const REGEX_PRICE_POUNDS = /^\d+(\.\d{1,2})?$/;
@@ -15,7 +15,8 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
   const [formData, setFormData] = useState({
     price: product.price,
     pounds: product.pounds,
-    quantity: product.quantity
+    quantity: product.quantity,
+    active: product.active
   });
   const [message, setMessage] = useState("");
   const [image, setImage] = useState(null);
@@ -35,7 +36,8 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
     setFormData({
       price: product.price,
       pounds: product.pounds,
-      quantity: product.quantity
+      quantity: product.quantity,
+      active: product.active
     });
   }, [product]);
 
@@ -45,7 +47,7 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, type, value, checked } = e.target;
 
     // For price and pounds: allow only numbers with up to 2 decimals
     if (name === 'price' || name === 'pounds') {
@@ -65,6 +67,13 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
         }));
       }
     }
+    // For checkbox: use checked value
+    else if (type === 'checkbox') {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: checked,
+      }));
+    }
     // Default case if needed
     else {
       setFormData((prevData) => ({
@@ -82,7 +91,7 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
   const handleSave = async (e) => {
     e.preventDefault();
 
-    const { price, pounds, quantity } = formData;
+    const { price, pounds, quantity, active } = formData;
     if (
       price <= 0 || price > MAX_PRICE ||
       pounds <= 0 || pounds > MAX_POUNDS ||
@@ -103,8 +112,9 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
         ['pounds', pounds],
         ['quantity', quantity],
         ['image', image],
-        ['imagePath', product.imagePath]
-       ]
+        ['imagePath', product.imagePath],
+        ['active', active ? 1 : 0],
+      ]
       productData.map(([name,item]) => {
         updateProductForm.append(name,item)
       })
@@ -130,7 +140,8 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
         ...product,
         price: parseFloat(price).toFixed(2),
         pounds: parseFloat(pounds).toFixed(2),
-        quantity: parseInt(quantity)
+        quantity: parseInt(quantity),
+        active: active
       });
       setMessage("✔ Product updated");
     } catch (error) {
@@ -198,15 +209,22 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
             <p className="text-[10px] text-gray-500 mt-1">Max: {MAX_QUANTITY}</p>
           </div>
           <div className="w-[15%] pr-2">
-          <div className="flex flex-col gap-1">
-          <label className="text-[#304c57] text-sm font-medium opacity-80">Image</label>
-          <input
-            type="file"
-            name="image"
-            className="w-full text-sm focus:outline-none"
-            onChange={handleImageChange}
-          />
-        </div>
+            <input
+              type="file"
+              name="image"
+              className="w-full text-[10px]"
+              onChange={handleImageChange}
+            />
+          </div>
+          <div className="w-[15%] pr-2">
+            <input
+              aria-label="Active"
+              type="checkbox"
+              name="active"
+              checked={formData.active}
+              onChange={handleChange}
+              className="h-4 w-4 border-gray-500 rounded"
+            />
           </div>
           <div className="w-[15%] flex gap-2">
             <button
@@ -243,6 +261,7 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
               <span className="text-xs text-gray-400">No image</span>
             )}
           </div>
+          <div className="w-[15%]">{product.active ? "✔" : "✘"}</div>
           <div className="w-[15%] text-green-700">
             <button
               onClick={handleClick}
