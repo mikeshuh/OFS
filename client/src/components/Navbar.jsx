@@ -374,7 +374,7 @@ function Navbar() {
             Home
           </DropdownBar>
 
-          <DropdownBar href="/products" DropdownContent={ProductContent}>
+          <DropdownBar href="/products/all" DropdownContent={ProductContent}>
             Products
           </DropdownBar>
           <Link
