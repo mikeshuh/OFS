@@ -123,9 +123,8 @@ const updateProduct = async (req, res) => {
   try {
     //update product
     const { productId } = req.params;
-    const { name, category, price, pounds, quantity, imagePath } = req.body;
+    const { name, category, price, pounds, quantity, imagePath, active } = req.body;
     const cacheBuster = Date.now();
-
 
     const productData = {
       category: category,
@@ -133,7 +132,8 @@ const updateProduct = async (req, res) => {
       price: price,
       pounds: pounds,
       quantity: quantity,
-      imagePath: imagePath
+      imagePath: imagePath,
+      active: active
     };
 
     const updated = await Product.update(productId, productData);
@@ -153,10 +153,9 @@ const updateProduct = async (req, res) => {
         if (downloadResults.errors)
           return responseHandler.badRequest(res, 'Error downloading image', downloadErrors);
         else
-          return responseHandler.success(res, Date.now(), 'product and product image updated succesfully' );
+          return responseHandler.success(res, cacheBuster, 'product and product image updated succesfully' );
       }
     }
-
   } catch (error) {
     console.error(`Error updating product:  ${error.message}`, error);
     responseHandler.error(res, `Error updating product : ${error.message}`);

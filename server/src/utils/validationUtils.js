@@ -258,6 +258,13 @@ const validateProduct = [
   .isInt({min: 0, max:1000})
   .withMessage('Quantity must be a positive integer'),
 
+  //santize
+  body('active')
+  .exists()
+  .withMessage('Active is required')
+  .isBoolean()
+  .withMessage('Active must be a boolean'),
+
   (req, res, next) => {
     const errors = validationResult(req);
 

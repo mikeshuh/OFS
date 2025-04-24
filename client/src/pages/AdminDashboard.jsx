@@ -326,7 +326,7 @@ const AdminDashboard = () => {
   return (
     <div>
       <Navbar />
-      <div className="w-full mt-20 p-8 flex flex-col gap-5 items-start max-w-[1280px] ps-[50px] overflow-hidden">
+      <div className="w-full mt-20 p-8 flex flex-col gap-5 items-start max-w-[1440px] ps-[50px] overflow-hidden">
         {Error && (
           <div className="bg-red-100 text-red-700 border border-red-400 px-4 py-3 rounded mb-4 text-sm w-full">
             {Error}
@@ -386,6 +386,7 @@ const AdminDashboard = () => {
               <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Pounds</div>
               <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Quantity</div>
               <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Image</div>
+              <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Active</div>
               <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Action</div>
               <div className="text-[#304c57] text-sm font-medium w-[15%] opacity-60">Status</div>
             </div>
