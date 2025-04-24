@@ -27,14 +27,7 @@ const Signup = () => {
     passwordConfirmed: ""
   });
 
-  const [errorMessage, setMessage] = useState("");
-  const [signupError, setSignupError] = useState(false);
-
-  // Function to display error message
-  const setError = (errorMessage) => {
-    setSignupError(true);
-    setMessage(errorMessage);
-  };
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Action listener for form fields
   const handleChange = (e) => {
@@ -48,7 +41,7 @@ const Signup = () => {
   // Handle signup logic upon form submission
   const signupDB = async (e) => {
     e.preventDefault();
-
+    setErrorMessage(null);
     // pull & trim once
     const firstName = formData.firstName?.trim() || "";
     const lastName  = formData.lastName?.trim()  || "";
@@ -58,27 +51,27 @@ const Signup = () => {
 
     // 1. Generic check for missing fields
     if (!firstName || !lastName || !email || !password || !passwordConfirmed) {
-      setError("Please fill in all required fields.");
+      setErrorMessage("Please fill in all required fields.");
       return;
     }
 
     // 2. Single‐error checks for name/email
     if (firstName.length > 32) {
-      setError("First name must be less than 32 characters.");
+      setErrorMessage("First name must be less than 32 characters.");
       return;
     }
     if (lastName.length > 32) {
-      setError("Last name must be less than 32 characters.");
+      setErrorMessage("Last name must be less than 32 characters.");
       return;
     }
 
     const emailRegex = /^\S+@\S+\.\S+$/;
     if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address.");
+      setErrorMessage("Please enter a valid email address.");
       return;
     }
     if (email.length > 64) {
-      setError("Email must be less than 64 characters.");
+      setErrorMessage("Email must be less than 64 characters.");
       return;
     }
 
@@ -103,7 +96,7 @@ const Signup = () => {
       pwErrors.push("one special character (@, $, !, %, *, ?, &)");
     }
     if (pwErrors.length) {
-      setError(
+      setErrorMessage(
         `Password must contain ${pwErrors.join(", ")}.`
       );
       return;
@@ -111,7 +104,7 @@ const Signup = () => {
 
     // 4. Password confirmation
     if (passwordConfirmed !== password) {
-      setError("Passwords do not match.");
+      setErrorMessage("Passwords do not match.");
       return;
     }
 
@@ -126,10 +119,10 @@ const Signup = () => {
       if (response.data?.success) {
         navigate("/login");
       } else {
-        setError(response.data?.errors?.errors[0].msg || response.data?.message || "Failed to register user.");
+        setErrorMessage(response.data?.errors?.errors[0].msg || response.data?.message || "Network error. please try again later.");
       }
     } catch (err) {
-      setError("Network error. Please try again.");
+      setErrorMessage("Network error. Please try again.");
     }
   };
 
@@ -153,7 +146,7 @@ const Signup = () => {
             <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6">Create Account</h1>
 
             {/* Display error message */}
-            {signupError && (
+            {errorMessage && (
               <div className="bg-red-100 text-red-700 border border-red-400 px-4 py-3 rounded mb-4 text-sm">
                 {errorMessage}
               </div>

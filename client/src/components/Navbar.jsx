@@ -34,11 +34,12 @@ function Navbar() {
         if (!res?.data?.success) {
           throw new Error(res?.data?.message || "Failed to fetch products");
         }
-        const data = res.data.data;
+        // only keep active products
+        const activeOnly = res.data.data.filter(p => p.active);
 
         // build category list
         const cats = [
-          ...new Set(data.map((p) => p.category.toLowerCase()))
+          ...new Set(activeOnly.map((p) => p.category.toLowerCase()))
         ];
         setCategories(cats);
       } catch (err) {
@@ -374,7 +375,7 @@ function Navbar() {
             Home
           </DropdownBar>
 
-          <DropdownBar href="/products" DropdownContent={ProductContent}>
+          <DropdownBar href="/products/all" DropdownContent={ProductContent}>
             Products
           </DropdownBar>
           <Link

@@ -36,13 +36,14 @@ const Products = () => {
         if (!res?.data?.success) {
           throw new Error(res?.data?.message || "Failed to fetch products");
         }
-        const data = res.data.data;
-        setAllProducts(data);
+        // only keep active products
+        const activeOnly = res.data.data.filter(p => p.active);
+        setAllProducts(activeOnly);
 
         // build category list
         const cats = [
           "all",
-          ...new Set(data.map((p) => p.category.toLowerCase()))
+          ...new Set(activeOnly.map((p) => p.category.toLowerCase()))
         ];
         setCategories(cats);
       } catch (err) {
