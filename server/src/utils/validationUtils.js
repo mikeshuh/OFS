@@ -211,6 +211,11 @@ const validateProduct = [
   .notEmpty()
   .withMessage('Category is required')
   .isString()
+  // Handle casing
+  .customSanitizer(value => {
+    return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+  })
+
   .isLength({max: 16})
   .withMessage('Category must be less than 16 characters'),
 
@@ -222,6 +227,11 @@ const validateProduct = [
   .notEmpty()
   .withMessage('Name is required')
   .isString()
+  // Handle casing
+  .customSanitizer(value => {
+    return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+  })
+    
   .isLength({max: 32})
   .withMessage('Name must be less than 32 characters'),
 

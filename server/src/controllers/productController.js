@@ -44,6 +44,7 @@ const createProduct = async (req, res) => {
   let downloadOutputPath;
   try {
     const { name, category, price, pounds, quantity } = req.body;
+    const lowercaseName = name.toLowerCase();
 
     //if product already exists dont create new product
     productFound = await Product.findByName(name);
@@ -53,13 +54,10 @@ const createProduct = async (req, res) => {
     }
 
     //download image to server
-
     if (!req.file) {
       return responseHandler.badRequest(res, "Image invalid, please upload a JPEG image ");
     }
     let imageBuffer = req.file.buffer;
-
-
     const downloadResults = await downloadImage(name, imageBuffer);
 
     downloadOutputPath = downloadResults.outputPath;
@@ -69,7 +67,7 @@ const createProduct = async (req, res) => {
       return responseHandler.badRequest(res, 'Error downloading image', downloadErrors);
     }
 
-    const imagePath = '/images/products/' + name + ".jpg"
+    const imagePath = '/images/products/' + lowercaseName + ".jpg"
     const productData = {
       category: category,
       name: name,
