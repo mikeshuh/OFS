@@ -4,7 +4,7 @@ import { requestServer } from "../utils/Utility";
 const API_URL = import.meta.env.VITE_API_URL;
 
 const MAX_PRICE = 9999.99;
-const MAX_POUNDS = 999.99;
+const MAX_POUNDS = 50.00;
 const MAX_QUANTITY = 1000;
 
 const REGEX_PRICE_POUNDS = /^\d+(\.\d{1,2})?$/;

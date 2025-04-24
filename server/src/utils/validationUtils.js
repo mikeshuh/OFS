@@ -244,7 +244,7 @@ const validateProduct = [
   .notEmpty()
   .withMessage('Pounds is required')
   .toFloat()
-  .isFloat({min: 0, max: 1000})
+  .isFloat({min: 0, max: 50})
   .withMessage('Pounds must be a positive float'),
 
   //sanitize
