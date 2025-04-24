@@ -8,9 +8,11 @@ const API_URL = import.meta.env.VITE_API_URL;
 const OrderList = () => {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
-  const [searchDate, setSearchDate] = useState("");
-  const [deliveryStatus, setDeliveryStatus] = useState("All");
+  const [searchDateStart, setSearchDateStart] = useState("");
+  const [searchDateEnd, setSearchDateEnd] = useState("");
+  const [searchDeliveryStatus, setSearchDeliveryStatus] = useState("All");
   const [error, setError] = useState(null);
+  const [errorDate, setErrorDate] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorDetails, setErrorDetails] = useState("");
   const navigate = useNavigate();
@@ -45,33 +47,50 @@ const OrderList = () => {
     fetchOrders();
   }, []);
 
-  const filterOrders = (selectedDate, selectedStatus) => {
-    const filtered = orders.filter(order => {
-      const orderDate = new Date(order.orderTime);
-      const localDate = orderDate.toISOString().split("T")[0];
+  const parseDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+  useEffect(() => {
 
-      const matchDate = !selectedDate || localDate === selectedDate;
-      const matchStatus =
-        selectedStatus === "All" ||
-        (selectedStatus === "Delivered" && order.orderStatus) ||
-        (selectedStatus === "In Progress" && !order.orderStatus);
+    const filterOrders = () => {
+      const filtered = orders.filter(order => {
+        const localDate = parseDate(new Date(order.orderTime))
+        const matchDate = (!searchDateStart || localDate >= searchDateStart) && (!searchDateEnd || localDate <= searchDateEnd);
+        const matchStatus =
+          searchDeliveryStatus === "All" ||
+          (searchDeliveryStatus === "Delivered" && order.orderStatus) ||
+          (searchDeliveryStatus === "In Progress" && !order.orderStatus);
 
-      return matchDate && matchStatus;
-    });
+        return matchDate && matchStatus;
+      });
 
-    setFilteredOrders(filtered);
-  };
+      setFilteredOrders(filtered);
+    };
+    filterOrders();
+  }, [orders, searchDateStart, searchDateEnd, searchDeliveryStatus]);
 
   const handleDateChange = (e) => {
     const dateValue = e.target.value;
-    setSearchDate(dateValue);
-    filterOrders(dateValue, deliveryStatus);
+    setErrorDate(null);
+    if (e.target.name === "endDate" && searchDateStart && dateValue < searchDateStart ||
+      e.target.name === "startDate" && searchDateEnd && dateValue > searchDateEnd) {
+      setErrorDate("End date cannot be earlier than start date.");
+      return;
+    }
+
+    if (dateValue > new Date().toISOString().split('T')[0]) {
+      setErrorDate("Date cannot be in the future.");
+      return;
+    }
+    e.target.name == "startDate" ? setSearchDateStart(dateValue) : setSearchDateEnd(dateValue);
   };
 
   const handleStatusChange = (e) => {
     const value = e.target.value;
-    setDeliveryStatus(value);
-    filterOrders(searchDate, value);
+    setSearchDeliveryStatus(value);
   };
 
   return (
@@ -105,7 +124,7 @@ const OrderList = () => {
                 <label className="block text-gray-700 mb-2 font-medium">Order Status</label>
                 <div className="relative">
                   <select
-                    value={deliveryStatus}
+                    value={searchDeliveryStatus}
                     onChange={handleStatusChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent shadow-sm appearance-none bg-white"
                   >
@@ -124,20 +143,37 @@ const OrderList = () => {
               </div>
               <div>
                 <label className="block text-gray-700 mb-2 font-medium">Filter by Date</label>
-                <input
-                  type="date"
-                  value={searchDate}
-                  onChange={handleDateChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent shadow-sm"
-                />
+
+                <div className="flex flex-row gap-4">
+                  <input
+                    type="date"
+                    name="startDate"
+                    value={searchDateStart}
+                    onChange={handleDateChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent shadow-sm"
+                  />
+                  <input
+                    type="date"
+                    name="endDate"
+                    value={searchDateEnd}
+                    onChange={handleDateChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent shadow-sm"
+                  />
+                </div>
+                {errorDate && (
+                  <div className="text-red-700 px-4 py-3 rounded mb-4 text-sm">
+                    {errorDate}
+                  </div>
+                )}
               </div>
             </div>
 
             <div className="flex justify-end">
               <button
                 onClick={() => {
-                  setSearchDate("");
-                  setDeliveryStatus("All");
+                  setSearchDateStart("");
+                  setSearchDateEnd("");
+                  setSearchDeliveryStatus("All");
                   setFilteredOrders(orders);
                 }}
                 className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-transparent rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
@@ -161,7 +197,7 @@ const OrderList = () => {
               </svg>
               <h3 className="mt-4 text-lg font-medium text-gray-900">No orders found</h3>
               <p className="mt-2 text-gray-500">
-                {searchDate || deliveryStatus !== "All"
+                {searchDateStart || searchDeliveryStatus !== "All"
                   ? "No orders match your filter criteria. Try changing your filters."
                   : "You haven't made any orders yet."}
               </p>
@@ -224,11 +260,10 @@ const OrderList = () => {
                             {new Date(order.orderTime).toLocaleString()}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                              order.orderStatus
-                                ? "bg-blue-100 text-blue-800 border border-blue-200"
-                                : "bg-yellow-100 text-yellow-800 border border-yellow-200"
-                            }`}>
+                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${order.orderStatus
+                              ? "bg-blue-100 text-blue-800 border border-blue-200"
+                              : "bg-yellow-100 text-yellow-800 border border-yellow-200"
+                              }`}>
                               {order.orderStatus ? (
                                 <>
                                   <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -247,11 +282,10 @@ const OrderList = () => {
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                              order.paymentStatus === "paid"
-                                ? "bg-green-100 text-green-800 border border-green-200"
-                                : "bg-red-100 text-red-800 border border-red-200"
-                            }`}>
+                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${order.paymentStatus === "paid"
+                              ? "bg-green-100 text-green-800 border border-green-200"
+                              : "bg-red-100 text-red-800 border border-red-200"
+                              }`}>
                               {order.paymentStatus === "paid" ? (
                                 <>
                                   <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
