@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { checkLogin  } from "../utils/Utility";
 import { useAuth } from "../components/AuthContext";
-import loginBackground from "../assets/login.jpg"
+import loginBackground from "../assets/login.webp"
 
 const Login = () => {
   const navigate = useNavigate();
