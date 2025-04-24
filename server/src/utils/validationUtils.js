@@ -211,6 +211,20 @@ const validateProduct = [
   .notEmpty()
   .withMessage('Category is required')
   .isString()
+  // Handle casing
+  .customSanitizer(value => {
+    //remove multiple whitespace characters "chicken  soup"
+    const normalizedValue = value.replace(/\s+/g, ' ');
+    let words = normalizedValue.split(" ");
+
+    //Handle casing for multiple words chicken soup => Chicken Soup
+    for (let i = 0; i < words.length; i++) {
+      words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1).toLowerCase();
+    }
+
+    const formattedCategory = words.join(" ");
+    return formattedCategory;
+  })
   .isLength({max: 16})
   .withMessage('Category must be less than 16 characters'),
 
@@ -222,6 +236,20 @@ const validateProduct = [
   .notEmpty()
   .withMessage('Name is required')
   .isString()
+  // Handle casing
+  .customSanitizer(value => {
+    //remove multiple whitespace characters "chicken  soup"
+    const normalizedValue = value.replace(/\s+/g, ' ');
+    let words = normalizedValue.split(" ");
+
+    //Handle casing for multiple words chicken soup => Chicken Soup
+    for (let i = 0; i < words.length; i++) {
+      words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1).toLowerCase();
+    }
+
+    const formattedName = words.join(" ");
+    return formattedName;
+  })
   .isLength({max: 32})
   .withMessage('Name must be less than 32 characters'),
 
