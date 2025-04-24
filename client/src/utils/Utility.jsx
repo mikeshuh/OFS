@@ -2,16 +2,16 @@ import axios from 'axios';
 import {jwtDecode} from 'jwt-decode';
 
 const API_URL = import.meta.env.VITE_API_URL;
-export const requestServer = async (url, method, token, data = {}, contentType = 'application/json') => {
+export const requestServer = async (url, method, data = {}, contentType = 'application/json') => {
   try {
     const response = await axios({
       method,
       url,
       data,
       headers: {
-        'Content-Type': contentType,
-        'Authorization': `Bearer ${token}`
-      }
+        'Content-Type': contentType
+      },
+      withCredentials: true
     });
     return response;
   } catch (error) {
