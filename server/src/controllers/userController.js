@@ -143,6 +143,7 @@ const changePassword = async (req, res) => {
       await tokenService.blacklistToken(req.token, userID);
     }
 
+    res.cookie(COOKIE_NAME, '', { ...COOKIE_OPTIONS, maxAge: 0 });
     return responseHandler.success(res, null, 'Password changed successfully.');
   } catch (error) {
     console.error(`Change password error: ${error.message}`, error);

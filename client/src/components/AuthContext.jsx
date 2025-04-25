@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
       return res;
     } catch (err) {
       console.error("Login error:", err);
-      return { data: { success: false, message: err.message } };
+      return err.message;
     }
   };
 
@@ -94,7 +94,7 @@ export const AuthProvider = ({ children }) => {
       return res;
     } catch (err) {
       console.error("Change password error:", err);
-      return { data: { success: false, message: err.message } };
+      return err.message;
     }
   };
 
