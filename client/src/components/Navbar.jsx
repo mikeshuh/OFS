@@ -198,10 +198,13 @@ function Navbar() {
     }
   };
 
-
   const handleClear = () => {
     setSearchQuery("");
     navigate(`/products/${currentCategory}`);
+  };
+
+  const handleLogout = async () => {
+    await auth.logOut();
   };
 
   return (
@@ -318,9 +321,9 @@ function Navbar() {
                     Profile
                   </Link>
                   <span>|</span>
-                  <Link to="/logout" className="hover:underline">
+                  <button onClick={handleLogout} className="hover:underline">
                     Logout
-                  </Link>
+                  </button>
                 </div>
               ) : (
                 <div className="flex gap-1 text-sm font-medium">

@@ -72,11 +72,9 @@ const CreateProductForm = ({selectableCategories, onProductAdded, products }) =>
 
 
 
-      const token = localStorage.getItem("authToken");
 
       const response = await requestServer(`${API_URL}/api/products/create-product`,
         'POST',
-        token,
         productForm,
         'multipart/form-data'
       );

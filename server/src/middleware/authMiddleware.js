@@ -1,6 +1,6 @@
 // Authentication middleware
 // Protects routes by verifying JWT tokens
-const { verifyToken, extractTokenFromHeaders } = require('../utils/authUtils');
+const { verifyToken } = require('../utils/authUtils');
 const User = require('../models/userModel');
 const responseHandler = require('../utils/responseHandler');
 const tokenService = require('../services/tokenService');
@@ -9,7 +9,7 @@ const tokenService = require('../services/tokenService');
 const protect = async (req, res, next) => {
   try {
     // Get token from authorization header
-    const token = extractTokenFromHeaders(req.headers);
+    const token = req.cookies.token;
 
     // Check if token exists
     if (!token) {

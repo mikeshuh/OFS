@@ -1,38 +1,39 @@
+// src/utils/Utility.jsx
 import axios from 'axios';
-import {jwtDecode} from 'jwt-decode';
 
 const API_URL = import.meta.env.VITE_API_URL;
-export const requestServer = async (url, method, data = {}, contentType = 'application/json') => {
+
+// baseURL & cookies
+axios.defaults.baseURL = API_URL;
+axios.defaults.withCredentials = true;
+
+// 2) CSRF interceptor: read the XSRF-TOKEN cookie and set header on mutating requests
+axios.interceptors.request.use(config => {
+  if (config.method && config.method.toLowerCase() !== 'get') {
+    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+    if (match) {
+      config.headers['X-CSRF-Token'] = match[1];
+    }
+  }
+  return config;
+});
+
+export const requestServer = async (
+  url,
+  method,
+  data = {},
+  contentType = 'application/json'
+) => {
   try {
     const response = await axios({
-      method,
       url,
+      method,
       data,
-      headers: {
-        'Content-Type': contentType
-      },
-      withCredentials: true
+      headers: { 'Content-Type': contentType }
     });
     return response;
   } catch (error) {
+    // return your standardized response object or the raw error
     return error.response || error;
   }
 };
-
-export const checkLogin = async () => {
-  const token = localStorage.getItem("authToken");
-  if (token) {
-    try {
-      const decode = jwtDecode(token);
-      const response = await requestServer(`${API_URL}/api/users/profile/${decode.id}`, "GET", token);
-      return response.data?.success;
-    } catch (error) {
-      console.error("Login session expired:", error);
-      return false;
-    }
-  } else {
-    return false;
-  }
-};
-
-

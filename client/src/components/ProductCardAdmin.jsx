@@ -102,8 +102,6 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
     }
 
     try {
-      const token = localStorage.getItem("authToken");
-
       const updateProductForm = new FormData();
       const productData = [
         ['name',product.name],
@@ -123,7 +121,6 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
       const response = await requestServer(
         `${API_URL}/api/products/update-product/${product.productID}`,
         "PUT",
-        token,
         updateProductForm,
         'multipart/form-data'
       );

@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { requestServer, checkLogin } from "../utils/Utility";
+import { requestServer } from "../utils/Utility";
 import signupBackground from "../assets/signup.webp"
+import { useAuth } from "../components/AuthContext";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Signup = () => {
   const navigate = useNavigate();
+  const auth = useAuth();
 
   useEffect(() => {
     (async () => {
-      const response = await checkLogin();
-      if (response) {
+      if (auth.loggedIn) {
         navigate("/");
       }
-
     })();
   }, []);
 

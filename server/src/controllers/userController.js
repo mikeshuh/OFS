@@ -5,6 +5,14 @@ const responseHandler = require('../utils/responseHandler');
 const { generateToken, hashPassword, comparePassword } = require('../utils/authUtils');
 const tokenService = require('../services/tokenService');
 
+const COOKIE_NAME = 'token';
+const COOKIE_OPTIONS = {
+  httpOnly: true,                         // hide from JS
+  secure:  process.env.NODE_ENV === 'production',
+  sameSite: 'strict',
+  maxAge: 24 * 60 * 60 * 1000,            // 24h in ms (match your JWT expiry)
+};
+
 // Register a new user
 const register = async (req, res) => {
   try {
@@ -62,7 +70,8 @@ const login = async (req, res) => {
     const token = generateToken(userData);
 
     // Return success with token
-    return responseHandler.success(res, {token}, 'Login successful.');
+    res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
+    return responseHandler.success(res, null, 'Login successful.');
   } catch (error) {
     console.error(`Login error: ${error.message}`, error);
     return responseHandler.error(res, 'Failed to login.');
@@ -75,6 +84,8 @@ const logout = async (req, res) => {
     // Blacklist the current token
     await tokenService.blacklistToken(req.token, req.user.userID);
 
+    // expire the cookie
+    res.cookie(COOKIE_NAME, '', { ...COOKIE_OPTIONS, maxAge: 0 });
     return responseHandler.success(res, null, 'Logged out successfully.');
   } catch (error) {
     console.error(`Logout error: ${error.message}`, error);
@@ -85,12 +96,7 @@ const logout = async (req, res) => {
 // Get user profile
 const getProfile = async (req, res) => {
   try {
-    const userID = req.params.userID;
-
-    // Check if requesting user is authorized to view this profile
-    if (req.user.userID !== userID && !req.user.isAdmin) {
-      return responseHandler.forbidden(res, 'You are not authorized to view this profile.');
-    }
+    const userID = req.user.userID;
 
     // Get user profile
     const user = await User.findById(userID);
@@ -108,13 +114,7 @@ const getProfile = async (req, res) => {
 // Change password
 const changePassword = async (req, res) => {
   try {
-    const userID = req.params.userID;
-
-    // Check if requesting user is authorized to change this password
-    if (req.user.userID !== userID) {
-      return responseHandler.forbidden(res, 'You are not authorized to change this password.');
-    }
-
+    const userID = req.user.userID;
     const { currentPassword, newPassword } = req.body;
 
     // Get user with password

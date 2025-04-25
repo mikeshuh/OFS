@@ -53,8 +53,8 @@ const csrfProtection = csurf({
   },
 });
 app.use((req, res, next) => {
-  // skip CSRF check on GETs and Stripe webhook endpoint
-  if (req.method === 'GET' || req.originalUrl === '/api/payments/webhook') {
+  // skip CSRF check on Stripe webhook endpoint
+  if (req.originalUrl === '/api/payments/webhook') {
     return next();
   }
   csrfProtection(req, res, next);
