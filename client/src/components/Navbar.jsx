@@ -39,7 +39,7 @@ function Navbar() {
 
         // build category list
         const cats = [
-          ...new Set(activeOnly.map((p) => p.category))
+          ...new Set(activeOnly.map((p) => p.category.toLowerCase()))
         ];
         setCategories(cats);
       } catch (err) {
@@ -164,9 +164,9 @@ function Navbar() {
           <Link
             key={category}
             to={`/products/${category}`}
-            className="block px-6 py-2 text-gray-800 hover:bg-green-100 hover:text-green-600 transition-colors duration-200"
+            className="block px-6 py-2 text-gray-800 hover:bg-green-100 hover:text-green-600 transition-colors duration-200 capitalize"
           >
-            {category.charAt(0).toUpperCase() + category.slice(1)}
+            {category}
           </Link>
         ))}
       </div>
