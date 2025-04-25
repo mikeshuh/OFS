@@ -4,7 +4,7 @@ import { requestServer } from "../utils/Utility";
 
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+const AuthProvider = ({ children }) => {
   const [loggedIn, setLoggedIn]       = useState(false);
   const [loading, setLoading]         = useState(true);
   const [userProfile, setUserProfile] = useState(null);
