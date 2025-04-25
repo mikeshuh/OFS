@@ -43,7 +43,7 @@ const Products = () => {
         // build category list
         const cats = [
           "all",
-          ...new Set(activeOnly.map((p) => p.category.toLowerCase()))
+          ...new Set(activeOnly.map((p) => p.category))
         ];
         setCategories(cats);
       } catch (err) {

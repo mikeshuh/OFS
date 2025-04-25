@@ -39,7 +39,7 @@ function Navbar() {
 
         // build category list
         const cats = [
-          ...new Set(activeOnly.map((p) => p.category.toLowerCase()))
+          ...new Set(activeOnly.map((p) => p.category))
         ];
         setCategories(cats);
       } catch (err) {
