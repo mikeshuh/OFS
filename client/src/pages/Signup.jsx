@@ -113,10 +113,10 @@ const Signup = () => {
       const response = await requestServer(
         `${API_URL}/api/users/register`,
         "POST",
-        "",
         { firstName, lastName, email, password, passwordConfirmed }
       );
       if (response.data?.success) {
+        window.alert("Account created successfully. Please log in.");
         navigate("/login");
       } else {
         setErrorMessage(response.data?.errors?.errors[0].msg || response.data?.message || "Network error. please try again later.");
