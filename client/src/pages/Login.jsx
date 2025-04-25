@@ -16,7 +16,7 @@ const Login = () => {
         navigate("/");
       }
     })();
-  }, []);
+  }, [auth.loggedIn]);
 
   const [errorMessage, setErrorMessage] = useState(null);
   const [formData, setFormData] = useState({

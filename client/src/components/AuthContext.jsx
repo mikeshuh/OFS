@@ -59,21 +59,22 @@ const AuthProvider = ({ children }) => {
   // Logout action
   const logOut = async () => {
     try {
-      const res = await requestServer("/api/users/logout", "POST");
-      if (!res.data?.success) {
-        throw new Error(res.data?.message || "Logout failed.");
-      }
-      window.alert("Logout successful.");
       // clear client state
       if (cartFunctions.clearCart) cartFunctions.clearCart();
       setLoggedIn(false);
       setUserProfile(null);
       localStorage.clear();
+      const res = await requestServer("/api/users/logout", "POST");
+      if (!res.data?.success) {
+        throw new Error(res.data?.message || "Logout failed.");
+      }
+      window.alert("Logout successful.");
       navigate("/");
       return res;
     } catch (err) {
       console.error("Logout error:", err);
-      window.alert("Logout failed. Please try again.");
+      window.alert("Logout successful.");     // still show alert for client side logout sucess even though server logout failed
+      navigate("/");
     }
   };
 

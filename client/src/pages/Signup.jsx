@@ -17,7 +17,7 @@ const Signup = () => {
         navigate("/");
       }
     })();
-  }, []);
+  }, [auth.loggedIn]);
 
   const [formData, setFormData] = useState({
     firstName: "",
