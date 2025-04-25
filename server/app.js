@@ -44,7 +44,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// CSRF protection for non-GET, non-webhook routes
+// CSRF protection for non-webhook routes
 const csrfProtection = csurf({
   cookie: {
     httpOnly: false,                          // so front-end JS can read the token
