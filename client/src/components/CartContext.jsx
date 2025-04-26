@@ -58,7 +58,7 @@ const CartProvider = ({ children }) => {
       }
     })
     if (removedItems.length !== 0 ) {
-      window.alert(`The following items have been removed from your cart: ${removedItems.join(",")}`);
+      window.alert(`The following items have been unlisted for sale: ${removedItems.join(",")}`);
     }
     if (updatedPoundItems.length !== 0) {
       window.alert(`The weight for the following product has changed: ${updatedPoundItems.join(",")}`);
