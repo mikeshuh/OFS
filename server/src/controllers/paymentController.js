@@ -137,7 +137,7 @@ const handlePaymentIntentSucceeded = async (paymentIntent) => {
 
     // Update order payment status
     await Order.updatePaymentStatus(orderID, 'paid');
-
+    await Order.completeOrder(orderID);
     // **** Bull Queue Batching Integration ****
     // Retrieve order details and add to the in-memory batch
     const orderDetails = await Order.findById(orderID);

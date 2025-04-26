@@ -9,16 +9,16 @@ const API_URL = import.meta.env.VITE_API_URL;
 const LS_ORDER_ID = "orderID";
 const LS_CLIENT_SECRET = "clientSecret";
 const LS_DELIVERY_ADDRESS = "deliveryAddress";
+const WEIGHT_LIMIT = 50;
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const { cartItems, calculateTotal, calculateTotalWithShipping, getTaxRate, calculateTotalWeight, clearCart } = useCart();
+  const { cartItems, fetchProducts, calculateTotal, calculateTotalWithShipping, getTaxRate, calculateTotalWeight, clearCart } = useCart();
   const stripe = useStripe();
   const elements = useElements();
-
-  const isOverWeightLimit = calculateTotalWeight() > 50;
+  const [isOverWeightLimit, setIsOverWeightLimit] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(isOverWeightLimit ? "Your cart weight exceeds the maximum allowed weight of 50 lbs" : null);
+  const [errorMessage, setErrorMessage] = useState(null);
   const [isOrderCreated, setIsOrderCreated] = useState(false);
   const justPaidRef = useRef(false);
 
@@ -44,6 +44,14 @@ const Checkout = () => {
   };
 
   useEffect(() => {
+    fetchProducts().then(() => {
+      if (calculateTotalWeight() > WEIGHT_LIMIT) {
+        setIsOverWeightLimit(true);
+        setErrorMessage("Your cart weight exceeds the maximum allowed weight of 50 lbs");
+      }
+    })
+  }, []);
+  useEffect(() => {
     if (cartItems.length === 0 && !justPaidRef.current) {
       navigate("/cart");
     }
@@ -51,7 +59,6 @@ const Checkout = () => {
 
   useEffect(() => {
     const orderID = localStorage.getItem(LS_ORDER_ID);
-
     if (orderID) {
       setIsOrderCreated(true);
       // Check if order is paid already, if so, clear checkout session
@@ -77,7 +84,9 @@ const Checkout = () => {
       };
 
       checkOrderPaymentStatus();
+
     }
+
   }, [cartItems, deliveryAddress, isOrderCreated]);
 
   const handleSubmit = async (event) => {
@@ -114,7 +123,7 @@ const Checkout = () => {
 
     try {
       const cardElement = elements.getElement(CardElement);
-      const {orderID,clientSecret} = await createOrder();
+      const { orderID, clientSecret } = await createOrder();
       localStorage.setItem(LS_ORDER_ID, orderID);
       const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: { card: cardElement }
@@ -131,8 +140,8 @@ const Checkout = () => {
         setErrorMessage("Payment processing failed. Please try again.");
       }
     } catch (error) {
-      console.error("Error: ",error);
-      setErrorMessage( error.message || "An unexpected error occurred. Please try again.");
+      console.error("Error: ", error);
+      setErrorMessage(error.message || "An unexpected error occurred. Please try again.");
     } finally {
       setIsProcessing(false);
     }

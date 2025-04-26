@@ -1,13 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-
+import { requestServer } from '../utils/Utility';
 // Create the context
 const CartContext = createContext(null);
 
 // Cart storage key for localStorage
 const CART_STORAGE_KEY = 'ofs_shopping_cart';
 const TAX_RATE = 0.09375; // 9.375% tax rate
-const [updatedCart, setUpdatedCart] = useState(false);
 // Create the provider
 const CartProvider = ({ children }) => {
   // Initialize state from localStorage if available
@@ -38,15 +37,12 @@ const CartProvider = ({ children }) => {
   }, [auth]);
 
   const fetchProducts = async () => {
-    setUpdatedCart(false);
     const products = (await requestServer("/api/products", "GET")).data.data;
     cartItems.forEach(item => {
       const product = products.find(product => product.productID === item.productID);
       if (product && !product.active) {
-        setUpdatedCart(true);
         removeFromCart(item.productID);
       } else if (product && product.pounds !== item.pounds) {
-        setUpdatedCart(true);
         updateProductInfo(item.productID, product);
       }
     })

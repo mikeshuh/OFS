@@ -2,8 +2,8 @@ import React, { useEffect,useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useCart } from "../components/CartContext";
-import { requestServer } from "../utils/Utility";
 const API_URL = import.meta.env.VITE_API_URL;
+const WEIGHT_LIMIT = 50;
 
 const Cart = () => {
   const {
@@ -20,7 +20,7 @@ const Cart = () => {
   } = useCart();
   const navigate = useNavigate();
 
-  const isOverWeightLimit = calculateTotalWeight() > 50;
+  const isOverWeightLimit = calculateTotalWeight() > WEIGHT_LIMIT;
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -30,7 +30,7 @@ const Cart = () => {
     }
     // Prevent checkout if the cart's weight exceeds 50 lbs.
     if (isOverWeightLimit) {
-      alert("Your cart weight exceeds the maximum allowed limit of 50 lbs.");
+      alert(`Your cart weight exceeds the maximum allowed limit of ${WEIGHT_LIMIT} lbs.`);
       return;
     }
 
@@ -221,7 +221,7 @@ const Cart = () => {
                 {/* Message if cart weight exceeds 50 lbs */}
                 {isOverWeightLimit && (
                   <p className="mt-2 text-red-500 text-sm">
-                    Your cart weight exceeds the maximum allowed weight of 50 lbs.
+                    Your cart weight exceeds the maximum allowed weight of {WEIGHT_LIMIT} lbs.
                   </p>
                 )}
               </div>
