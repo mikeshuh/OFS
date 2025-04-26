@@ -231,11 +231,15 @@ const Checkout = () => {
                     Test card: 4242 4242 4242 4242, any future date, any 3 digits for CVC, any 5 digits for postal code
                   </p>
                   {/* Message if cart weight exceeds 50 lbs */}
-                  {isOverWeightLimit && (
+                  {isOverWeightLimit ? (
                     <p className="mt-2 text-red-500 text-sm">
                       Your cart weight exceeds the maximum allowed weight of {WEIGHT_LIMIT} lbs.
                     </p>
-                  )}
+                  ) : errorMessage ? (
+                    <p className="mt-2 text-red-500 text-sm">
+                      {errorMessage}
+                    </p>
+                  ) : null}
                 </div>
 
                 <button
