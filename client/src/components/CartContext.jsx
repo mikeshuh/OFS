@@ -7,7 +7,7 @@ const CartContext = createContext(null);
 // Cart storage key for localStorage
 const CART_STORAGE_KEY = 'ofs_shopping_cart';
 const TAX_RATE = 0.09375; // 9.375% tax rate
-
+const [updatedCart, setUpdatedCart] = useState(false);
 // Create the provider
 const CartProvider = ({ children }) => {
   // Initialize state from localStorage if available
@@ -37,6 +37,20 @@ const CartProvider = ({ children }) => {
     }
   }, [auth]);
 
+  const fetchProducts = async () => {
+    setUpdatedCart(false);
+    const products = (await requestServer("/api/products", "GET")).data.data;
+    cartItems.forEach(item => {
+      const product = products.find(product => product.productID === item.productID);
+      if (product && !product.active) {
+        setUpdatedCart(true);
+        removeFromCart(item.productID);
+      } else if (product && product.pounds !== item.pounds) {
+        setUpdatedCart(true);
+        updateProductInfo(item.productID, product);
+      }
+    })
+  }
   // Save cart to localStorage whenever it changes
   useEffect(() => {
     try {
@@ -73,6 +87,17 @@ const CartProvider = ({ children }) => {
     );
   };
 
+  // Update product information
+  const updateProductInfo = (productID, newProductInfo) => {
+    console.log("Updating product info for ID: 111", productID);
+    setCartItems(prevItems =>
+      prevItems.map(item =>
+        item.productID === productID
+          ? { ...item, ...newProductInfo }
+          : item
+      )
+    );
+  };
   // Update item quantity
   const updateQuantity = (productID, newQuantity) => {
     // Don't allow quantities less than 1
@@ -141,9 +166,12 @@ const CartProvider = ({ children }) => {
   // Context value provided to consumers
   const value = {
     cartItems,
+    updatedCart,
     addToCart,
     removeFromCart,
     updateQuantity,
+    updateProductInfo,
+    fetchProducts,
     clearCart,
     calculateTotal,
     calculateTotalWeight,
@@ -169,10 +197,13 @@ export const useCart = () => {
     return {
       cartItems: [],
       cartItemsCount: 0,
-      addToCart: () => {},
-      removeFromCart: () => {},
-      updateQuantity: () => {},
-      clearCart: () => {},
+      updatedCart: false,
+      addToCart: () => { },
+      removeFromCart: () => { },
+      updateProductInfo: () => { },
+      updateQuantity: () => { },
+      fetchProducts: () => { },
+      clearCart: () => { },
       calculateTotal: () => 0,
       calculateTotalWeight: () => 0,
       calculateTotalWithShipping: () => 0,

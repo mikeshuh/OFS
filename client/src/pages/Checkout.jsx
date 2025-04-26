@@ -19,12 +19,8 @@ const Checkout = () => {
   const isOverWeightLimit = calculateTotalWeight() > 50;
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState(isOverWeightLimit ? "Your cart weight exceeds the maximum allowed weight of 50 lbs" : null);
-  const [clientSecret, setClientSecret] = useState("");
-  const [orderID, setOrderID] = useState(null);
   const [isOrderCreated, setIsOrderCreated] = useState(false);
-  const hasInitialized = useRef(false);
   const justPaidRef = useRef(false);
-  const hasCheckedAddressRef = useRef(false);
 
   const deliveryAddress = useMemo(() => {
     return JSON.parse(localStorage.getItem(LS_DELIVERY_ADDRESS) || "{}");
@@ -54,31 +50,25 @@ const Checkout = () => {
   }, [cartItems, navigate]);
 
   useEffect(() => {
-    const existingOrderID = localStorage.getItem(LS_ORDER_ID);
-    const existingClientSecret = localStorage.getItem(LS_CLIENT_SECRET);
+    const orderID = localStorage.getItem(LS_ORDER_ID);
 
-    if (existingOrderID && existingClientSecret) {
-      setOrderID(existingOrderID);
-      setClientSecret(existingClientSecret);
+    if (orderID) {
       setIsOrderCreated(true);
-
       // Check if order is paid already, if so, clear checkout session
       // delay to ensure db is updated
       const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
       const checkOrderPaymentStatus = async () => {
         await delay(3000);
-
         try {
           const orderDetails = await requestServer(
-            `${API_URL}/api/orders/details/${existingOrderID}`,
+            `${API_URL}/api/orders/details/${orderID}`,
             "GET"
           );
           const orderPaymentStatus = orderDetails.data.data[0].paymentStatus;
           if (orderPaymentStatus === "paid" || orderPaymentStatus === "refunded") {
             clearCart();
             clearCheckoutSession();
-            navigate(`/order-confirmation/${existingOrderID}`);
+            navigate(`/order-confirmation/${orderID}`);
           }
         } catch (error) {
           console.error("error checking order payment status:", error);
@@ -87,7 +77,6 @@ const Checkout = () => {
       };
 
       checkOrderPaymentStatus();
-      return;
     }
   }, [cartItems, deliveryAddress, isOrderCreated]);
 
@@ -114,18 +103,19 @@ const Checkout = () => {
           }
         );
         if (!response.data?.success) {
-          setErrorMessage(response.data?.message || "Failed to create order");
-          throw new error("Failed to create order");
+          console.log(response.data?.message)
+          throw new Error(response.data.message || "Failed to create order");
         }
         return response.data.data;
       } catch (error) {
-        throw new error("Failed to create order");
+        throw error;
       }
     };
 
     try {
       const cardElement = elements.getElement(CardElement);
       const {orderID,clientSecret} = await createOrder();
+      localStorage.setItem(LS_ORDER_ID, orderID);
       const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: { card: cardElement }
       });
@@ -141,8 +131,8 @@ const Checkout = () => {
         setErrorMessage("Payment processing failed. Please try again.");
       }
     } catch (error) {
-      console.error("Payment error: ", error);
-      setErrorMessage( "An unexpected error occurred. Please try again.");
+      console.error("Error: ",error);
+      setErrorMessage( error.message || "An unexpected error occurred. Please try again.");
     } finally {
       setIsProcessing(false);
     }
