@@ -9,10 +9,6 @@ const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const csurf = require('csurf');
 
-// Cookie & CSRF
-const cookieParser = require('cookie-parser');
-const csurf = require('csurf');
-
 // Validate environment variables
 env.validateEnv();
 
@@ -36,9 +32,6 @@ const app = express();
 // parse cookies so we can read/write our JWT & CSRF tokens
 app.use(cookieParser());
 
-// parse cookies so we can read/write our JWT & CSRF tokens
-app.use(cookieParser());
-
 // Middleware
 app.use('/api/payments/webhook', express.raw({ type: 'application/json' })); // Middleware to parse raw JSON for Stripe webhook
 
@@ -51,7 +44,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// CSRF protection for non-GET, non-webhook routes
+// CSRF protection for non-webhook routes
 const csrfProtection = csurf({
   cookie: {
     httpOnly: false,                          // so front-end JS can read the token
@@ -81,7 +74,7 @@ app.use((req, res, next) => {
 // Rate limiter that skips only the webhook route
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200,                 // limit each IP to 150 requests per windowMs
+  max: 200,                 // limit each IP to 200 requests per windowMs
   skip: (req) =>
     req.originalUrl === '/api/payments/webhook', // do not rate-limit Stripe retries
   message: {
@@ -159,11 +152,6 @@ app.use((req, res) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  // handle CSRF token errors explicitly
-  if (err.code === 'EBADCSRFTOKEN') {
-    return responseHandler.error(res, 'Invalid CSRF token', 403);
-  }
-
   // handle CSRF token errors explicitly
   if (err.code === 'EBADCSRFTOKEN') {
     return responseHandler.error(res, 'Invalid CSRF token', 403);

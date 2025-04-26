@@ -59,6 +59,7 @@ const AuthProvider = ({ children }) => {
   // Logout action
   const logOut = async () => {
     try {
+      // clear client state
       if (cartFunctions.clearCart) cartFunctions.clearCart();
       setLoggedIn(false);
       setUserProfile(null);
@@ -68,12 +69,12 @@ const AuthProvider = ({ children }) => {
         throw new Error(res.data?.message || "Logout failed.");
       }
       window.alert("Logout successful.");
-      // clear client state
       navigate("/");
       return res;
     } catch (err) {
       console.error("Logout error:", err);
-      window.alert("Logout failed. Please try again.");
+      window.alert("Logout successful.");     // still show alert for client side logout sucess even though server logout failed
+      navigate("/");
     }
   };
 
