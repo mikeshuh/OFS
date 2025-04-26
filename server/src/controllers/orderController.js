@@ -1,7 +1,7 @@
 const Order = require('../models/orderModel');
 const responseHandler = require('../utils/responseHandler');
 const orderService = require('../services/orderService');
-
+const paymentController = require('./paymentController');
 const createOrder = async (req, res) => {
   try {
     const { streetAddress, city, zipCode, orderProducts } = req.body
@@ -25,11 +25,15 @@ const createOrder = async (req, res) => {
     }
 
     const orderID = await Order.create(orderData, orderProducts);
+    req.body.orderID = orderID;
+    const clientSecret = await paymentController.createPaymentIntent(req,res);
+    if (!clientSecret) {
+      throw new Error('Failed to create payment intent');
+    }
 
-    return responseHandler.created(res, { orderID }, 'Order created succesfully');
+    return responseHandler.created(res, { orderID,clientSecret }, 'Order created succesfully');
   } catch (error) {
-    console.error(`Create order error: ${error.message}`, error);
-    return responseHandler.error(res, 'Failed to create order.');
+    return responseHandler.error(res, error.message);
   }
 }
 
@@ -77,74 +81,8 @@ const getOrderDetailsByOrderID = async (req, res) => {
   }
 }
 
-const updateOrderDetails = async (req, res) => {
-  try {
-    const orderID = req.params.orderID;
-    const userID = req.user.userID;
-    const {orderProducts} = req.body;
-
-    // Check if the order exists and belongs to the user
-    const order = await Order.findById(orderID);
-    if (!order) {
-      return responseHandler.notFound(res, 'Order not found.');
-    }
-    if (order.userID !== userID) {
-      return responseHandler.forbidden(res, 'You do not have permission to update this order.');
-    }
-
-    // Validate the order products
-    const { totalPrice, totalPounds, deliveryFee } = await orderService.calculateTotalPrice(orderProducts);
-    if (totalPounds > 50) {
-      return responseHandler.badRequest(res, 'Total pounds exceed the maximum limit of 50 lbs.');
-    }
-
-    const orderData = {
-      userID,
-      totalPrice,
-      totalPounds,
-      deliveryFee,
-      orderID
-    }
-
-    // Update the order details
-    const response = await Order.updateOrderDetails(orderData, orderProducts);
-    return responseHandler.success(res, response, 'Order updated successfully.');
-  } catch (error) {
-    console.error(`Update order error: ${error.message}`, error);
-    return responseHandler.error(res, 'Failed to update order.');
-  }
-}
-
-const updateOrderAddress = async (req, res) => {
-  try {
-    const deliveryAddress = req.body;
-    const orderID = req.params.orderID;
-    const userID = req.user.userID;
-
-    // Check if the order exists and belongs to the user
-    const order = await Order.findById(orderID);
-    if (!order) {
-      return responseHandler.notFound(res, 'Order not found.');
-    }
-    if (order.userID !== userID) {
-      return responseHandler.forbidden(res, 'You do not have permission to update this order.');
-    }
-
-    // Update the order address
-    await Order.updateOrderAddress(orderID, deliveryAddress);
-
-    return responseHandler.success(res, null, 'Order address updated successfully.');
-  } catch (error) {
-    console.error(`Update order address error: ${error.message}`, error);
-    return responseHandler.error(res, 'Failed to update order address.');
-  }
-}
-
-
 module.exports = {
   getOrderByUserID,
   createOrder,
   getOrderDetailsByOrderID,
-  updateOrderAddress,
-  updateOrderDetails,
 };

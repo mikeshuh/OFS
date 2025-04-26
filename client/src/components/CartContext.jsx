@@ -1,13 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-
+import { requestServer } from '../utils/Utility';
 // Create the context
 const CartContext = createContext(null);
 
 // Cart storage key for localStorage
 const CART_STORAGE_KEY = 'ofs_shopping_cart';
 const TAX_RATE = 0.09375; // 9.375% tax rate
-
 // Create the provider
 const CartProvider = ({ children }) => {
   // Initialize state from localStorage if available
@@ -37,6 +36,38 @@ const CartProvider = ({ children }) => {
     }
   }, [auth]);
 
+  const fetchProducts = async () => {
+    const products = (await requestServer("/api/products", "GET")).data.data;
+    let removedItems = [];
+    let updatedPoundItems = [];
+    let updatedPriceItems = [];
+    cartItems.forEach(item => {
+      const product = products.find(product => product.productID === item.productID);
+      if (product && !product.active) {
+        removeFromCart(item.productID);
+        removedItems.push(`${item.name}`);
+      } else if (product && (product.pounds !== item.pounds || product.price !== item.price)) {
+
+        if (product.pounds!=item.pounds) {
+          updatedPoundItems.push(`${item.name}`);
+        }
+        if (product.price!=item.price) {
+          updatedPriceItems.push(`${item.name}`);
+        }
+        updateProductInfo(item, product);
+      }
+    })
+    if (removedItems.length !== 0 ) {
+      window.alert(`The following items have been unlisted for sale: ${removedItems.join(", ")}`);
+    }
+    if (updatedPoundItems.length !== 0) {
+      window.alert(`The weight for the following product has changed: ${updatedPoundItems.join(", ")}`);
+    }
+    if (updatedPriceItems.length !== 0) {
+      window.alert(`The price for the following product has changed: ${updatedPriceItems.join(", ")}`);
+    }
+
+  }
   // Save cart to localStorage whenever it changes
   useEffect(() => {
     try {
@@ -73,6 +104,16 @@ const CartProvider = ({ children }) => {
     );
   };
 
+  // Update product information
+  const updateProductInfo = (product, newProductInfo) => {
+    setCartItems(prevItems =>
+      prevItems.map(item =>
+        item.productID === product.productID
+          ? { ...item, ...newProductInfo }
+          : item
+      )
+    );
+  };
   // Update item quantity
   const updateQuantity = (productID, newQuantity) => {
     // Don't allow quantities less than 1
@@ -144,6 +185,8 @@ const CartProvider = ({ children }) => {
     addToCart,
     removeFromCart,
     updateQuantity,
+    updateProductInfo,
+    fetchProducts,
     clearCart,
     calculateTotal,
     calculateTotalWeight,
@@ -169,10 +212,12 @@ export const useCart = () => {
     return {
       cartItems: [],
       cartItemsCount: 0,
-      addToCart: () => {},
-      removeFromCart: () => {},
-      updateQuantity: () => {},
-      clearCart: () => {},
+      addToCart: () => { },
+      removeFromCart: () => { },
+      updateProductInfo: () => { },
+      updateQuantity: () => { },
+      fetchProducts: () => { },
+      clearCart: () => { },
       calculateTotal: () => 0,
       calculateTotalWeight: () => 0,
       calculateTotalWithShipping: () => 0,

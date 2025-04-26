@@ -5,10 +5,10 @@ import { requestServer } from "../utils/Utility";
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-  const [loggedIn, setLoggedIn]       = useState(false);
-  const [loading, setLoading]         = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState(null);
-  const navigate                      = useNavigate();
+  const navigate = useNavigate();
 
   // CartContext can register its clearCart function here
   const cartFunctions = { clearCart: null };

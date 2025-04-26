@@ -47,13 +47,12 @@ const createPaymentIntent = async (req, res) => {
     });
 
     // Return client secret to frontend
-    responseHandler.created(res, {
-      clientSecret: paymentIntent.client_secret
-    }, 'Payment intent created successfully');
+    return paymentIntent.client_secret;
 
   } catch (error) {
     console.error('Payment intent error:', error);
-    responseHandler.error(res, 'Error creating payment intent');
+    throw error;
+    // responseHandler.error(res, 'Error creating payment intent');
   }
 };
 
@@ -138,7 +137,7 @@ const handlePaymentIntentSucceeded = async (paymentIntent) => {
 
     // Update order payment status
     await Order.updatePaymentStatus(orderID, 'paid');
-
+    await Order.completeOrder(orderID);
     // **** Bull Queue Batching Integration ****
     // Retrieve order details and add to the in-memory batch
     const orderDetails = await Order.findById(orderID);
