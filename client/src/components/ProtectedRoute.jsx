@@ -8,6 +8,10 @@ const ProtectedRoute = () => {
   // While checking session, you could show a spinner instead of nothing:
   if (loading) return null;
 
+  if (!loggedIn) {
+    window.alert("Login to access this page");
+  }
+
   return loggedIn ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
