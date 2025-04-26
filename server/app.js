@@ -74,7 +74,7 @@ app.use((req, res, next) => {
 // Rate limiter that skips only the webhook route
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200,                 // limit each IP to 200 requests per windowMs
+  max: 100,                 // limit each IP to 200 requests per windowMs
   skip: (req) =>
     req.originalUrl === '/api/payments/webhook', // do not rate-limit Stripe retries
   message: {

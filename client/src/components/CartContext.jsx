@@ -38,14 +38,35 @@ const CartProvider = ({ children }) => {
 
   const fetchProducts = async () => {
     const products = (await requestServer("/api/products", "GET")).data.data;
+    let removedItems = [];
+    let updatedPoundItems = [];
+    let updatedPriceItems = [];
     cartItems.forEach(item => {
       const product = products.find(product => product.productID === item.productID);
       if (product && !product.active) {
         removeFromCart(item.productID);
-      } else if (product && product.pounds !== item.pounds) {
-        updateProductInfo(item.productID, product);
+        removedItems.push(`${item.name} `);
+      } else if (product && (product.pounds !== item.pounds || product.price !== item.price)) {
+
+        if (product.pounds!=item.pounds) {
+          updatedPoundItems.push(`${item.name} `);
+        }
+        if (product.price!=item.price) {
+          updatedPriceItems.push(`${item.name} `);
+        }
+        updateProductInfo(item, product);
       }
     })
+    if (removedItems.length !== 0 ) {
+      window.alert(`The following items have been removed from your cart: ${removedItems.join(", ")}`);
+    }
+    if (updatedPoundItems.length !== 0) {
+      window.alert(`The weight for the following product has changed: ${updatedPoundItems.join(", ")}`);
+    }
+    if (updatedPriceItems.length !== 0) {
+      window.alert(`The price for the following product has changed: ${updatedPriceItems.join(", ")}`);
+    }
+
   }
   // Save cart to localStorage whenever it changes
   useEffect(() => {
@@ -84,11 +105,10 @@ const CartProvider = ({ children }) => {
   };
 
   // Update product information
-  const updateProductInfo = (productID, newProductInfo) => {
-    console.log("Updating product info for ID: 111", productID);
+  const updateProductInfo = (product, newProductInfo) => {
     setCartItems(prevItems =>
       prevItems.map(item =>
-        item.productID === productID
+        item.productID === product.productID
           ? { ...item, ...newProductInfo }
           : item
       )

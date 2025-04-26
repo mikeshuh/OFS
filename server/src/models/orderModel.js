@@ -40,7 +40,7 @@ const Order = {
         );
 
         if (!inventoryResult[0] || inventoryResult[0].quantity < orderProduct.cartQuantity) {
-          const {name} = await Product.findById(orderProduct.productID);
+          const { name } = await Product.findById(orderProduct.productID);
           throw new Error(`Insufficient inventory for ${name}. Requested: ${orderProduct.cartQuantity}, Available: ${inventoryResult[0]?.quantity || 0}`);
         }
       }
@@ -132,23 +132,36 @@ const Order = {
     return rows;
   },
   completeOrder: async (orderID) => {
-    // All checks passed, now update products in orderProduct
-    const [orderProducts] = await db.execute(
-      `SELECT op.productID, op.quantity AS cartQuantity
+    const connection = await db.getConnection();
+    try {
+      await connection.beginTransaction();
+      // All checks passed, now update products in orderProduct
+      const [orderProducts] = await connection.execute(
+        `SELECT op.productID, op.quantity AS cartQuantity
         FROM OrderProduct op
         JOIN \`Order\` o ON op.orderID = o.orderID
         WHERE o.orderID = ?`,
-      [orderID]
-    );
-    let affectedRows = 0;
-    for (const orderProduct of orderProducts) {
-      await db.execute(
-        'UPDATE Product SET quantity = quantity - ? WHERE productID = ?',
-        [orderProduct.cartQuantity, orderProduct.productID]
+        [orderID]
       );
-      affectedRows ++;
+      let affectedRows = 0;
+      for (const orderProduct of orderProducts) {
+        await connection.execute(
+          'UPDATE Product SET quantity = quantity - ? WHERE productID = ?',
+          [orderProduct.cartQuantity, orderProduct.productID]
+        );
+        affectedRows++;
+      }
+      if (affectedRows === 0) {
+        throw new Error('No products found in the order.');
+      }
+      await connection.commit(); // Commit transaction
+    } catch (error) {
+      await connection.rollback(); // Rollback transaction on error
+      throw error;
     }
-    return affectedRows > 0;
+    finally {
+      connection.release(); // Release the connection back to the pool
+    }
   },
 
   // Update payment status
