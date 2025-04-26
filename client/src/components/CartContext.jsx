@@ -45,7 +45,7 @@ const CartProvider = ({ children }) => {
       const product = products.find(product => product.productID === item.productID);
       if (product && !product.active) {
         removeFromCart(item.productID);
-        removedItems.push(`${item.name} `);
+        removedItems.push(`${item.name}`);
       } else if (product && (product.pounds !== item.pounds || product.price !== item.price)) {
 
         if (product.pounds!=item.pounds) {
@@ -58,13 +58,13 @@ const CartProvider = ({ children }) => {
       }
     })
     if (removedItems.length !== 0 ) {
-      window.alert(`The following items have been unlisted for sale: ${removedItems.join(",")}`);
+      window.alert(`The following items have been unlisted for sale: ${removedItems.join(", ")}`);
     }
     if (updatedPoundItems.length !== 0) {
-      window.alert(`The weight for the following product has changed: ${updatedPoundItems.join(",")}`);
+      window.alert(`The weight for the following product has changed: ${updatedPoundItems.join(", ")}`);
     }
     if (updatedPriceItems.length !== 0) {
-      window.alert(`The price for the following product has changed: ${updatedPriceItems.join(",")}`);
+      window.alert(`The price for the following product has changed: ${updatedPriceItems.join(", ")}`);
     }
 
   }
