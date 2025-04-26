@@ -24,9 +24,8 @@ const OrderList = () => {
       setIsLoading(true);
       try {
         const response = await requestServer(`${API_URL}/api/orders/user`, "GET");
-        const data = response?.data?.data || response?.data || [];
-
-        if (Array.isArray(data)) {
+        if (response?.data?.success && Array.isArray(response.data.data)) {
+          const data = response.data.data;
           setOrders(data);
           setFilteredOrders(data);
           setError(null);
