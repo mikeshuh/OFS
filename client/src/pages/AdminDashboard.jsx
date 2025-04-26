@@ -1,6 +1,5 @@
 import React, { useState, useEffect, forwardRef, Children, useMemo, useCallback } from "react";
 import logo from "../assets/OFS_logo.png";
-import notification from "../assets/notification.svg";
 import user from "../assets/user.svg";
 import { requestServer } from "../utils/Utility";
 import ProductCardAdmin from "../components/ProductCardAdmin.jsx";
@@ -100,7 +99,9 @@ const Navbar = () => {
   return (
     <div className="w-full flex flex-row gap-8 items-center justify-between p-4 bg-white shadow-md fixed top-0 left-0 z-[1050]">
       <div className="ms-1 flex flex-row gap-5 items-center">
-        <img className="w-20 h-8" src={logo} alt="Logo" />
+        <Link to="/" className="flex items-center">
+          <img className="w-20 h-8" src={logo} alt="Logo" />
+        </Link>
         <div className="rounded-lg px-2.5 py-1">
           <Link to="/" className="text-[#304c57] text-base font-medium opacity-80">Home</Link>
         </div>
@@ -109,13 +110,6 @@ const Navbar = () => {
         </div>
       </div>
       <div className="flex flex-row gap-2.5 items-center">
-        <div className="bg-white rounded-lg border border-opacity-20 border-[#304c57] px-2.5 py-1 w-60 shadow-sm">
-          <div className="text-[#304c57] text-base font-normal opacity-60">Quick action...</div>
-        </div>
-        <div className="rounded-lg border border-opacity-20 border-[#304c57] px-2.5 py-1 relative">
-          <img className="w-6 h-6 opacity-80" src={notification} alt="Notifications" />
-          <div className="bg-[#329141] rounded-full w-3 h-3 absolute left-6 top-2"></div>
-        </div>
         <div className="rounded-lg border border-opacity-20 border-[#304c57] px-2.5 py-1 flex flex-row gap-2.5 items-center">
           <div className="text-[#304c57] text-base font-medium opacity-80">{userProfile}</div>
           <img className="w-6 h-6 opacity-80" src={user} alt="User" />
