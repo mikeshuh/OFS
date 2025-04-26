@@ -9,6 +9,10 @@ const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 const csurf = require('csurf');
 
+// Cookie & CSRF
+const cookieParser = require('cookie-parser');
+const csurf = require('csurf');
+
 // Validate environment variables
 env.validateEnv();
 
@@ -28,6 +32,9 @@ const deliveryRoutes = require('./src/routes/deliveryRoute');
 
 // Initialize Express app
 const app = express();
+
+// parse cookies so we can read/write our JWT & CSRF tokens
+app.use(cookieParser());
 
 // parse cookies so we can read/write our JWT & CSRF tokens
 app.use(cookieParser());
@@ -152,6 +159,11 @@ app.use((req, res) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
+  // handle CSRF token errors explicitly
+  if (err.code === 'EBADCSRFTOKEN') {
+    return responseHandler.error(res, 'Invalid CSRF token', 403);
+  }
+
   // handle CSRF token errors explicitly
   if (err.code === 'EBADCSRFTOKEN') {
     return responseHandler.error(res, 'Invalid CSRF token', 403);
