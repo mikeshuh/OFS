@@ -16,7 +16,8 @@ const Checkout = () => {
   const { cartItems, fetchProducts, calculateTotal, calculateTotalWithShipping, getTaxRate, calculateTotalWeight, clearCart } = useCart();
   const stripe = useStripe();
   const elements = useElements();
-  const [isOverWeightLimit, setIsOverWeightLimit] = useState(false);
+
+  const isOverWeightLimit = calculateTotalWeight() > WEIGHT_LIMIT;
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isOrderCreated, setIsOrderCreated] = useState(false);
@@ -44,12 +45,7 @@ const Checkout = () => {
   };
 
   useEffect(() => {
-    fetchProducts().then(() => {
-      if (calculateTotalWeight() > WEIGHT_LIMIT) {
-        setIsOverWeightLimit(true);
-        setErrorMessage("Your cart weight exceeds the maximum allowed weight of 50 lbs");
-      }
-    })
+    fetchProducts();
   }, []);
   useEffect(() => {
     if (cartItems.length === 0 && !justPaidRef.current) {
@@ -235,9 +231,9 @@ const Checkout = () => {
                     Test card: 4242 4242 4242 4242, any future date, any 3 digits for CVC, any 5 digits for postal code
                   </p>
                   {/* Message if cart weight exceeds 50 lbs */}
-                  {errorMessage && (
+                  {isOverWeightLimit && (
                     <p className="mt-2 text-red-500 text-sm">
-                      {errorMessage}
+                      Your cart weight exceeds the maximum allowed weight of {WEIGHT_LIMIT} lbs.
                     </p>
                   )}
                 </div>
