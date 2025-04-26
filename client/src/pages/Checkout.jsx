@@ -21,6 +21,7 @@ const Checkout = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isOrderCreated, setIsOrderCreated] = useState(false);
+  const [cardComplete, setCardComplete] = useState(false);
   const justPaidRef = useRef(false);
 
   const deliveryAddress = useMemo(() => {
@@ -119,9 +120,25 @@ const Checkout = () => {
 
     try {
       const cardElement = elements.getElement(CardElement);
-      const { orderID, clientSecret } = await createOrder();
-      localStorage.setItem(LS_ORDER_ID, orderID);
-      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+
+      let stripeOrderID;
+      let stripeClientSecret;
+
+      const prevOrderID = localStorage.getItem(LS_ORDER_ID);
+      const prevClientSecret = localStorage.getItem(LS_CLIENT_SECRET);
+
+      if (!prevOrderID && !prevClientSecret) {
+        const { orderID, clientSecret } = await createOrder();
+        localStorage.setItem(LS_ORDER_ID, orderID);
+        localStorage.setItem(LS_CLIENT_SECRET, clientSecret);
+
+        stripeOrderID = orderID;
+        stripeClientSecret = clientSecret;
+      } else {
+        stripeOrderID = prevOrderID;
+        stripeClientSecret = prevClientSecret;
+      }
+      const { error, paymentIntent } = await stripe.confirmCardPayment(stripeClientSecret, {
         payment_method: { card: cardElement }
       });
 
@@ -131,7 +148,7 @@ const Checkout = () => {
         justPaidRef.current = true;
         clearCart();
         clearCheckoutSession();
-        navigate(`/order-confirmation/${orderID}`);
+        navigate(`/order-confirmation/${stripeOrderID}`);
       } else {
         setErrorMessage("Payment processing failed. Please try again.");
       }
@@ -225,6 +242,9 @@ const Checkout = () => {
                           invalid: { color: "#9e2146" },
                         },
                       }}
+                      onChange={(e) =>
+                        setCardComplete(e.complete)
+                      }
                     />
                   </div>
                   <p className="text-gray-500 text-xs mt-1">
@@ -244,8 +264,8 @@ const Checkout = () => {
 
                 <button
                   type="submit"
-                  disabled={isProcessing || !stripe || isOverWeightLimit}
-                  className={`w-full py-3 rounded font-medium ${isProcessing || !stripe || isOverWeightLimit
+                  disabled={isProcessing || !stripe || isOverWeightLimit || !cardComplete}
+                  className={`w-full py-3 rounded font-medium ${isProcessing || !stripe || isOverWeightLimit || !cardComplete
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-green-600 hover:bg-green-700"
                     } text-white`}

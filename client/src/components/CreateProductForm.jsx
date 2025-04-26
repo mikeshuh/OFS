@@ -66,13 +66,6 @@ const CreateProductForm = ({selectableCategories, onProductAdded, products }) =>
         productForm.append(name,item)
       })
 
-
-
-
-
-
-
-
       const response = await requestServer(`${API_URL}/api/products/create-product`,
         'POST',
         productForm,
