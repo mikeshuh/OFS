@@ -1,5 +1,6 @@
 // Import the database connection pool
 const db = require('../config/db');
+const Product = require('./productModel'); // Import the Product model
 
 // Order model with database operations
 const Order = {
@@ -39,7 +40,8 @@ const Order = {
         );
 
         if (!inventoryResult[0] || inventoryResult[0].quantity < orderProduct.cartQuantity) {
-          throw new Error(`Insufficient inventory for product ID ${orderProduct.productID}. Requested: ${orderProduct.cartQuantity}, Available: ${inventoryResult[0]?.quantity || 0}`);
+          const {name} = await Product.findById(orderProduct.productID);
+          throw new Error(`Insufficient inventory for ${name}. Requested: ${orderProduct.cartQuantity}, Available: ${inventoryResult[0]?.quantity || 0}`);
         }
       }
       for (const orderProduct of orderProducts) {

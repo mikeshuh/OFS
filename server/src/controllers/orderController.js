@@ -33,8 +33,7 @@ const createOrder = async (req, res) => {
 
     return responseHandler.created(res, { orderID,clientSecret }, 'Order created succesfully');
   } catch (error) {
-    console.error(`Create order error: ${error.message}`, error);
-    return responseHandler.error(res, 'Failed to create order.');
+    return responseHandler.error(res, error.message);
   }
 }
 
