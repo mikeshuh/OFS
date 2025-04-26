@@ -166,7 +166,6 @@ const CartProvider = ({ children }) => {
   // Context value provided to consumers
   const value = {
     cartItems,
-    updatedCart,
     addToCart,
     removeFromCart,
     updateQuantity,
@@ -197,7 +196,6 @@ export const useCart = () => {
     return {
       cartItems: [],
       cartItemsCount: 0,
-      updatedCart: false,
       addToCart: () => { },
       removeFromCart: () => { },
       updateProductInfo: () => { },
