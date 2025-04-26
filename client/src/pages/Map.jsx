@@ -110,8 +110,7 @@ const Map = () => {
           state: context.region.name
         },
       };
-      const token = localStorage.getItem("authToken");
-      const response = await requestServer(`${API_URL}/api/delivery/check`, "POST", token, JSON.stringify(addressData));
+      const response = await requestServer(`${API_URL}/api/delivery/check`, "POST", JSON.stringify(addressData));
 
       // Display the message for whether the address is in the delivery area
       if (response.data.success) {

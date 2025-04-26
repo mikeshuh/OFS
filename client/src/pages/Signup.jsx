@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { requestServer, checkLogin } from "../utils/Utility";
+import { requestServer } from "../utils/Utility";
 import signupBackground from "../assets/signup.webp"
+import { useAuth } from "../components/AuthContext";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Signup = () => {
   const navigate = useNavigate();
+  const auth = useAuth();
 
   useEffect(() => {
     (async () => {
-      const response = await checkLogin();
-      if (response) {
+      if (auth.loggedIn) {
         navigate("/");
       }
-
     })();
-  }, []);
+  }, [auth.loggedIn]);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -113,10 +113,10 @@ const Signup = () => {
       const response = await requestServer(
         `${API_URL}/api/users/register`,
         "POST",
-        "",
         { firstName, lastName, email, password, passwordConfirmed }
       );
       if (response.data?.success) {
+        window.alert("Account created successfully. Please log in.");
         navigate("/login");
       } else {
         setErrorMessage(response.data?.errors?.errors[0].msg || response.data?.message || "Network error. please try again later.");

@@ -1,116 +1,115 @@
-import { useContext, createContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { requestServer } from "../utils/Utility";
-import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext();
 
-const API_URL = import.meta.env.VITE_API_URL;
-
 const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(localStorage.getItem("authToken"));
-  const [loggedIn, setLoggedIn] = useState(!!token);
-  const navigate = useNavigate();
+  const [loggedIn, setLoggedIn]       = useState(false);
+  const [loading, setLoading]         = useState(true);
+  const [userProfile, setUserProfile] = useState(null);
+  const navigate                      = useNavigate();
 
-  // Create a reference to store cart functions
-  const cartFunctions = {
-    clearCart: null
-  };
+  // CartContext can register its clearCart function here
+  const cartFunctions = { clearCart: null };
+  const registerCartFunctions = fn => { cartFunctions.clearCart = fn; };
 
-  // Function to register the clearCart function from the CartContext
-  const registerCartFunctions = (clearCartFn) => {
-    cartFunctions.clearCart = clearCartFn;
-  };
-
-  // logic to get profile
-  const getProfile = async (token) => {
+  // Fetch the profile from /api/users/profile
+  const getProfile = async () => {
     try {
-      const decode = jwtDecode(token);
-      const response = await requestServer(`${API_URL}/api/users/profile/${decode.id}`, "GET", token);
-      if (!response.data?.success) {
+      const res = await requestServer("/api/users/profile", "GET");
+      if (res.data?.success) {
+        setUserProfile(res.data.data);
+        localStorage.setItem("userProfile", JSON.stringify(res.data.data));
+        return res.data.data;
+      } else {
         throw new Error("Failed to fetch profile.");
       }
-      localStorage.setItem("userProfile", JSON.stringify(response.data.data));
-    } catch (error) {
-      console.error("Error fetching profile", error);
-      throw error;
+    } catch (err) {
+      throw err;
     }
-  }
+  };
 
-  // logic for login
-  const loginAction = async (data) => {
+  // On mount, check session validity
+  useEffect(() => {
+    getProfile()
+      .then(() => setLoggedIn(true))
+      .catch(() => setLoggedIn(false))
+      .finally(() => setLoading(false));
+  }, []);
+
+  // Login action
+  const loginAction = async credentials => {
     try {
-      const response = await requestServer(`${API_URL}/api/users/login`, "POST", "", data);
-      if (response.data?.success) {
-        const token = response.data.data?.token;
-        await getProfile(token);
-        localStorage.setItem("authToken", token);
-        setToken(token);
+      const res = await requestServer("/api/users/login", "POST", credentials);
+      if (res.data?.success) {
         setLoggedIn(true);
+        await getProfile();
         navigate("/");
       } else {
-        throw new Error(response.data?.errors?.errors[0].msg || response.data?.message || "Network error, please try again later.");
+        throw new Error(res.data?.errors?.errors[0].msg || res.data?.message || "Network error, please try again later.");
       }
-      return response;
-    } catch (error) {
-      return error.message || "An unexpected error occurred.";
+      return res;
+    } catch (err) {
+      console.error("Login error:", err);
+      return err.message;
     }
   };
 
-  // logic for logout
+  // Logout action
   const logOut = async () => {
     try {
-      const response = await requestServer(`${API_URL}/api/users/logout`, "POST", token);
-      if (!response.data?.success) {
-        throw new Error(response.data?.errors?.errors[0].msg || response.data?.message || "Error logging out.");
-      }
-      return response;
-    } catch (error) {
-      return error;
-    } finally {
-      // Clear the cart when the user logs out
-      if (cartFunctions.clearCart) {
-        cartFunctions.clearCart();
-      }
-      setToken("");
+      // clear client state
+      if (cartFunctions.clearCart) cartFunctions.clearCart();
       setLoggedIn(false);
+      setUserProfile(null);
       localStorage.clear();
+      const res = await requestServer("/api/users/logout", "POST");
+      if (!res.data?.success) {
+        throw new Error(res.data?.message || "Logout failed.");
+      }
+      window.alert("Logout successful.");
+      navigate("/");
+      return res;
+    } catch (err) {
+      console.error("Logout error:", err);
+      window.alert("Logout successful.");     // still show alert for client side logout sucess even though server logout failed
+      navigate("/");
     }
   };
 
-  const changePassword = async (data) => {
+  // Change password action
+  const changePassword = async payload => {
     try {
-      const decode = jwtDecode(token);
-      const response = await requestServer(`${API_URL}/api/users/change-password/${decode.id}`, "PUT", token, data);
-      if (response.data?.success) {
-        // Clear the cart when the user changes password
-        if (cartFunctions.clearCart) {
-          cartFunctions.clearCart();
-        }
+      const res = await requestServer("/api/users/change-password", "PUT", payload);
+      if (res.data?.success) {
+        if (cartFunctions.clearCart) cartFunctions.clearCart();
         window.alert("Password changed successfully.");
-        setToken("");
         setLoggedIn(false);
+        setUserProfile(null);
         localStorage.clear();
-        navigate("/login");
+        navigate("/");
       } else {
-        throw new Error(response.data?.errors?.errors[0].msg || response.data?.message || "Failed to change password.");
+        throw new Error(res.data?.errors?.errors[0].msg || res.data?.message || "Password change failed.");
       }
-    } catch (error) {
-      console.error("Error changing password", error);
-      return error.message || "An unexpected error occurred.";
+      return res;
+    } catch (err) {
+      console.error("Change password error:", err);
+      return err.message;
     }
-  }
+  };
 
   return (
     <AuthContext.Provider
       value={{
-        changePassword,
-        token,
         loggedIn,
+        loading,
+        userProfile,
         loginAction,
         logOut,
+        changePassword,
         getProfile,
-        registerCartFunctions
+        registerCartFunctions,
       }}
     >
       {children}

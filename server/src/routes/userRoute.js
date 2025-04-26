@@ -18,9 +18,9 @@ router.post('/login', validateLogin, userController.login);
 router.post('/logout', protect, userController.logout);
 
 // GET /api/users/profile/:userID - Get user profile details
-router.get('/profile/:userID', protect, validateParamInt('userID'), userController.getProfile);
+router.get('/profile', protect, userController.getProfile);
 
 // PUT /api/users/change-password/:userID - Change user password
-router.put('/change-password/:userID', protect, validateParamInt('userID'), validatePasswordChange, userController.changePassword);
+router.put('/change-password', protect, validatePasswordChange, userController.changePassword);
 
 module.exports = router;

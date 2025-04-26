@@ -164,9 +164,9 @@ function Navbar() {
           <Link
             key={category}
             to={`/products/${category}`}
-            className="block px-6 py-2 text-gray-800 hover:bg-green-100 hover:text-green-600 transition-colors duration-200"
+            className="block px-6 py-2 text-gray-800 hover:bg-green-100 hover:text-green-600 transition-colors duration-200 capitalize"
           >
-            {category.charAt(0).toUpperCase() + category.slice(1)}
+            {category}
           </Link>
         ))}
       </div>
@@ -198,10 +198,13 @@ function Navbar() {
     }
   };
 
-
   const handleClear = () => {
     setSearchQuery("");
     navigate(`/products/${currentCategory}`);
+  };
+
+  const handleLogout = async () => {
+    await auth.logOut();
   };
 
   return (
@@ -318,9 +321,9 @@ function Navbar() {
                     Profile
                   </Link>
                   <span>|</span>
-                  <Link to="/logout" className="hover:underline">
+                  <button onClick={handleLogout} className="hover:underline">
                     Logout
-                  </Link>
+                  </button>
                 </div>
               ) : (
                 <div className="flex gap-1 text-sm font-medium">

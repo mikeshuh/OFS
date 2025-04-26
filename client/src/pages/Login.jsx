@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { checkLogin  } from "../utils/Utility";
 import { useAuth } from "../components/AuthContext";
 import loginBackground from "../assets/login.webp"
 
@@ -13,13 +12,11 @@ const Login = () => {
   const auth = useAuth();
   useEffect(() => {
     (async () => {
-      const response = await checkLogin();
-      if (response) {
+      if (auth.loggedIn) {
         navigate("/");
       }
-
     })();
-  }, []);
+  }, [auth.loggedIn]);
 
   const [errorMessage, setErrorMessage] = useState(null);
   const [formData, setFormData] = useState({

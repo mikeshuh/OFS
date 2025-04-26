@@ -37,21 +37,9 @@ const comparePassword = async (password, hashedPassword) => {
   return await bcrypt.compare(password, hashedPassword);
 };
 
-// Extract token from request headers
-const extractTokenFromHeaders = (headers) => {
-  const authHeader = headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return null;
-  }
-
-  return authHeader.split(' ')[1];
-};
-
 module.exports = {
   generateToken,
   verifyToken,
   hashPassword,
-  comparePassword,
-  extractTokenFromHeaders
+  comparePassword
 };

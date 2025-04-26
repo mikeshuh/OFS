@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import Navbar from "../components/Navbar";
 import { useCart } from "../components/CartContext";
-import { useAuth } from "../components/AuthContext";
 import { requestServer } from "../utils/Utility";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -14,7 +13,6 @@ const LS_DELIVERY_ADDRESS = "deliveryAddress";
 const Checkout = () => {
   const navigate = useNavigate();
   const { cartItems, calculateTotal, calculateTotalWithShipping, getTaxRate, calculateTotalWeight, clearCart } = useCart();
-  const { token } = useAuth();
   const stripe = useStripe();
   const elements = useElements();
 
@@ -74,8 +72,7 @@ const Checkout = () => {
         try {
           const orderDetails = await requestServer(
             `${API_URL}/api/orders/details/${existingOrderID}`,
-            "GET",
-            token
+            "GET"
           );
           const orderPaymentStatus = orderDetails.data.data[0].paymentStatus;
           if (orderPaymentStatus === "paid" || orderPaymentStatus === "refunded") {
@@ -98,8 +95,7 @@ const Checkout = () => {
           try {
             const orderDetails = await requestServer(
               `${API_URL}/api/orders/details/${existingOrderID}`,
-              "GET",
-              token
+              "GET"
             );
             const oldAddress = {
               streetAddress: orderDetails.data.data[0].streetAddress,
@@ -111,7 +107,6 @@ const Checkout = () => {
               await requestServer(
                 `${API_URL}/api/orders/update-address/${existingOrderID}`,
                 "PUT",
-                token,
                 newAddress
               );
             }
@@ -131,7 +126,6 @@ const Checkout = () => {
       hasInitialized.current ||
       isOrderCreated ||
       cartItems.length === 0 ||
-      !token ||
       !deliveryAddress?.streetAddress
     ) {
       return;
@@ -145,8 +139,7 @@ const Checkout = () => {
           !deliveryAddress.streetAddress ||
           !deliveryAddress.city ||
           !deliveryAddress.zipCode ||
-          cartItems.length === 0 ||
-          !token
+          cartItems.length === 0
         ) {
           setErrorMessage("Missing address information or cart is empty");
           return;
@@ -165,7 +158,6 @@ const Checkout = () => {
         const orderResponse = await requestServer(
           `${API_URL}/api/orders/create-order`,
           "POST",
-          token,
           orderData
         );
 
@@ -182,7 +174,6 @@ const Checkout = () => {
         const paymentResponse = await requestServer(
           `${API_URL}/api/payments/create-payment-intent`,
           "POST",
-          token,
           { orderID: createdOrderID }
         );
 
@@ -201,7 +192,7 @@ const Checkout = () => {
     };
 
     createOrder();
-  }, [cartItems, token, deliveryAddress, isOrderCreated]);
+  }, [cartItems, deliveryAddress, isOrderCreated]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -216,7 +207,6 @@ const Checkout = () => {
         const response = await requestServer(
           `${API_URL}/api/orders/update-order/${existingOrderID}`,
           "PUT",
-          token,
           {
             orderProducts: cartItems.map(item => ({
               productID: item.productID,

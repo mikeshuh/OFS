@@ -23,8 +23,7 @@ const OrderList = () => {
     const fetchOrders = async () => {
       setIsLoading(true);
       try {
-        const token = localStorage.getItem("authToken");
-        const response = await requestServer(`${API_URL}/api/orders/user`, "GET", token);
+        const response = await requestServer(`${API_URL}/api/orders/user`, "GET");
         const data = response?.data?.data || response?.data || [];
 
         if (Array.isArray(data)) {

@@ -9,7 +9,6 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const OrderConfirmation = () => {
   const { orderID } = useParams();
-  const { token } = useAuth();
   const { getTaxRate } = useCart();
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,8 +24,7 @@ const OrderConfirmation = () => {
         await delay(1000);
         const response = await requestServer(
           `${API_URL}/api/orders/details/${orderID}`,
-          "GET",
-          token
+          "GET"
         );
 
         if (!response.data?.success) {
@@ -45,10 +43,10 @@ const OrderConfirmation = () => {
       }
     };
 
-    if (orderID && token) {
+    if (orderID) {
       fetchOrderDetails();
     }
-  }, [orderID, token]);
+  }, [orderID]);
 
   // Format date
   const formatDate = (dateString) => {

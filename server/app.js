@@ -5,6 +5,10 @@ const env = require('./src/config/env');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
 
+// Cookie & CSRF
+const cookieParser = require('cookie-parser');
+const csurf = require('csurf');
+
 // Validate environment variables
 env.validateEnv();
 
@@ -25,11 +29,47 @@ const deliveryRoutes = require('./src/routes/deliveryRoute');
 // Initialize Express app
 const app = express();
 
+// parse cookies so we can read/write our JWT & CSRF tokens
+app.use(cookieParser());
+
 // Middleware
 app.use('/api/payments/webhook', express.raw({ type: 'application/json' })); // Middleware to parse raw JSON for Stripe webhook
-app.use(cors());
+
+// Allow cookies to be sent/received
+app.use(cors({
+  origin: true,
+  credentials: true,
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// CSRF protection for non-webhook routes
+const csrfProtection = csurf({
+  cookie: {
+    httpOnly: false,                          // so front-end JS can read the token
+    secure: env.nodeEnv === 'production',
+    sameSite: 'strict',
+  },
+});
+app.use((req, res, next) => {
+  // skip CSRF check on Stripe webhook endpoint
+  if (req.originalUrl === '/api/payments/webhook') {
+    return next();
+  }
+  csrfProtection(req, res, next);
+});
+
+// Expose the CSRF token in a cookie named "XSRF-TOKEN"
+app.use((req, res, next) => {
+  if (req.csrfToken) {
+    res.cookie('XSRF-TOKEN', req.csrfToken(), {
+      secure: env.nodeEnv === 'production',
+      sameSite: 'strict',
+    });
+  }
+  next();
+});
 
 // Rate limiter that skips only the webhook route
 const apiLimiter = rateLimit({
@@ -112,6 +152,11 @@ app.use((req, res) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
+  // handle CSRF token errors explicitly
+  if (err.code === 'EBADCSRFTOKEN') {
+    return responseHandler.error(res, 'Invalid CSRF token', 403);
+  }
+
   console.error(err.stack);
   responseHandler.error(
     res,

@@ -8,7 +8,6 @@ import NotFoundPage from "./pages/NotFoundPage.jsx";
 import AboutPage from "./pages/AboutPage.jsx";
 import Redirect404 from "./pages/Redirect404.jsx";
 import Signup from "./pages/Signup.jsx";
-import Logout from "./pages/Logout.jsx";
 import Cart from "./pages/Cart.jsx";
 import AuthProvider from "./components/AuthContext.jsx";
 import CartProvider from "./components/CartContext.jsx";
@@ -43,7 +42,6 @@ function App() {
               <Route path="/order-confirmation/:orderID" element={<OrderConfirmation />} />
             </Route>
             <Route path="/login" element={<Login />} />
-            <Route path="/logout" element={<Logout />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/404" element={<NotFoundPage />} />

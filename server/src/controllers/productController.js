@@ -123,6 +123,7 @@ const updateProduct = async (req, res) => {
     const { productId } = req.params;
     const { name, category, price, pounds, quantity, imagePath, active } = req.body;
     const cacheBuster = Date.now();
+    const formattedName = name.toLowerCase().replace(/\s+/g, '_');
 
     const productData = {
       category: category,
@@ -147,7 +148,7 @@ const updateProduct = async (req, res) => {
       } else {
         //Overwrite image
         const imageBuffer = req.file.buffer;
-        const downloadResults = await downloadImage(name, imageBuffer);
+        const downloadResults = await downloadImage(formattedName, imageBuffer);
         if (downloadResults.errors)
           return responseHandler.badRequest(res, 'Error downloading image', downloadErrors);
         else
