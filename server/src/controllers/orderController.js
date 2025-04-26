@@ -1,7 +1,7 @@
 const Order = require('../models/orderModel');
 const responseHandler = require('../utils/responseHandler');
 const orderService = require('../services/orderService');
-
+const paymentController = require('./paymentController');
 const createOrder = async (req, res) => {
   try {
     const { streetAddress, city, zipCode, orderProducts } = req.body
@@ -26,7 +26,9 @@ const createOrder = async (req, res) => {
 
     const orderID = await Order.create(orderData, orderProducts);
 
-    return responseHandler.created(res, { orderID }, 'Order created succesfully');
+    req.body.orderID = orderID;
+    const clientSecret = await paymentController.createPaymentIntent(req,res);
+    return responseHandler.created(res, { orderID,clientSecret }, 'Order created succesfully');
   } catch (error) {
     console.error(`Create order error: ${error.message}`, error);
     return responseHandler.error(res, 'Failed to create order.');

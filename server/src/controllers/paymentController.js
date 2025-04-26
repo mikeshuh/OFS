@@ -47,13 +47,12 @@ const createPaymentIntent = async (req, res) => {
     });
 
     // Return client secret to frontend
-    responseHandler.created(res, {
-      clientSecret: paymentIntent.client_secret
-    }, 'Payment intent created successfully');
+    return paymentIntent.client_secret;
 
   } catch (error) {
     console.error('Payment intent error:', error);
-    responseHandler.error(res, 'Error creating payment intent');
+    throw error;
+    // responseHandler.error(res, 'Error creating payment intent');
   }
 };
 

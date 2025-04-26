@@ -28,7 +28,7 @@ const Checkout = () => {
 
   const deliveryAddress = useMemo(() => {
     return JSON.parse(localStorage.getItem(LS_DELIVERY_ADDRESS) || "{}");
-  }, []);
+  }, [localStorage]);
 
   const subtotal = useMemo(() => calculateTotal(), [cartItems]);
   const shipping = useMemo(() => calculateTotalWithShipping() - subtotal, [cartItems]);
@@ -87,147 +87,45 @@ const Checkout = () => {
       };
 
       checkOrderPaymentStatus();
-
-      if (!hasCheckedAddressRef.current) {
-        hasCheckedAddressRef.current = true;
-
-        const updateAddress = async () => {
-          try {
-            const orderDetails = await requestServer(
-              `${API_URL}/api/orders/details/${existingOrderID}`,
-              "GET"
-            );
-            const oldAddress = {
-              streetAddress: orderDetails.data.data[0].streetAddress,
-              city: orderDetails.data.data[0].city,
-              zipCode: orderDetails.data.data[0].zipCode,
-            };
-            const newAddress = JSON.parse(localStorage.getItem(LS_DELIVERY_ADDRESS) || "{}");
-            if (newAddress.streetAddress !== oldAddress.streetAddress) {
-              await requestServer(
-                `${API_URL}/api/orders/update-address/${existingOrderID}`,
-                "PUT",
-                newAddress
-              );
-            }
-          } catch (error) {
-            console.error("error fetching order details:", error);
-            setErrorMessage("Failed to retrieve order details. Please try again.");
-          }
-        };
-
-        updateAddress();
-      }
-
       return;
     }
-
-    if (
-      hasInitialized.current ||
-      isOrderCreated ||
-      cartItems.length === 0 ||
-      !deliveryAddress?.streetAddress
-    ) {
-      return;
-    }
-
-    hasInitialized.current = true;
-
-    const createOrder = async () => {
-      try {
-        if (
-          !deliveryAddress.streetAddress ||
-          !deliveryAddress.city ||
-          !deliveryAddress.zipCode ||
-          cartItems.length === 0
-        ) {
-          setErrorMessage("Missing address information or cart is empty");
-          return;
-        }
-
-        const orderData = {
-          streetAddress: deliveryAddress.streetAddress,
-          city: deliveryAddress.city,
-          zipCode: deliveryAddress.zipCode,
-          orderProducts: cartItems.map(item => ({
-            productID: item.productID,
-            cartQuantity: item.cartQuantity
-          }))
-        };
-
-        const orderResponse = await requestServer(
-          `${API_URL}/api/orders/create-order`,
-          "POST",
-          orderData
-        );
-
-        if (!orderResponse.data?.success) {
-          setErrorMessage(orderResponse.data?.message || "Failed to create order");
-          return;
-        }
-
-        const createdOrderID = orderResponse.data.data.orderID;
-        setOrderID(createdOrderID);
-        setIsOrderCreated(true);
-        localStorage.setItem(LS_ORDER_ID, createdOrderID);
-
-        const paymentResponse = await requestServer(
-          `${API_URL}/api/payments/create-payment-intent`,
-          "POST",
-          { orderID: createdOrderID }
-        );
-
-        if (!paymentResponse.data?.success) {
-          setErrorMessage(paymentResponse.data?.message || "Failed to create payment intent");
-          return;
-        }
-
-        const createdClientSecret = paymentResponse.data.data.clientSecret;
-        setClientSecret(createdClientSecret);
-        localStorage.setItem(LS_CLIENT_SECRET, createdClientSecret);
-      } catch (error) {
-        console.error("error creating order and payment:", error);
-        setErrorMessage("An error occurred while setting up your payment. Please try again.");
-      }
-    };
-
-    createOrder();
   }, [cartItems, deliveryAddress, isOrderCreated]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!stripe || !elements || !clientSecret) return;
+    if (!stripe || !elements) return;
 
     setIsProcessing(true);
     setErrorMessage(null);
-    const updateOrderDetails = async () => {
-      const existingOrderID = localStorage.getItem(LS_ORDER_ID);
+    const createOrder = async () => {
       try {
         const response = await requestServer(
-          `${API_URL}/api/orders/update-order/${existingOrderID}`,
-          "PUT",
+          `${API_URL}/api/orders/create-order`,
+          "POST",
           {
+            streetAddress: deliveryAddress.streetAddress,
+            zipCode: deliveryAddress.zipCode,
+            city: deliveryAddress.city,
             orderProducts: cartItems.map(item => ({
               productID: item.productID,
               cartQuantity: item.cartQuantity
-            }))
+            })),
           }
         );
         if (!response.data?.success) {
-          setErrorMessage(response.data?.message || "Failed to update order");
-          throw new error("Failed to update order");
+          setErrorMessage(response.data?.message || "Failed to create order");
+          throw new error("Failed to create order");
         }
+        return response.data.data;
       } catch (error) {
-        setErrorMessage(response.data?.message || "Failed to update order");
-        console.error("error fetching order details:", error);
-        throw new error("Failed to update order");
+        throw new error("Failed to create order");
       }
-    }
+    };
 
     try {
-
       const cardElement = elements.getElement(CardElement);
+      const {orderID,clientSecret} = await createOrder();
       const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: { card: cardElement }
       });
@@ -236,7 +134,6 @@ const Checkout = () => {
         setErrorMessage(`Payment failed with code: ${error.code}`);
       } else if (paymentIntent.status === "succeeded") {
         justPaidRef.current = true;
-        await updateOrderDetails();
         clearCart();
         clearCheckoutSession();
         navigate(`/order-confirmation/${orderID}`);
@@ -245,16 +142,11 @@ const Checkout = () => {
       }
     } catch (error) {
       console.error("Payment error: ", error);
-      setErrorMessage("An unexpected error occurred. Please try again.");
+      setErrorMessage( "An unexpected error occurred. Please try again.");
     } finally {
       setIsProcessing(false);
     }
   };
-
-  if (!clientSecret && !errorMessage) {
-    return <div className="text-center mt-10 text-gray-600">Preparing your checkout...</div>;
-  }
-
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Navbar />
@@ -353,8 +245,8 @@ const Checkout = () => {
 
                 <button
                   type="submit"
-                  disabled={isProcessing || !stripe || !clientSecret || isOverWeightLimit}
-                  className={`w-full py-3 rounded font-medium ${isProcessing || !stripe || !clientSecret || isOverWeightLimit
+                  disabled={isProcessing || !stripe || isOverWeightLimit}
+                  className={`w-full py-3 rounded font-medium ${isProcessing || !stripe || isOverWeightLimit
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-green-600 hover:bg-green-700"
                     } text-white`}

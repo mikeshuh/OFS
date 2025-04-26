@@ -5,10 +5,10 @@ import { requestServer } from "../utils/Utility";
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-  const [loggedIn, setLoggedIn]       = useState(false);
-  const [loading, setLoading]         = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState(null);
-  const navigate                      = useNavigate();
+  const navigate = useNavigate();
 
   // CartContext can register its clearCart function here
   const cartFunctions = { clearCart: null };
@@ -56,19 +56,28 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  function deleteAllCookies() {
+    document.cookie.split(';').forEach(cookie => {
+      const eqPos = cookie.indexOf('=');
+      const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
+      document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    });
+  }
   // Logout action
   const logOut = async () => {
     try {
+      if (cartFunctions.clearCart) cartFunctions.clearCart();
+      setLoggedIn(false);
+      setUserProfile(null);
+      localStorage.clear();
       const res = await requestServer("/api/users/logout", "POST");
       if (!res.data?.success) {
         throw new Error(res.data?.message || "Logout failed.");
       }
       window.alert("Logout successful.");
       // clear client state
-      if (cartFunctions.clearCart) cartFunctions.clearCart();
-      setLoggedIn(false);
-      setUserProfile(null);
-      localStorage.clear();
+
+      // deleteAllCookies();
       navigate("/");
       return res;
     } catch (err) {
