@@ -127,7 +127,7 @@ const Checkout = () => {
       const prevOrderID = localStorage.getItem(LS_ORDER_ID);
       const prevClientSecret = localStorage.getItem(LS_CLIENT_SECRET);
 
-      if (!prevOrderID && !prevClientSecret) {
+      if (!prevOrderID || !prevClientSecret) {
         const { orderID, clientSecret } = await createOrder();
         localStorage.setItem(LS_ORDER_ID, orderID);
         localStorage.setItem(LS_CLIENT_SECRET, clientSecret);
