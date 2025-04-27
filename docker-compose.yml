@@ -4,13 +4,11 @@ services:
     build:
       context: ./database
       dockerfile: Dockerfile
-    environment:
-      MYSQL_DATABASE: OFS_DB
-      MYSQL_ROOT_PASSWORD: RootPassword123!
+    env_file: .env
     volumes:
       - db_data:/var/lib/mysql
-    ports:
-      - "3307:3306"  # Maps host port 3307 to container port 3306
+    expose:
+      - "3306"  # Expose MySQL port internally to other services
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$${MYSQL_ROOT_PASSWORD}"]
@@ -30,13 +28,15 @@ services:
       interval: 5s
       timeout: 5s
       retries: 3
+    expose:
+      - "6379"  # Expose Redis port internally to other services
 
   server:
     image: mikeshuh/ofs-server:latest
     build:
       context: ./server
       dockerfile: Dockerfile
-    env_file: .env.server
+    env_file: .env
     ports:
       - "4000:4000"
     depends_on:
@@ -57,10 +57,11 @@ services:
       context: ./client
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "5173:80"
     depends_on:
       - server
     restart: unless-stopped
+
 volumes:
   db_data:
   redis_data:

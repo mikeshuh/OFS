@@ -5,7 +5,7 @@ import { useAuth } from "./AuthContext";
 import { useCart } from "./CartContext";
 import { requestServer } from "../utils/Utility";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
 function Navbar() {
   const auth = useAuth();
   const { cartItemsCount, calculateTotal } = useCart();
