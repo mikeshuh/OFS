@@ -1,5 +1,6 @@
 services:
   mysql:
+    image: mikeshuh/ofs-mysql:latest
     build:
       context: ./database
       dockerfile: Dockerfile
@@ -31,6 +32,7 @@ services:
       retries: 3
 
   server:
+    image: mikeshuh/ofs-server:latest
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -50,6 +52,7 @@ services:
       retries: 3
 
   client:
+    image: mikeshuh/ofs-client:latest
     build:
       context: ./client
       dockerfile: Dockerfile
