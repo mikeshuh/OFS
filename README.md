@@ -111,6 +111,9 @@ The application consists of four main services orchestrated with Docker Compose:
 
 - Docker Desktop installed ([Download here](https://www.docker.com/products/docker-desktop/))
 - Stripe CLI installed ([Download here](https://docs.stripe.com/stripe-cli/))
+- Log in to stripe with test account credentials I provide. For info, message me at:
+  - 📧 Email: michael.stephen.huh@gmail.com
+  - 💬 Discord: mikrelin
 - Environment variables configured (see Environment Setup)
 
 ### Installation
@@ -133,10 +136,17 @@ The application consists of four main services orchestrated with Docker Compose:
 4. **Run Stripe CLI**
    ```bash
    stripe login
+   ```
+   Make sure you log in on the OFS account in Test mode.
+   
+   ![image](https://github.com/user-attachments/assets/9d6e3008-a0b5-43ba-bb63-73afbd7ac625)
+
+   ```bash
    stripe listen --forward-to localhost:6423/api/payments/webhook
    ```
+   Make sure the webhook signing secret that displays in terminal matches the one we provide for your `.env`.
 
-5. **Access the application**
+6. **Access the application**
    - 🌐 Frontend: http://localhost:6422
    - 🔌 API: http://localhost:6423
    - 🗄️ MySQL: localhost:6424
