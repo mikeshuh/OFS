@@ -235,7 +235,7 @@ volumes:
   db_data:
   redis_data:
 ```
-Ensure the
+Ensure the host ports (6422, 6423, 6424) are not already in use.
 
 ## 💻 Development
 
