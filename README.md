@@ -111,7 +111,7 @@ The application consists of four main services orchestrated with Docker Compose:
 
 - Docker Desktop installed ([Download here](https://www.docker.com/products/docker-desktop/))
 - Stripe CLI installed ([Download here](https://docs.stripe.com/stripe-cli/))
-- Log in to stripe with test account credentials I provide. For info, message me at:
+- Log in to stripe with test account credentials. To obtain the stripe test account credentials, please contact:
   - 📧 Email: michael.stephen.huh@gmail.com
   - 💬 Discord: mikrelin
 - Environment variables configured (see Environment Setup)
