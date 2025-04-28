@@ -89,8 +89,8 @@ OFS is a modern web application that enables customers to purchase organic foods
 
 ```mermaid
 graph TD
-    A[Client - Port 80] --> B[Server API - Port 4000]
-    B --> C[MySQL - Port 3307]
+    A[Client - Port 6422] --> B[Server API - Port 6423]
+    B --> C[MySQL - Port 6424]
     B --> D[Redis]
     B --> E[Stripe API]
     B --> F[Mapbox API]
@@ -100,10 +100,10 @@ The application consists of four main services orchestrated with Docker Compose:
 
 | Service | Description | Port |
 |---------|-------------|------|
-| **MySQL** | Primary relational data storage | `3307` |
+| **MySQL** | Primary relational data storage | `6424` |
 | **Redis** | JWT blacklisting & Bull queue management | Default |
-| **Server** | Node.js/Express API backend | `4000` |
-| **Client** | React frontend served by Nginx | `80` |
+| **Server** | Node.js/Express API backend | `6423` |
+| **Client** | React frontend served by Nginx | `6422` |
 
 ## 🚀 Quick Start
 
@@ -133,13 +133,13 @@ The application consists of four main services orchestrated with Docker Compose:
 4. **Run Stripe CLI**
    ```bash
    stripe login
-   stripe listen --forward-to localhost:4000/api/payments/webhook
+   stripe listen --forward-to localhost:6423/api/payments/webhook
    ```
 
 5. **Access the application**
-   - 🌐 Frontend: http://localhost:80
-   - 🔌 API: http://localhost:4000
-   - 🗄️ MySQL: localhost:3307
+   - 🌐 Frontend: http://localhost:6422
+   - 🔌 API: http://localhost:6423
+   - 🗄️ MySQL: localhost:6424
 
 ## 🔐 Environment Setup
 
@@ -161,7 +161,7 @@ To connect to the MySQL database directly:
 
 ```bash
 # Connect to MySQL from your local machine
-mysql -P 3307 -u root -p
+mysql -P 6424 -u root -p
 ```
 
 When prompted for a password, enter the `MYSQL_ROOT_PASSWORD` value from your `.env` file.
@@ -180,7 +180,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     ports:
-      - "3307:3306"  # Maps host port 3307 to container port 3306
+      - "6424:3306"  # Maps host port 6424 to container port 3306
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$${MYSQL_ROOT_PASSWORD}"]
@@ -208,7 +208,7 @@ services:
       dockerfile: Dockerfile
     env_file: .env
     ports:
-      - "4000:4000"
+      - "6423:4000"
     depends_on:
       mysql:
         condition: service_healthy
@@ -227,7 +227,7 @@ services:
       context: ./client
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "6422:80"
     depends_on:
       - server
     restart: unless-stopped
@@ -274,7 +274,7 @@ docker-compose down -v
 |---------|-------------|----------|
 | MySQL | `mysqladmin ping` | 5s |
 | Redis | `redis-cli ping` | 5s |
-| Server | `http://localhost:4000/health` | 30s |
+| Server | `http://localhost:6423/health` | 30s |
 
 ### 📞 Support
 
