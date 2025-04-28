@@ -50,9 +50,19 @@ OFS is a modern web application that enables customers to purchase organic foods
 - Order tracking and simulated delivery
 
 ### 🔒 Security Features
+
+**Authentication & Session Management**
 - Secure user authentication with JWT cookies
-- CSRF token protection for all API endpoints
 - JWT blacklisting on logout using Redis
+- HTTP-only cookies for sensitive data
+
+**Request Protection**
+- CSRF token protection for all API endpoints
+- Rate limiting
+- Strict CORS policy with credentials
+
+**Data Security**
+- Input validation and sanitization using Express Validator
 - Secure password hashing
 
 ### 🚚 Delivery System
