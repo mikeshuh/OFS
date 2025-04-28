@@ -1,0 +1,64 @@
+services:
+  mysql:
+    image: mikeshuh/ofs-mysql:latest
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    env_file: .env
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "6424:3306"  # Maps host port 6424 to container port 3306
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server","--appendonly","yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+
+  server:
+    image: mikeshuh/ofs-server:latest
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    env_file: .env
+    ports:
+      - "6423:4000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL","curl -f http://localhost:4000/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  client:
+    image: mikeshuh/ofs-client:latest
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "6422:80"
+    depends_on:
+      - server
+    restart: unless-stopped
+volumes:
+  db_data:
+  redis_data:

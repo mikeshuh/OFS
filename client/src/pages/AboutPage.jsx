@@ -15,6 +15,8 @@ import redisIcon from "../assets/aboutpage/redisIcon.png"
 import mapBoxIcon from "../assets/aboutpage/mapBoxIcon.png"
 import expressIcon from "../assets/aboutpage/expressIcon.png"
 import bullIcon from "../assets/aboutpage/bullIcon.png"
+import ngnixIcon from "../assets/aboutpage/nginxIcon.svg"
+import dockerIcon from "../assets/aboutpage/dockerIcon.svg"
 //team pictures
 import rayProfile from "../assets/team/rayProfile.jpg"
 import michaelProfile from "../assets/team/michaelProfile.jpg"
@@ -269,7 +271,7 @@ function AboutPage() {
               transform: translateX(0);
             }
             100% {
-              transform: translateX(calc(-190px * 10));  /* Slide width * number of unique slides */
+              transform: translateX(calc(-190px * 12));  /* Slide width * number of unique slides */
             }
           }
 
@@ -360,6 +362,8 @@ function AboutPage() {
                 { src: bullIcon, alt: "Bull" },
                 { src: stripeIcon, alt: "Stripe" },
                 { src: mapBoxIcon, alt: "MapBox" },
+                { src: ngnixIcon, alt: "Nginx" },
+                { src: dockerIcon, alt: "Docker" },
               ].map((tech, index) => (
                 <div className="tech-logo" key={`original-${index}`}>
                   <div className="tech-logo-container">
@@ -384,6 +388,8 @@ function AboutPage() {
                 { src: bullIcon, alt: "Bull" },
                 { src: stripeIcon, alt: "Stripe" },
                 { src: mapBoxIcon, alt: "MapBox" },
+                { src: ngnixIcon, alt: "Nginx" },
+                { src: dockerIcon, alt: "Docker" },
               ].map((tech, index) => (
                 <div className="tech-logo" key={`duplicate-${index}`}>
                   <div className="tech-logo-container">
