@@ -7,6 +7,33 @@
 [![React](https://img.shields.io/badge/React-Vite-blueviolet)](https://reactjs.org/)
 [![MySQL](https://img.shields.io/badge/MySQL-Database-orange)](https://www.mysql.com/)
 
+---
+
+## 📚 Table of Contents
+
+- [📋 Overview](#-overview)
+- [✨ Key Features](#-key-features)
+  - [🛒 Customer Features](#-customer-features)
+  - [🔒 Security Features](#-security-features)
+  - [🚚 Delivery System](#-delivery-system)
+  - [📊 Management Features](#-management-features)
+- [🛠️ Tech Stack](#-tech-stack)
+- [🏗️ Architecture Overview](#-architecture-overview)
+- [🚀 Quick Start](#-quick-start)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [🔐 Environment Setup](#-environment-setup)
+- [🗄️ Database Access](#-database-access)
+- [📁 Docker Compose](#-docker-compose)
+- [💻 Development](#-development)
+  - [Building from Source](#building-from-source)
+  - [Viewing Logs](#viewing-logs)
+  - [Stopping Services](#stopping-services)
+- [🔍 Health Checks](#-health-checks)
+- [📞 Support](#-support)
+
+---
+
 ## 📋 Overview
 
 OFS is a modern web application that enables customers to purchase organic foods online and have them delivered by simulated autonomous vehicles. The system includes inventory management, order processing, delivery optimization, and a comprehensive dashboard for store employees and managers.
@@ -117,6 +144,19 @@ The environment file includes:
 - JWT secrets
 - Redis connection details
 - Other application-specific settings
+
+## 🗄️ Database Access
+
+To connect to the MySQL database directly:
+
+```bash
+# Connect to MySQL from your local machine
+mysql -P 3307 -u root -p
+```
+
+When prompted for a password, enter the `MYSQL_ROOT_PASSWORD` value from your `.env` file.
+
+This gives you direct access to manage the database, run queries, and inspect data.
 
 ## 📁 Docker Compose
 ```yaml
