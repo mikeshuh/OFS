@@ -17,13 +17,13 @@
   - [🔒 Security Features](#-security-features)
   - [🚚 Delivery System](#-delivery-system)
   - [📊 Management Features](#-management-features)
-- [🛠️ Tech Stack](#-tech-stack)
-- [🏗️ Architecture Overview](#-architecture-overview)
+- [🛠 Tech Stack](#-tech-stack)
+- [🏗 Architecture Overview](#-architecture-overview)
 - [🚀 Quick Start](#-quick-start)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
 - [🔐 Environment Setup](#-environment-setup)
-- [🗄️ Database Access](#-database-access)
+- [🗄 Database Access](#-database-access)
 - [📁 Docker Compose](#-docker-compose)
 - [💻 Development](#-development)
   - [Building from Source](#building-from-source)
@@ -74,7 +74,7 @@ OFS is a modern web application that enables customers to purchase organic foods
 - Admin inventory management dashboard
   - CRUD operations on products
 
-## 🛠️ Tech Stack
+## 🛠 Tech Stack
 
 | Category | Technologies |
 |----------|-------------|
@@ -85,7 +85,7 @@ OFS is a modern web application that enables customers to purchase organic foods
 | **Queue** | ![Bull](https://img.shields.io/badge/Bull-Queue-orange) |
 | **DevOps** | ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white) ![Docker Compose](https://img.shields.io/badge/Docker_Compose-2496ED?style=flat&logo=docker&logoColor=white) |
 
-## 🏗️ Architecture Overview
+## 🏗 Architecture Overview
 
 ```mermaid
 graph TD
@@ -155,7 +155,7 @@ The environment file includes:
 - Redis connection details
 - Other application-specific settings
 
-## 🗄️ Database Access
+## 🗄 Database Access
 
 To connect to the MySQL database directly:
 
@@ -234,8 +234,8 @@ services:
 volumes:
   db_data:
   redis_data:
-
 ```
+Ensure the
 
 ## 💻 Development
 
