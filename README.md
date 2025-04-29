@@ -252,30 +252,30 @@ Ensure the host ports (6422, 6423, 6424) are not already in use.
 ### Building from Source
 ```bash
 # Build all services
-docker-compose build
+docker compose build
 
 # Build specific service
-docker-compose build mysql
-docker-compose build server
-docker-compose build client
+docker compose build mysql
+docker compose build server
+docker compose build client
 ```
 
 ### Viewing Logs
 ```bash
 # All services
-docker-compose logs -f
+docker compose logs -f
 
 # Specific service
-docker-compose logs -f server
+docker compose logs -f server
 ```
 
 ### Stopping Services
 ```bash
 # Stop all services
-docker-compose down
+docker compose down
 
 # Stop and remove volumes (⚠️ deletes data)
-docker-compose down -v
+docker compose down -v
 ```
 
 ## 🔍 Health Checks
