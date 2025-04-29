@@ -130,7 +130,7 @@ The application consists of four main services orchestrated with Docker Compose:
 
 3. **Build and start containers**
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
    
 4. **Run Stripe CLI**
