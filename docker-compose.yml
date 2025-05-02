@@ -1,6 +1,7 @@
 services:
   mysql:
     image: mikeshuh/ofs-mysql:latest
+    # platform: linux/amd64  # Uncomment this line if you are using a M1 Mac
     build:
       context: ./database
       dockerfile: Dockerfile
@@ -19,6 +20,7 @@ services:
 
   redis:
     image: redis:7-alpine
+    # platform: linux/amd64  # Uncomment this line if you are using a M1 Mac
     restart: unless-stopped
     command: ["redis-server","--appendonly","yes"]
     volumes:
@@ -31,6 +33,7 @@ services:
 
   server:
     image: mikeshuh/ofs-server:latest
+    # platform: linux/amd64  # Uncomment this line if you are using a M1 Mac
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -51,6 +54,7 @@ services:
 
   client:
     image: mikeshuh/ofs-client:latest
+    # platform: linux/amd64  # Uncomment this line if you are using a M1 Mac
     build:
       context: ./client
       dockerfile: Dockerfile
