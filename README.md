@@ -123,13 +123,13 @@ The application consists of four main services orchestrated with Docker Compose:
    ```bash
    git clone git@github.com:mikeshuh/OFS.git
    ```
-   or alternatively, just copy the docker-compose.yml file into a folder on your file system
+   Or alternatively, just copy the docker-compose.yml file into a folder on your file system.
 
 2. **Set up environment variables**
    - Create `.env` file in root directory (where the docker-compose.yml file is)
    - Contact for credentials (see below)
 
-3. **Build and start containers**
+3. **Start containers**
    ```bash
    docker compose up -d
    ```
@@ -184,6 +184,7 @@ This gives you direct access to manage the database, run queries, and inspect da
 services:
   mysql:
     image: mikeshuh/ofs-mysql:latest
+    # platform: linux/amd64  # Uncomment this line if you are using a M1 Mac
     build:
       context: ./database
       dockerfile: Dockerfile
@@ -202,6 +203,7 @@ services:
 
   redis:
     image: redis:7-alpine
+    # platform: linux/amd64  # Uncomment this line if you are using a M1 Mac
     restart: unless-stopped
     command: ["redis-server","--appendonly","yes"]
     volumes:
@@ -214,6 +216,7 @@ services:
 
   server:
     image: mikeshuh/ofs-server:latest
+    # platform: linux/amd64  # Uncomment this line if you are using a M1 Mac
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -234,6 +237,7 @@ services:
 
   client:
     image: mikeshuh/ofs-client:latest
+    # platform: linux/amd64  # Uncomment this line if you are using a M1 Mac
     build:
       context: ./client
       dockerfile: Dockerfile
