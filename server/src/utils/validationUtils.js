@@ -232,6 +232,8 @@ const validateProduct = [
   body('name')
   .trim()
   .escape()
+  .isAlphanumeric()
+  .withMessage('Name must be alphanumeric')
   //validate
   .notEmpty()
   .withMessage('Name is required')

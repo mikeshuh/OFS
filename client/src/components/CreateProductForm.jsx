@@ -12,6 +12,10 @@ const MAX_QUANTITY = 1000;
 const REGEX_PRICE_POUNDS = /^\d+(\.\d{1,2})?$/;
 const REGEX_QUANTITY = /^\d+$/;
 
+//alphanumeric
+const REGEX_NAME = /^[a-z0-9]+$/i;
+
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 const CreateProductForm = ({selectableCategories, onProductAdded, products }) => {
@@ -126,6 +130,14 @@ const CreateProductForm = ({selectableCategories, onProductAdded, products }) =>
 
   }
 
+  const handleProductNameChange = (e) => {
+    const value = e.target.value;
+
+    if(REGEX_NAME.test(value)){
+      setName(value);
+    }
+  }
+
 
   const handleNumberChange = (e) => {
     const { name, value } = e.target;
@@ -160,7 +172,7 @@ const CreateProductForm = ({selectableCategories, onProductAdded, products }) =>
             name="name"
             className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#304c57]"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={handleProductNameChange}
           />
         </div>
         <div className="flex flex-col gap-1">
