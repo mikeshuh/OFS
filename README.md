@@ -182,6 +182,7 @@ When prompted for a password, enter the `MYSQL_ROOT_PASSWORD` value from your `.
 This gives you direct access to manage the database, run queries, and inspect data.
 
 ## 📁 Docker Compose
+**NOTE: If you are on a M1 Mac, uncomment the platform specification lines for each service.**
 ```yaml
 services:
   mysql:
