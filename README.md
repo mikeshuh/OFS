@@ -112,7 +112,9 @@ The application consists of four main services orchestrated with Docker Compose:
 
 - Docker Desktop installed ([Download here](https://www.docker.com/products/docker-desktop/))
 - Stripe CLI installed ([Download here](https://docs.stripe.com/stripe-cli/))
-- Log in to stripe with test account credentials. To obtain the stripe test account credentials, please contact:
+  - Stripe CLI is necessary for payment integration on a local development environment
+- While installing MySQL is not necessary to test our application, if you wish to inspect the database records, install MySQL Shell and Server ([Download here](https://dev.mysql.com/downloads/))
+- Log in to Stripe with test account credentials. To obtain the Stripe test account credentials, please contact:
   - 📧 Email: michael.stephen.huh@gmail.com
   - 💬 Discord: mikrelin
 - Environment variables configured (see Environment Setup)
@@ -123,7 +125,7 @@ The application consists of four main services orchestrated with Docker Compose:
    ```bash
    git clone git@github.com:mikeshuh/OFS.git
    ```
-   Or alternatively, just copy the docker-compose.yml file into a folder on your file system.
+   Alternatively, just copy the docker-compose.yml file into a folder on your file system.
 
 2. **Set up environment variables**
    - Create `.env` file in root directory (where the docker-compose.yml file is)
@@ -145,7 +147,7 @@ The application consists of four main services orchestrated with Docker Compose:
    ```bash
    stripe listen --forward-to localhost:6423/api/payments/webhook
    ```
-   Make sure the webhook signing secret that displays in terminal matches the one we provide for your `.env`.
+   Ensure the webhook signing secret displayed in the terminal matches the one we provide for your `.env`.
 
 6. **Access the application**
    - 🌐 Frontend: http://localhost:6422
