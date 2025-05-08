@@ -86,9 +86,7 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
-    console.log('test');
     if (file && file.type != "image/jpeg") {
-      console.log('test2');
       setImage(null);
       setFileInputKey(fileInputKey+1);
       setMessage("⚠ Invalid image format. Only JPEG.");
