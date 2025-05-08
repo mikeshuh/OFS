@@ -21,6 +21,7 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
   const [message, setMessage] = useState("");
   const [image, setImage] = useState(null);
   const [bustCache, setBustCache] = useState("");
+  const [fileInputKey, setFileInputKey] = useState(1);
 
 
   // Clear message after 3 seconds
@@ -85,8 +86,15 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
+    if (file && file.type != "image/jpeg") {
+      setImage(null);
+      setFileInputKey(fileInputKey+1);
+      setMessage("⚠ Invalid image format. Only JPEG.");
+      return;
+    }
     setImage(file);
-  };
+    setImageError("");
+    };
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -210,6 +218,7 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
               type="file"
               name="image"
               className="w-full text-[10px]"
+              key={fileInputKey}
               onChange={handleImageChange}
             />
           </div>
