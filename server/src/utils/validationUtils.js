@@ -207,6 +207,8 @@ const validateProduct = [
   body('category')
   .trim()
   .escape()
+  .isAlphanumeric()
+  .withMessage('Category must be alphanumeric')
   //validate
   .notEmpty()
   .withMessage('Category is required')

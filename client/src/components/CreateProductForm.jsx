@@ -198,7 +198,12 @@ const CreateProductForm = ({selectableCategories, onProductAdded, products }) =>
               type="text"
               className="w-full border border-gray-200 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#304c57]"
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                if(REGEX_NAME.test(value)){
+                  setCategory(value)
+                }
+              }}
             />
           </div>
         )}
