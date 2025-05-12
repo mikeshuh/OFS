@@ -135,21 +135,41 @@ const handlePaymentIntentSucceeded = async (paymentIntent) => {
       });
     }
 
-    // Update order payment status
-    await Order.updatePaymentStatus(orderID, 'paid');
-    await Order.completeOrder(orderID);
-    // **** Bull Queue Batching Integration ****
-    // Retrieve order details and add to the in-memory batch
-    const orderDetails = await Order.findById(orderID);
-    console.log("Retrieved order details:", orderDetails);
+    // First try to update inventory with proper locking
+    try {
+      // Try to update inventory with proper locking
+      await Order.completeOrder(orderID);
+      
+      // Only if inventory update succeeds, update payment status
+      await Order.updatePaymentStatus(orderID, 'paid');
+      
+      // If successful, add to delivery queue
+      const orderDetails = await Order.findById(orderID);
+      console.log("Retrieved order details:", orderDetails);
 
-    if (orderDetails) {
-      deliveryQueueService.addOrderToQueue(orderDetails);
-    } else {
-      console.error(`Order with ID ${orderID} not found for delivery queue.`);
+      if (orderDetails) {
+        deliveryQueueService.addOrderToQueue(orderDetails);
+      } else {
+        console.error(`Order with ID ${orderID} not found for delivery queue.`);
+      }
+    } catch (error) {
+      console.error(`Inventory error fulfilling order ${orderID}:`, error.message);
+      
+      // If we can't fulfill due to inventory, issue a refund and mark order as failed
+      try {
+        await stripe.refunds.create({
+          payment_intent: paymentIntent.id,
+          reason: 'requested_by_customer'
+        });
+        
+        // Update order status to indicate failure
+        await Order.updatePaymentStatus(orderID, 'failed');
+        
+        console.log(`Refund issued for order ${orderID} due to inventory shortage: ${error.message}`);
+      } catch (refundError) {
+        console.error(`Failed to issue refund for order ${orderID}:`, refundError);
+      }
     }
-    // ********************************************
-
   } catch (error) {
     console.error('Error handling successful payment:', error);
   }
