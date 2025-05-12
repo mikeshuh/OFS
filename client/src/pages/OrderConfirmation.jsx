@@ -153,7 +153,7 @@ const OrderConfirmation = () => {
                         : 'bg-red-100 text-red-800'
                     }`}
                   >
-                    {firstItem.paymentStatus === 'paid' ? 'Paid' : 'Pending'}
+                    {firstItem.paymentStatus === 'paid' ? 'Paid' : (firstItem.paymentStatus === 'refunded') ? 'Refunded' : 'Pending'}
                   </span>
                 </p>
                 <p>
