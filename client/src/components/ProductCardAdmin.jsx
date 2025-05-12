@@ -86,15 +86,21 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
-    if (file && file.type != "image/jpeg") {
-      setImage(null);
-      setFileInputKey(fileInputKey+1);
-      setMessage("⚠ Invalid image format. Only JPEG.");
+    if (!file) {
       return;
     }
+    
+    // Ensure consistent JPEG type checking
+    if (file.type !== "image/jpeg" && !file.name.toLowerCase().endsWith('.jpg') && !file.name.toLowerCase().endsWith('.jpeg')) {
+      setImage(null);
+      setFileInputKey(fileInputKey+1);
+      setMessage("⚠ Invalid image format. Only JPEG/JPG allowed.");
+      return;
+    }
+    
     setImage(file);
-    setImageError("");
-    };
+    setMessage("");
+  };
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -220,6 +226,7 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
               className="w-full text-[10px]"
               key={fileInputKey}
               onChange={handleImageChange}
+              accept=".jpg,.jpeg,image/jpeg"
             />
           </div>
           <div className="w-[15%] pr-2">
