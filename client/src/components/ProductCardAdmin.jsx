@@ -86,15 +86,15 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
-    if (file && file.type != "image/jpeg") {
+    if (file && file.type !== "image/jpeg") {
       setImage(null);
       setFileInputKey(fileInputKey+1);
       setMessage("⚠ Invalid image format. Only JPEG.");
       return;
     }
     setImage(file);
-    setImageError("");
-    };
+    setMessage("");
+  };
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -220,6 +220,7 @@ const ProductCardAdmin = React.memo(({ product, onUpdate }) => {
               className="w-full text-[10px]"
               key={fileInputKey}
               onChange={handleImageChange}
+              accept="image/jpeg"
             />
           </div>
           <div className="w-[15%] pr-2">
