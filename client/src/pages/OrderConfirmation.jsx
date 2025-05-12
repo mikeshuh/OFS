@@ -129,7 +129,7 @@ const OrderConfirmation = () => {
             </div>
             <h1 className="text-3xl font-bold text-gray-800 mb-2">Order Confirmed!</h1>
             <p className="text-gray-600">
-              Thank you for your order. We've received your payment and will begin processing your items right away.
+              Thank you for your order.
             </p>
           </div>
 
@@ -153,7 +153,7 @@ const OrderConfirmation = () => {
                         : 'bg-red-100 text-red-800'
                     }`}
                   >
-                    {firstItem.paymentStatus === 'paid' ? 'Paid' : 'Pending'}
+                    {firstItem.paymentStatus === 'paid' ? 'Paid' : (firstItem.paymentStatus === 'refunded') ? 'Refunded' : 'Pending'}
                   </span>
                 </p>
                 <p>
