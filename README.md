@@ -1,6 +1,6 @@
 # 🥬 OFS (On-Demand Food Service) Application
 
-> A full-stack e-commerce platform for a local organic food retailer chain in the San Jose Downtown area, featuring online shopping, automated delivery optimization, and inventory management.
+> A full-stack e-commerce platform for groceries in the San Jose Downtown area, featuring online shopping, automated delivery optimization, and inventory management.
 
 [![Docker](https://img.shields.io/badge/Docker-Compose-blue)](https://www.docker.com/)
 [![Node.js](https://img.shields.io/badge/Node.js-Express-green)](https://nodejs.org/)
